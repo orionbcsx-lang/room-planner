@@ -69,7 +69,7 @@
   details.more summary { font-size: 11px; color: #888; cursor: pointer; margin: 4px 0 8px; }
 
   .canvas-area { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-  .toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; position: relative; }
 
   .view-btns { display: flex; gap: 4px; }
   .view-btn { font-size: 12px; padding: 5px 12px; cursor: pointer; border-radius: 6px; border: 1px solid #ddd; background: #fafaf8; color: #333; transition: all .15s; }
@@ -110,6 +110,63 @@
   .sel-actions .danger { color: #c04040; border-color: #f0b0b0; }
   .sel-panel a { font-size: 11px; color: #2a5cc8; display: block; margin-bottom: 8px; }
   .sel-hint { font-size: 10px; color: #aaa; margin-top: 8px; line-height: 1.4; }
+
+  .sel-row #selPrice { flex: 1; width: auto; min-width: 0; }
+  .sel-row #selCurrency { flex: none; width: 62px; }
+  .sel-note { font-size: 10px; color: #999; margin: -4px 0 8px; }
+
+  /* Running total, bottom-left of the plan */
+  .budget-bar { position: absolute; left: 10px; bottom: 10px; z-index: 3; min-width: 200px; max-width: calc(100% - 20px); background: rgba(255,255,255,.96); border: 1px solid #e0e0d8; border-radius: 10px; padding: 8px 12px; box-shadow: 0 4px 16px rgba(0,0,0,.08); font-size: 11px; color: #777; }
+  .budget-bar[hidden] { display: none; }
+  .budget-main { display: flex; align-items: baseline; gap: 8px; position: relative; }
+  .budget-main .lbl { text-transform: uppercase; letter-spacing: .06em; font-weight: 600; font-size: 10px; color: #999; }
+  .odo { font-size: 20px; font-weight: 600; color: #1a1a1a; font-variant-numeric: tabular-nums; display: inline-flex; line-height: 1.15em; height: 1.15em; overflow: hidden; }
+  .odo-d { display: inline-block; height: 1.15em; overflow: hidden; }
+  .odo-d > span { display: block; transition: transform .6s cubic-bezier(.2,.8,.2,1); }
+  .odo-d > span > i { display: block; font-style: normal; height: 1.15em; }
+  .budget-extra { color: #555; font-size: 12px; }
+  .budget-delta { position: absolute; left: 44px; top: -4px; font-size: 12px; font-weight: 600; pointer-events: none; opacity: 0; }
+  .budget-delta.up { color: #c07010; } .budget-delta.down { color: #3a9d63; }
+  .budget-delta.show { animation: budgetDelta 1.6s ease-out; }
+  @keyframes budgetDelta { 0% { opacity: 0; transform: translateY(4px); } 15% { opacity: 1; transform: translateY(-10px); } 70% { opacity: 1; transform: translateY(-18px); } 100% { opacity: 0; transform: translateY(-24px); } }
+  .budget-sub { margin-top: 2px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .budget-sub a { color: #2a5cc8; cursor: pointer; text-decoration: none; }
+  .budget-sub a:hover { text-decoration: underline; }
+  .budget-meter { height: 5px; border-radius: 3px; background: #eeeee8; margin-top: 6px; overflow: hidden; }
+  .budget-meter > div { height: 100%; width: 0; background: #3a9d63; transition: width .6s ease, background-color .3s; }
+  .budget-meter.warn > div { background: #e0a020; } .budget-meter.over > div { background: #d04040; }
+  .budget-left.over { color: #c04040; font-weight: 600; }
+  .budget-input { width: 80px; padding: 1px 4px; border: 1px solid #4a7fe8; border-radius: 4px; font-size: 11px; }
+
+  /* Shopping list */
+  .shop-dialog { border: none; border-radius: 12px; padding: 0; width: min(760px, calc(100vw - 32px)); max-height: calc(100vh - 64px); box-shadow: 0 12px 40px rgba(0,0,0,.25); color: #1a1a1a; }
+  .shop-dialog::backdrop { background: rgba(20,20,20,.35); }
+  .shop-inner { display: flex; flex-direction: column; max-height: calc(100vh - 64px); }
+  .shop-head { display: flex; align-items: center; padding: 14px 18px; border-bottom: 1px solid #eee; }
+  .shop-head h2 { flex: 1; font-size: 16px; font-weight: 600; }
+  .shop-scroll { overflow: auto; padding: 4px 18px; }
+  .shop-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .shop-table th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: #999; font-weight: 600; padding: 8px 6px; border-bottom: 1px solid #eee; position: sticky; top: 0; background: #fff; }
+  .shop-table td { padding: 8px 6px; border-bottom: 1px solid #f2f2ee; vertical-align: middle; }
+  .shop-table .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .shop-thumb { width: 44px; height: 44px; border-radius: 6px; background: #f3f3ef; display: block; }
+  .shop-name { font-weight: 500; }
+  .shop-meta { font-size: 11px; color: #999; margin-top: 2px; }
+  .shop-meta a { color: #2a5cc8; }
+  .shop-price { width: 90px; padding: 3px 6px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; text-align: right; }
+  .shop-price:placeholder-shown { border-color: #f0c070; background: #fffaf0; }
+  .shop-table tfoot td { border-bottom: none; font-weight: 600; font-size: 14px; }
+  .shop-foot { display: flex; gap: 8px; align-items: center; padding: 12px 18px; border-top: 1px solid #eee; flex-wrap: wrap; }
+  .shop-foot .note { flex: 1; font-size: 11px; color: #999; min-width: 160px; }
+
+  /* Share-link popover and toasts */
+  .share-pop { position: absolute; top: 44px; right: 0; z-index: 6; width: 380px; max-width: calc(100vw - 32px); background: #fff; border: 1px solid #e0e0d8; border-radius: 10px; padding: 12px; box-shadow: 0 8px 28px rgba(0,0,0,.14); font-size: 12px; color: #555; line-height: 1.5; }
+  .share-pop[hidden] { display: none; }
+  .share-pop input { width: 100%; padding: 6px 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 12px; margin: 6px 0; color: #333; }
+  .share-pop .ok { color: #3a9d63; font-weight: 600; }
+  .share-pop .row { display: flex; gap: 6px; }
+  .toast { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 7; background: #1f2937; color: #fff; font-size: 12px; padding: 8px 14px; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.2); max-width: 80%; }
+  .toast[hidden] { display: none; }
 
   .legend { font-size: 11px; color: #aaa; padding: 6px 12px; border-top: 1px solid #f0f0ec; background: #fafaf8; border-radius: 0 0 12px 12px; }
 </style>
@@ -204,6 +261,17 @@
       </div>
       <button class="view-btn" id="autoRotateBtn" style="display:none">Auto-rotate: Off</button>
       <span class="toolbar-hint" id="toolbarHint"></span>
+      <button class="view-btn" id="shopListBtn" title="Everything in the room, with prices — download, copy or print it">🛒 Shopping list</button>
+      <button class="view-btn" id="shareBtn" title="Copy a link that opens this layout">🔗 Share link</button>
+      <div class="share-pop" id="sharePop" hidden>
+        <div id="shareMsg"></div>
+        <input type="text" id="shareUrl" readonly>
+        <div class="row">
+          <button class="view-btn" id="shareCopy">Copy again</button>
+          <button class="view-btn" id="shareClose" style="margin-left:auto">Close</button>
+        </div>
+        <div class="hint-text" id="shareNote" style="margin-top:6px"></div>
+      </div>
       <button class="view-btn" id="saveFileBtn" title="Download this layout as a .json file">Save file</button>
       <button class="view-btn" id="openFileBtn" title="Load a layout saved with Save file">Open file</button>
       <input type="file" id="openFileInput" accept=".json,application/json" hidden>
@@ -280,16 +348,44 @@
           </select>
         </div>
         <div class="sel-row" id="selColorRow"><span>Colour</span><input type="color" id="selColor"></div>
+        <div class="sel-row"><span>Price</span>
+          <input type="number" id="selPrice" min="0" step="1" placeholder="not set">
+          <select id="selCurrency" title="Currency"></select>
+        </div>
+        <div class="sel-note" id="selPriceNote" hidden></div>
         <div class="sel-actions">
           <button id="selDuplicate">Duplicate</button>
           <button id="selDelete" class="danger">Delete</button>
         </div>
         <div class="sel-hint">R / Shift+R rotate 15° · arrows nudge · Del removes</div>
       </div>
+      <div class="budget-bar" id="budgetBar" hidden>
+        <div class="budget-main">
+          <span class="lbl">Total</span><span class="odo" id="budgetTotal"></span><span class="budget-extra" id="budgetExtra"></span>
+          <span class="budget-delta" id="budgetDelta"></span>
+        </div>
+        <div class="budget-sub"><span id="budgetCount"></span><a id="budgetMissing"></a></div>
+        <div class="budget-meter" id="budgetMeter" hidden><div></div></div>
+        <div class="budget-sub"><span id="budgetLeft" class="budget-left"></span><a id="budgetSet"></a></div>
+      </div>
+      <div class="toast" id="toast" hidden></div>
     </div>
     <div class="legend">Scale: 1 grid square = 1 metre · <span id="buildTag"></span></div>
   </div>
 </div>
+
+<dialog class="shop-dialog" id="shopDialog">
+  <div class="shop-inner">
+    <div class="shop-head"><h2>Shopping list</h2><button class="icon-btn" id="shopClose" title="Close">×</button></div>
+    <div class="shop-scroll"><table class="shop-table" id="shopTable"></table></div>
+    <div class="shop-foot">
+      <span class="note" id="shopNote"></span>
+      <button class="view-btn" id="shopCsv">Download CSV</button>
+      <button class="view-btn" id="shopCopy">Copy as text</button>
+      <button class="view-btn" id="shopPrint">Print</button>
+    </div>
+  </div>
+</dialog>
 
 <script>
 const FURNITURE = [
@@ -320,7 +416,7 @@ const STYLE_PRESETS = {
 // diag() keeps the last 150 steps/errors in localStorage ('rp-diag'), which
 // Claude can read back from the Edge profile on disk when something works in
 // tests but not in the user's browser (see CLAUDE.md).
-const BUILD = '2026-09-29.10';
+const BUILD = '2026-09-30.1';
 function diag(event, data) {
   try {
     const log = JSON.parse(localStorage.getItem('rp-diag') || '[]');
@@ -2348,6 +2444,12 @@ function updateSelPanel() {
   const sh = item.shape;
   shapeSel.value = !sh ? 'box' : sh.kind === 'modular' ? 'modular' : sh.kind === 'chair' ? `chair:${sh.style}:${sh.base}` : sh.kind === 'bed' ? 'bed' : sh.kind === 'beanbag' ? (sh.arms ? 'beanbag-arms' : 'beanbag') : sh.kind === 'table' ? `table:${sh.top}:${sh.base}` : sh.kind === 'cabinet' ? `cabinet:${sh.front}` : sh.kind === 'shelf' ? 'shelf' : sh.kind === 'seat' ? `seat:${sh.style}` : sh.style === 'curved' ? 'curved' : sh.chaise;
   document.getElementById('selColor').value = /^#[0-9a-f]{6}$/i.test(item.color) ? item.color : '#888888';
+  const priceEl = document.getElementById('selPrice');
+  if (document.activeElement !== priceEl) priceEl.value = item.price > 0 ? +item.price.toFixed(2) : '';
+  fillCurrencySelect(document.getElementById('selCurrency'), item.currency || mainCurrency());
+  const note = document.getElementById('selPriceNote');
+  note.hidden = !item.inSet;
+  note.textContent = item.inSet ? 'Part of a set: its price is on the set\'s first piece.' : '';
 }
 
 // Something about placed[i] changed. geometry=true when the 3D mesh must be
@@ -2405,6 +2507,15 @@ document.getElementById('selColor').addEventListener('input', e => {
   if (!placed[selected]) return;
   placed[selected].color = e.target.value;
   itemChanged(selected, true);
+});
+document.getElementById('selPrice').addEventListener('input', e => {
+  const item = placed[selected];
+  if (!item) return;
+  setItemPrice(item, e.target.value === '' ? null : +e.target.value, item.currency || document.getElementById('selCurrency').value);
+});
+document.getElementById('selCurrency').addEventListener('change', e => {
+  const item = placed[selected];
+  if (item) { item.currency = e.target.value; refreshBudget(); }
 });
 document.getElementById('selShape').addEventListener('change', e => {
   const item = placed[selected];
@@ -3560,6 +3671,7 @@ function addSofaSet(p, url, image, seatsList, drawn) {
     items.push(item);
     colourFromPhoto(item, image);
   }
+  priceSet(items, p);
   // Line the pieces up left to right around the room's centre.
   const gap = 0.3 * SCALE, total = items.reduce((s, it) => s + it.w * SCALE, 0) + gap * (items.length - 1);
   let x = items[0].x + items[0].w * SCALE / 2 - total / 2;
@@ -3658,6 +3770,7 @@ function addFromAnalysis(p, url, image, ai) {
     item._sizeFrom = usePage ? 'page_text' : piece.size_source;
     return item;
   });
+  priceSet(items, p);
   if (items.length > 1) {
     const gap = 0.3 * SCALE, total = items.reduce((s, it) => s + it.w * SCALE, 0) + gap * (items.length - 1);
     let x = items[0].x + items[0].w * SCALE / 2 - total / 2;
@@ -3783,6 +3896,7 @@ async function generateFromPage(url) {
       fitToModel: !!p.model,
       shape, ...(shape && shape.kind === 'bed' ? {color: '#B08A5E'} : {}),
       modules, listedWidth: p.width || null,
+      ...productPrice(p),
     });
     if (modules) modules.forEach(m => { if (m.model) getModelEntry(m.model); });
     if (image) showPreviewWhenLoaded(image);
@@ -4072,6 +4186,7 @@ function layoutToJson() {
     shape, roomW, roomH, roomStyle,
     customPts: shape === 'custom' && !drawing ? customPts.map(p => toM(p.x, p.y)) : null,
     walls: walls.map(w => ({hStart: w.hStart, hEnd: w.hEnd, bulge: w.bulge || 0, openings: w.openings.map(o => ({...o}))})),
+    budget: budget.amount > 0 ? {...budget} : null,
     items,
   });
 }
@@ -4090,6 +4205,7 @@ function applyLayout(data) {
   if (elevWall != null) { elevSel = null; if (elevWall >= getRoomPts().length) closeElevation(); }
   syncStyleControls();
   placed = data.items.map(it => ({...it, ...toPx(it)}));
+  budget = data.budget && data.budget.amount > 0 ? {amount: +data.budget.amount, currency: data.budget.currency || null} : {amount: null, currency: null};
   select(-1);
   redraw();
 }
@@ -4134,6 +4250,388 @@ openFileInput.addEventListener('change', async () => {
   }
 });
 
+// ── Prices, the running total and the budget ──────────────────────────────────
+// item.price is the price of one of it, in item.currency (ISO code); the
+// extension reads both from the product page. Pieces of a set sold as one
+// product carry the price on the first piece; the others have price 0 and
+// inSet. `budget` is part of the layout.
+
+let budget = {amount: null, currency: null};
+const CURRENCIES = ['AUD', 'USD', 'MYR', 'SGD', 'NZD', 'GBP', 'EUR', 'CAD', 'CNY', 'HKD', 'JPY'];
+const REGION_CURRENCY = {AU: 'AUD', US: 'USD', MY: 'MYR', SG: 'SGD', NZ: 'NZD', GB: 'GBP', CA: 'CAD', CN: 'CNY', HK: 'HKD', JP: 'JPY',
+  DE: 'EUR', FR: 'EUR', IT: 'EUR', ES: 'EUR', NL: 'EUR', IE: 'EUR', AT: 'EUR', BE: 'EUR', FI: 'EUR', PT: 'EUR'};
+
+// The layout's currency: the budget's, else the one most items are priced
+// in, else the browser's region's.
+function mainCurrency() {
+  if (budget.currency) return budget.currency;
+  const n = {};
+  placed.forEach(it => { if (it.price > 0 && it.currency) n[it.currency] = (n[it.currency] || 0) + 1; });
+  const top = Object.keys(n).sort((a, b) => n[b] - n[a])[0];
+  if (top) return top;
+  const region = (navigator.language || '').split('-')[1];
+  return REGION_CURRENCY[(region || '').toUpperCase()] || 'USD';
+}
+
+function fmtMoney(v, cur, cents) {
+  try {
+    return new Intl.NumberFormat(undefined, {style: 'currency', currency: cur, maximumFractionDigits: cents ? 2 : 0, minimumFractionDigits: cents && v % 1 ? 2 : 0}).format(v);
+  } catch (e) { return cur + ' ' + (cents ? v.toFixed(2) : Math.round(v)); }
+}
+
+function fillCurrencySelect(sel, cur) {
+  const list = CURRENCIES.includes(cur) ? CURRENCIES : [cur, ...CURRENCIES];
+  if (sel.options.length !== list.length || sel.options[0].value !== list[0]) sel.innerHTML = list.map(c => `<option>${c}</option>`).join('');
+  sel.value = cur;
+}
+
+function productPrice(p) { return p && p.price > 0 ? {price: +p.price, currency: p.currency || mainCurrency()} : {}; }
+function priceSet(items, p) {
+  const pr = productPrice(p);
+  if (!pr.price || !items.length) return;
+  Object.assign(items[0], pr);
+  items.slice(1).forEach(it => Object.assign(it, {price: 0, currency: pr.currency, inSet: true}));
+}
+function setItemPrice(item, value, currency) {
+  if (value > 0) { item.price = value; item.currency = currency || item.currency || mainCurrency(); delete item.inSet; }
+  else { delete item.price; delete item.inSet; }
+  refreshBudget();
+}
+const hasPrice = it => it.price > 0 || !!it.inSet;
+
+// Totals per currency, the main one first.
+function priceTotals() {
+  const main = mainCurrency(), sums = {[main]: 0};
+  placed.forEach(it => { if (it.price > 0) sums[it.currency || main] = (sums[it.currency || main] || 0) + it.price; });
+  return {main, sums, unpriced: placed.filter(it => !hasPrice(it))};
+}
+
+// A rolling-digit counter: each digit is a 0–9 strip slid into place. Slots
+// line up from the right, so a digit keeps its column as the number grows.
+function setOdometer(el, text, animate) {
+  const chars = [...text];
+  while (el.children.length < chars.length) el.insertBefore(document.createElement('span'), el.firstChild);
+  while (el.children.length > chars.length) el.removeChild(el.firstChild);
+  chars.forEach((ch, i) => {
+    const slot = el.children[i];
+    if (/\d/.test(ch)) {
+      if (slot.className !== 'odo-d') {
+        slot.className = 'odo-d';
+        slot.innerHTML = '<span>' + '0123456789'.split('').map(d => `<i>${d}</i>`).join('') + '</span>';
+        void slot.offsetHeight;             // a new digit rolls up from 0
+      }
+      slot.firstChild.style.transition = animate ? '' : 'none';
+      slot.firstChild.style.transform = `translateY(${-ch * 1.15}em)`;
+    } else if (slot.className !== 'odo-c' || slot.textContent !== ch) {
+      slot.className = 'odo-c'; slot.textContent = ch;
+    }
+  });
+  el.setAttribute('aria-label', text);
+}
+
+const budgetBar = document.getElementById('budgetBar');
+let lastBudgetKey = null, lastMainTotal = null, editingBudget = false;
+function refreshBudget() {
+  const {main, sums, unpriced} = priceTotals();
+  const key = JSON.stringify([sums, unpriced.length, placed.length, budget]);
+  if (key === lastBudgetKey) return;
+  lastBudgetKey = key;
+  budgetBar.hidden = !placed.length && !(budget.amount > 0);
+  const total = sums[main];
+  setOdometer(document.getElementById('budgetTotal'), fmtMoney(total, main), lastMainTotal != null);
+  // A price came in or went out: flash the difference over the total.
+  if (lastMainTotal != null && Math.round(total) !== Math.round(lastMainTotal)) {
+    const d = document.getElementById('budgetDelta'), diff = total - lastMainTotal;
+    d.textContent = (diff > 0 ? '+' : '−') + fmtMoney(Math.abs(diff), main);
+    d.className = 'budget-delta ' + (diff > 0 ? 'up' : 'down');
+    void d.offsetWidth; d.classList.add('show');
+  }
+  lastMainTotal = total;
+  document.getElementById('budgetExtra').textContent = Object.keys(sums).filter(c => c !== main && sums[c] > 0).map(c => '+ ' + fmtMoney(sums[c], c)).join(' ');
+  document.getElementById('budgetCount').textContent = placed.length === 1 ? '1 item' : placed.length + ' items';
+  const miss = document.getElementById('budgetMissing');
+  miss.textContent = unpriced.length ? `${unpriced.length} without a price` : '';
+  miss.title = unpriced.length ? 'Select the next one without a price, to fill it in' : '';
+  const meter = document.getElementById('budgetMeter'), left = document.getElementById('budgetLeft');
+  if (budget.amount > 0) {
+    const cur = budget.currency || main, spent = sums[cur] || 0, ratio = spent / budget.amount;
+    meter.hidden = false;
+    meter.className = 'budget-meter' + (ratio > 1 ? ' over' : ratio > 0.9 ? ' warn' : '');
+    meter.firstChild.style.width = Math.min(100, ratio * 100) + '%';
+    left.className = 'budget-left' + (ratio > 1 ? ' over' : '');
+    left.textContent = ratio > 1 ? `${fmtMoney(spent - budget.amount, cur)} over the ${fmtMoney(budget.amount, cur)} budget`
+                                 : `${fmtMoney(budget.amount - spent, cur)} left of ${fmtMoney(budget.amount, cur)}`;
+  } else { meter.hidden = true; left.textContent = ''; }
+  if (!editingBudget) document.getElementById('budgetSet').textContent = budget.amount > 0 ? 'Change' : 'Set a budget';
+}
+setInterval(refreshBudget, 200);
+
+document.getElementById('budgetMissing').addEventListener('click', () => {
+  const list = placed.map((it, i) => i).filter(i => !hasPrice(placed[i]));
+  if (!list.length) return;
+  select(list.find(i => i > selected) ?? list[0]);
+  const el = document.getElementById('selPrice');
+  el.focus();
+});
+document.getElementById('budgetSet').addEventListener('click', () => {
+  if (editingBudget) return;
+  editingBudget = true;
+  const link = document.getElementById('budgetSet'), cur = budget.currency || mainCurrency();
+  const input = document.createElement('input');
+  input.type = 'number'; input.min = '0'; input.step = '100'; input.className = 'budget-input';
+  input.placeholder = cur; input.value = budget.amount > 0 ? budget.amount : '';
+  link.textContent = '';
+  link.before(input);
+  input.focus(); input.select();
+  let done = false;
+  const finish = save => {
+    if (done) return; done = true;
+    if (save) budget = +input.value > 0 ? {amount: +input.value, currency: cur} : {amount: null, currency: null};
+    input.remove(); editingBudget = false; lastBudgetKey = null; refreshBudget();
+  };
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') finish(true); if (e.key === 'Escape') finish(false); e.stopPropagation(); });
+  input.addEventListener('blur', () => finish(true));
+});
+
+// ── Shopping list ─────────────────────────────────────────────────────────────
+// Identical things (same product, name and price) are one line with a count.
+
+const shopDialog = document.getElementById('shopDialog');
+function shoppingLines() {
+  const lines = [], byKey = {};
+  placed.forEach(it => {
+    const key = JSON.stringify([it.label, it.pageUrl || null, it.price || null, it.currency || null, !!it.inSet]);
+    if (!byKey[key]) lines.push(byKey[key] = {key, label: it.label || 'Item', pageUrl: it.pageUrl || null, price: it.price > 0 ? it.price : null,
+      currency: it.currency || mainCurrency(), inSet: !!it.inSet, items: [], w: it.w, d: it.h, z: it.zHeight || null, imgUrl: it.imgUrl, modelUrl: it.modelUrl, color: it.color});
+    byKey[key].items.push(it);
+  });
+  return lines;
+}
+const sizeText = l => `${l.w.toFixed(2)} × ${l.d.toFixed(2)}${l.z ? ' × ' + l.z.toFixed(2) : ''} m`;
+
+// A small picture from what's already loaded (no new request: a plain <img>
+// load of the same URL can spoil the CORS load the 3D view depends on).
+function shopThumb(l) {
+  const c = document.createElement('canvas');
+  c.width = c.height = 88; c.className = 'shop-thumb';
+  const g = c.getContext('2d');
+  const m = l.modelUrl && modelCache[l.modelUrl], e = l.imgUrl && imgCache[l.imgUrl];
+  const img = m && m.topImg && m.topImg.complete ? m.topImg : e && e.status === 'ok' ? e.img : null;
+  if (img && img.naturalWidth) {
+    const s = Math.min(88 / img.naturalWidth, 88 / img.naturalHeight);
+    g.fillStyle = '#fff'; g.fillRect(0, 0, 88, 88);
+    g.drawImage(img, (88 - img.naturalWidth * s) / 2, (88 - img.naturalHeight * s) / 2, img.naturalWidth * s, img.naturalHeight * s);
+  } else { g.fillStyle = l.color || '#bbb'; g.fillRect(20, 20, 48, 48); }
+  return c;
+}
+
+function renderShoppingList() {
+  const lines = shoppingLines(), {main, sums, unpriced} = priceTotals();
+  const table = document.getElementById('shopTable');
+  table.innerHTML = '<thead><tr><th></th><th>Item</th><th class="num">Qty</th><th class="num">Price each</th><th class="num">Subtotal</th></tr></thead>';
+  const body = document.createElement('tbody');
+  lines.forEach(l => {
+    const tr = document.createElement('tr');
+    const td = () => tr.appendChild(document.createElement('td'));
+    td().appendChild(shopThumb(l));
+    const name = td();
+    name.innerHTML = '<div class="shop-name"></div><div class="shop-meta"></div>';
+    name.firstChild.textContent = l.label;
+    name.lastChild.textContent = sizeText(l) + (l.inSet ? ' · price included in the set' : '');
+    if (l.pageUrl) {
+      const a = document.createElement('a');
+      a.href = l.pageUrl; a.target = '_blank'; a.rel = 'noopener';
+      a.textContent = new URL(l.pageUrl).hostname.replace(/^www\./, '') + ' ↗';
+      name.lastChild.append(' · ', a);
+    }
+    const qty = td(); qty.className = 'num'; qty.textContent = l.items.length;
+    const each = td(); each.className = 'num';
+    if (l.inSet) each.textContent = '—';
+    else {
+      // Typing a price here sets it on every item of this line.
+      const inp = document.createElement('input');
+      inp.type = 'number'; inp.min = '0'; inp.step = '1'; inp.className = 'shop-price';
+      inp.placeholder = 'add price'; inp.value = l.price != null ? +l.price.toFixed(2) : '';
+      inp.title = l.currency;
+      inp.addEventListener('change', () => {
+        l.items.forEach(it => setItemPrice(it, inp.value === '' ? null : +inp.value, l.currency));
+        updateSelPanel(); renderShoppingList();
+      });
+      each.append(inp, ' ' + l.currency);
+    }
+    const sub = td(); sub.className = 'num';
+    sub.textContent = l.price != null ? fmtMoney(l.price * l.items.length, l.currency, true) : l.inSet ? '' : '—';
+    body.appendChild(tr);
+  });
+  table.appendChild(body);
+  const foot = document.createElement('tfoot');
+  Object.keys(sums).filter(c => c === main || sums[c] > 0).forEach(c => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td></td><td>Total</td><td class="num"></td><td></td><td class="num"></td>';
+    tr.children[2].textContent = placed.length;
+    tr.children[4].textContent = fmtMoney(sums[c], c, true);
+    foot.appendChild(tr);
+  });
+  table.appendChild(foot);
+  if (!lines.length) table.innerHTML = '<tr><td style="color:#999;padding:24px 6px">Nothing in the room yet.</td></tr>';
+  const b = budget.amount > 0 ? budget : null, spent = b ? sums[b.currency || main] || 0 : 0;
+  document.getElementById('shopNote').textContent =
+    (b ? (spent > b.amount ? `${fmtMoney(spent - b.amount, b.currency || main, true)} over budget. ` : `${fmtMoney(b.amount - spent, b.currency || main, true)} of the budget left. `) : '') +
+    (unpriced.length ? `${unpriced.length} item${unpriced.length > 1 ? 's have' : ' has'} no price yet — type it in above.` : '');
+}
+
+function shoppingCsv() {
+  const q = v => { const s = String(v == null ? '' : v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
+  const rows = [['Item', 'Qty', 'Price each', 'Currency', 'Subtotal', 'Width (m)', 'Depth (m)', 'Height (m)', 'Link']];
+  shoppingLines().forEach(l => rows.push([l.label + (l.inSet ? ' (price included in the set)' : ''), l.items.length,
+    l.price != null ? l.price.toFixed(2) : '', l.currency, l.price != null ? (l.price * l.items.length).toFixed(2) : '',
+    l.w.toFixed(2), l.d.toFixed(2), l.z ? l.z.toFixed(2) : '', l.pageUrl || '']));
+  const {sums} = priceTotals();
+  Object.keys(sums).filter(c => sums[c] > 0).forEach(c => rows.push(['Total', placed.length, '', c, sums[c].toFixed(2), '', '', '', '']));
+  return '﻿' + rows.map(r => r.map(q).join(',')).join('\r\n');   // BOM: Excel then reads non-English names right
+}
+
+function shoppingText() {
+  const {main, sums} = priceTotals();
+  const out = shoppingLines().map(l => `${l.items.length} × ${l.label}` +
+    (l.price != null ? ` — ${fmtMoney(l.price, l.currency, true)}${l.items.length > 1 ? ` each = ${fmtMoney(l.price * l.items.length, l.currency, true)}` : ''}` : l.inSet ? ' — included in the set' : ' — no price yet') +
+    `\n   ${sizeText(l)}${l.pageUrl ? '\n   ' + l.pageUrl : ''}`);
+  out.push('', 'Total: ' + Object.keys(sums).filter(c => c === main || sums[c] > 0).map(c => fmtMoney(sums[c], c, true)).join(' + '));
+  if (budget.amount > 0) out.push('Budget: ' + fmtMoney(budget.amount, budget.currency || main, true));
+  return out.join('\n');
+}
+
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; }
+  catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand('copy'); ta.remove();
+    return ok;
+  }
+}
+
+function flashButton(btn, text) {
+  const was = btn.dataset.label || (btn.dataset.label = btn.textContent);
+  btn.textContent = text;
+  clearTimeout(btn._t); btn._t = setTimeout(() => { btn.textContent = was; }, 1600);
+}
+
+document.getElementById('shopListBtn').addEventListener('click', () => { renderShoppingList(); shopDialog.showModal(); });
+document.getElementById('shopClose').addEventListener('click', () => shopDialog.close());
+shopDialog.addEventListener('click', e => { if (e.target === shopDialog) shopDialog.close(); });   // the backdrop
+document.getElementById('shopCsv').addEventListener('click', () => {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([shoppingCsv()], {type: 'text/csv;charset=utf-8'}));
+  a.download = 'shopping-list-' + new Date().toISOString().slice(0, 10) + '.csv';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+document.getElementById('shopCopy').addEventListener('click', async e => {
+  flashButton(e.target, (await copyText(shoppingText())) ? 'Copied ✓' : 'Couldn\'t copy');
+});
+document.getElementById('shopPrint').addEventListener('click', () => {
+  const w = window.open('', '_blank');
+  if (!w) { alert('The browser blocked the print window — allow pop-ups for this page and try again.'); return; }
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'})[c]);
+  const {main, sums} = priceTotals();
+  const rows = shoppingLines().map(l => `<tr><td>${esc(l.label)}<div class="m">${esc(sizeText(l))}${l.pageUrl ? ' · ' + esc(l.pageUrl) : ''}</div></td>` +
+    `<td class="n">${l.items.length}</td><td class="n">${l.price != null ? esc(fmtMoney(l.price, l.currency, true)) : l.inSet ? 'in set' : '—'}</td>` +
+    `<td class="n">${l.price != null ? esc(fmtMoney(l.price * l.items.length, l.currency, true)) : ''}</td></tr>`).join('');
+  const totals = Object.keys(sums).filter(c => c === main || sums[c] > 0).map(c => `<tr class="t"><td>Total</td><td class="n">${placed.length}</td><td></td><td class="n">${esc(fmtMoney(sums[c], c, true))}</td></tr>`).join('');
+  w.document.write(`<!doctype html><meta charset="utf-8"><title>Shopping list</title><style>
+    body{font:13px system-ui,sans-serif;margin:32px;color:#111} h1{font-size:20px;margin:0 0 4px} p{color:#777;margin:0 0 16px}
+    table{width:100%;border-collapse:collapse} th{text-align:left;font-size:11px;color:#777;border-bottom:2px solid #333;padding:6px}
+    td{padding:8px 6px;border-bottom:1px solid #ddd;vertical-align:top} .n{text-align:right;white-space:nowrap} .m{font-size:11px;color:#777;word-break:break-all}
+    .t td{font-weight:600;border-bottom:none;font-size:14px}</style>
+    <h1>Shopping list</h1><p>${esc(new Date().toLocaleDateString())}${budget.amount > 0 ? ' · Budget ' + esc(fmtMoney(budget.amount, budget.currency || main, true)) : ''}</p>
+    <table><tr><th>Item</th><th class="n">Qty</th><th class="n">Each</th><th class="n">Subtotal</th></tr>${rows}${totals}</table>`);
+  w.document.close();
+  w.focus();
+  w.print();
+});
+
+// ── Share links ───────────────────────────────────────────────────────────────
+// The whole layout goes in the link itself (#layout=<deflated JSON,
+// base64url>), so nothing is uploaded anywhere. From a file:// copy the link
+// points at the public site, since a file on this computer can't be shared.
+
+const SITE_URL = 'https://orionbcsx-lang.github.io/room-planner/';
+const toB64url = bytes => { let s = ''; bytes.forEach(b => { s += String.fromCharCode(b); }); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); };
+const fromB64url = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+async function packLayout(json) {
+  const stream = new Blob([json]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+  return toB64url(new Uint8Array(await new Response(stream).arrayBuffer()));
+}
+async function unpackLayout(code) {
+  const stream = new Blob([fromB64url(code)]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+  return new Response(stream).text();
+}
+
+async function makeShareLink() {
+  const data = JSON.parse(layoutToJson());
+  // Pictures pasted in as data: URLs would make the link enormous.
+  let dropped = 0;
+  data.items.forEach(it => { if (/^data:/.test(it.imgUrl || '')) { it.imgUrl = null; dropped++; } });
+  const base = location.protocol === 'file:' ? SITE_URL : location.origin + location.pathname;
+  return {url: base + '#layout=' + await packLayout(JSON.stringify(data)), dropped};
+}
+
+const sharePop = document.getElementById('sharePop');
+document.getElementById('shareBtn').addEventListener('click', async () => {
+  if (!sharePop.hidden) { sharePop.hidden = true; return; }
+  const {url, dropped} = await makeShareLink();
+  const input = document.getElementById('shareUrl');
+  input.value = url;
+  const copied = await copyText(url);
+  document.getElementById('shareMsg').innerHTML = copied ? '<span class="ok">✓ Link copied</span> — paste it anywhere to share or keep this layout.' : 'Copy this link to share or keep this layout:';
+  document.getElementById('shareNote').textContent =
+    'The link holds the whole layout (room, furniture, prices), so it works without an account and nothing is uploaded. ' +
+    'Whoever opens it gets their own copy: their changes don\'t affect yours. ' +
+    (location.protocol === 'file:' ? 'It opens on the Room Planner website. ' : '') +
+    (dropped ? `${dropped} picture${dropped > 1 ? 's' : ''} added from this computer ${dropped > 1 ? 'aren\'t' : 'isn\'t'} included. ` : '') +
+    `${url.length.toLocaleString()} characters long.`;
+  sharePop.hidden = false;
+  input.focus(); input.select();
+  diag('share link', {length: url.length, items: placed.length, dropped});
+});
+document.getElementById('shareCopy').addEventListener('click', async e => {
+  flashButton(e.target, (await copyText(document.getElementById('shareUrl').value)) ? 'Copied ✓' : 'Couldn\'t copy');
+});
+document.getElementById('shareClose').addEventListener('click', () => { sharePop.hidden = true; });
+document.addEventListener('mousedown', e => { if (!sharePop.hidden && !sharePop.contains(e.target) && e.target.id !== 'shareBtn') sharePop.hidden = true; });
+
+function toast(text, ms = 6000) {
+  const el = document.getElementById('toast');
+  el.textContent = text; el.hidden = false;
+  clearTimeout(el._t); el._t = setTimeout(() => { el.hidden = true; }, ms);
+}
+
+// Opening a share link: load its layout (after asking, if there's one here
+// already; the old one stays in undo), then drop the code from the address
+// so a reload doesn't load it again over later changes.
+async function openSharedFromHash() {
+  const m = location.hash.match(/^#layout=([A-Za-z0-9_-]+)/);
+  if (!m) return;
+  history.replaceState(null, '', location.pathname + location.search);
+  let data;
+  try { data = JSON.parse(await unpackLayout(m[1])); }
+  catch (err) {
+    diag('share link unreadable', String(err).slice(0, 200));
+    toast('That layout link is incomplete or damaged — ask for it again, or check it was copied in full.', 9000);
+    return;
+  }
+  if (placed.length && !confirm('Open the shared layout? It replaces the layout you have here (Ctrl+Z brings yours back).')) return;
+  checkpoint();
+  try { applyLayout(data); } catch (err) { toast('That link isn\'t a Room Planner layout.'); return; }
+  autosave();
+  checkpoint();
+  diag('shared layout opened', {items: placed.length, shape});
+  toast(`Opened the shared layout: ${placed.length} item${placed.length === 1 ? '' : 's'}. It's saved in this browser now; your changes don't affect the sender's copy.`);
+}
+window.addEventListener('hashchange', openSharedFromHash);
+
 window.addEventListener('resize', resizeCanvas);
 document.getElementById('buildTag').textContent = 'build ' + BUILD;
 syncStyleControls();
@@ -4141,6 +4639,8 @@ resizeCanvas();
 restoreLayout();
 updateRoomHint();
 checkpoint();                 // the starting point for undo
+refreshBudget();
+openSharedFromHash();
 setInterval(autosave, 1000);
 window.addEventListener('pagehide', autosave);
 </script>
