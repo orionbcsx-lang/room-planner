@@ -76,11 +76,17 @@
   .view-btn:hover { border-color: #aaa; }
   .view-btn.active { background: #e8f0fe; border-color: #4a7fe8; color: #2a5cc8; }
 
-  .toolbar-hint { font-size: 11px; color: #aaa; flex: 1; }
+  .toolbar-hint { font-size: 11px; color: #aaa; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }   /* one line, so the plan doesn't shift when the hint changes */
   .clear-btn { font-size: 12px; padding: 5px 10px; cursor: pointer; border-radius: 6px; border: 1px solid #f0a0a0; background: transparent; color: #c04040; transition: all .15s; }
   .clear-btn:hover { background: #fff0f0; }
 
-  .canvas-wrap { flex: 1; background: #fff; border: 1px solid #e0e0d8; border-radius: 12px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
+  .room-tabs { display: flex; gap: 4px; align-items: center; overflow-x: auto; margin-bottom: -4px; scrollbar-width: thin; }
+  .room-tab { flex: none; display: flex; align-items: center; gap: 4px; font-size: 12px; padding: 5px 10px; border-radius: 8px 8px 0 0; border: 1px solid #e0e0d8; border-bottom: none; background: #ecece6; color: #555; cursor: pointer; white-space: nowrap; }
+  .room-tab.active { background: #fff; color: #1a1a1a; font-weight: 600; }
+  .room-tab .x { color: #aaa; font-size: 14px; line-height: 1; padding: 0 2px; }
+  .room-tab .x:hover { color: #c04040; }
+  .room-tab.add { background: none; border-style: dashed; color: #2a5cc8; }
+  .canvas-wrap { flex: 1; min-height: 0; background: #fff; border: 1px solid #e0e0d8; border-radius: 12px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
   .elev-bar { position: absolute; top: 8px; left: 8px; right: 8px; z-index: 4; display: flex; flex-wrap: wrap; gap: 6px; align-items: center;
     background: rgba(255,255,255,0.95); border: 1px solid #e0e0d8; border-radius: 8px; padding: 6px 8px; font-size: 12px; }
   .elev-bar label { display: flex; align-items: center; gap: 3px; color: #555; }
@@ -88,11 +94,12 @@
   .elev-sel { display: flex; gap: 6px; align-items: center; padding: 2px 6px; border-left: 1px solid #ddd; }
   .elev-bar .primary-btn { margin-left: auto; background: #4a7fe8; color: #fff; border-color: #4a7fe8; }
   .wall-len-input { position: absolute; width: 72px; padding: 2px 5px; font: 600 12px system-ui; border: 2px solid #4a7fe8; border-radius: 5px; z-index: 5; }
-  canvas { display: block; }
+  canvas { display: block; touch-action: none; }
 
   /* Selected-item inspector, floats over the canvas in both views */
-  .sel-panel { position: absolute; top: 10px; right: 10px; width: 216px; background: rgba(255,255,255,.96); border: 1px solid #e0e0d8; border-radius: 10px; padding: 10px 12px; box-shadow: 0 4px 16px rgba(0,0,0,.08); font-size: 12px; color: #444; z-index: 2; }
+  .sel-panel { position: absolute; top: 10px; right: 10px; width: 244px; background: rgba(255,255,255,.96); border: 1px solid #e0e0d8; border-radius: 10px; padding: 10px 12px; box-shadow: 0 4px 16px rgba(0,0,0,.08); font-size: 12px; color: #444; z-index: 2; }
   .sel-panel[hidden] { display: none; }
+  .sel-more-btn { display: none; }
   .sel-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
   .sel-head strong { flex: 1; font-weight: 500; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .icon-btn { border: none; background: none; cursor: pointer; font-size: 16px; color: #999; line-height: 1; }
@@ -103,7 +110,8 @@
   .sel-btns { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin-bottom: 8px; }
   .sel-btns button, .sel-actions button { font-size: 11px; padding: 4px 0; border: 1px solid #ddd; border-radius: 5px; background: #fafaf8; cursor: pointer; }
   .sel-btns button:hover, .sel-actions button:hover { border-color: #aaa; }
-  .sel-dims { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin-bottom: 8px; }
+  .sel-dims { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 4px; margin-bottom: 8px; }
+  .sel-note.bad { color: #c04040; } .sel-note.good { color: #3a9d63; }
   .sel-dims label { font-size: 10px; color: #777; display: flex; flex-direction: column; gap: 2px; }
   .sel-dims input { width: 100%; padding: 3px 5px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px; }
   .sel-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
@@ -138,6 +146,18 @@
   .budget-left.over { color: #c04040; font-weight: 600; }
   .budget-input { width: 80px; padding: 1px 4px; border: 1px solid #4a7fe8; border-radius: 4px; font-size: 11px; }
 
+  /* Fit checks, bottom-right of the plan */
+  .fit-box { position: absolute; right: 10px; bottom: 10px; z-index: 3; max-width: min(340px, calc(100% - 20px)); background: rgba(255,255,255,.96); border: 1px solid #e0e0d8; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,.08); font-size: 12px; }
+  .fit-box[hidden] { display: none; }
+  .fit-head { border: none; background: none; font: 600 12px system-ui; padding: 8px 12px; cursor: pointer; width: 100%; text-align: left; }
+  .fit-head.good { color: #2f8a55; } .fit-head.warn { color: #b86e00; } .fit-head.bad { color: #c03030; }
+  .fit-list { padding: 0 12px 8px; display: flex; flex-direction: column; gap: 4px; max-height: 40vh; overflow: auto; }
+  .fit-list[hidden] { display: none; }
+  .fit-list a { cursor: pointer; line-height: 1.35; }
+  .fit-list a.bad { color: #c03030; } .fit-list a.warn { color: #9a5c00; }
+  .fit-list a:hover { text-decoration: underline; }
+  .fit-list label { color: #888; font-size: 11px; display: flex; gap: 4px; align-items: center; margin-top: 4px; }
+
   /* Shopping list */
   .shop-dialog { border: none; border-radius: 12px; padding: 0; width: min(760px, calc(100vw - 32px)); max-height: calc(100vh - 64px); box-shadow: 0 12px 40px rgba(0,0,0,.25); color: #1a1a1a; }
   .shop-dialog::backdrop { background: rgba(20,20,20,.35); }
@@ -155,6 +175,7 @@
   .shop-meta a { color: #2a5cc8; }
   .shop-price { width: 90px; padding: 3px 6px; border: 1px solid #ddd; border-radius: 5px; font-size: 13px; text-align: right; }
   .shop-price:placeholder-shown { border-color: #f0c070; background: #fffaf0; }
+  .shop-table .shop-room td { font-weight: 600; font-size: 12px; color: #555; padding: 14px 6px 6px; border-bottom: 1px solid #ddd; }
   .shop-table tfoot td { border-bottom: none; font-weight: 600; font-size: 14px; }
   .shop-foot { display: flex; gap: 8px; align-items: center; padding: 12px 18px; border-top: 1px solid #eee; flex-wrap: wrap; }
   .shop-foot .note { flex: 1; font-size: 11px; color: #999; min-width: 160px; }
@@ -165,8 +186,53 @@
   .share-pop input { width: 100%; padding: 6px 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 12px; margin: 6px 0; color: #333; }
   .share-pop .ok { color: #3a9d63; font-weight: 600; }
   .share-pop .row { display: flex; gap: 6px; }
+  .export-pop { width: 300px; padding: 6px; }
+  .menu-item { display: block; width: 100%; text-align: left; border: none; background: none; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; color: #222; }
+  .menu-item:hover { background: #f2f4f8; }
+  .menu-item span { display: block; font-size: 11px; color: #888; margin-top: 1px; }
+
+  /* Welcome card (first visit, or ? Help) */
+  .welcome { position: absolute; inset: 0; z-index: 8; background: rgba(245,245,242,.82); display: flex; align-items: center; justify-content: center; padding: 16px; }
+  .welcome[hidden] { display: none; }
+  .welcome-card { background: #fff; border: 1px solid #e0e0d8; border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,.14); padding: 22px 24px; max-width: 560px; width: 100%; max-height: 100%; overflow: auto; }
+  .welcome-card h2 { font-size: 19px; font-weight: 600; margin-bottom: 4px; }
+  .welcome-card > p { color: #666; font-size: 13px; margin-bottom: 14px; }
+  .steps { display: grid; gap: 10px; margin-bottom: 16px; }
+  .step { display: flex; gap: 12px; align-items: flex-start; font-size: 13px; color: #444; line-height: 1.45; }
+  .step b { color: #1a1a1a; }
+  .step-n { flex: none; width: 24px; height: 24px; border-radius: 50%; background: #e8f0fe; color: #2a5cc8; font-weight: 600; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+  .examples { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 6px 0 12px; }
+  .example { border: 1px solid #ddd; border-radius: 10px; background: #fafaf8; padding: 10px; cursor: pointer; text-align: left; font-size: 12px; color: #555; }
+  .example:hover { border-color: #4a7fe8; background: #f3f7ff; }
+  .example b { display: block; font-size: 13px; color: #1a1a1a; margin-bottom: 2px; }
+  .example .ico { font-size: 22px; display: block; margin-bottom: 4px; }
+  .welcome-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .welcome-foot .note { font-size: 11px; color: #999; }
+  @media (max-width: 520px) { .examples { grid-template-columns: 1fr; } .welcome-card { padding: 16px; } }
+
   .toast { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 7; background: #1f2937; color: #fff; font-size: 12px; padding: 8px 14px; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.2); max-width: 80%; }
   .toast[hidden] { display: none; }
+
+  /* Phones and small tablets: the plan on top, the side panels below it */
+  @media (max-width: 820px) {
+    header { padding: 10px 14px; }
+    header span { display: none; }
+    .app { grid-template-columns: 1fr; height: auto; padding: 10px; gap: 10px; }
+    .canvas-area { order: -1; height: 78vh; min-height: 420px; }
+    .sidebar { overflow: visible; }
+    .toolbar { gap: 6px; }
+    .toolbar-hint { display: none; }
+    .view-btn, .clear-btn { padding: 6px 9px; }
+    .sel-panel { top: auto; bottom: 0; left: 0; right: 0; width: auto; max-height: 58%; overflow: auto; border-radius: 12px 12px 0 0; z-index: 5; }
+    /* compact until ⋯ is tapped, so it covers less of the plan */
+    .sel-more-btn { display: inline; font-size: 20px; padding: 0 6px; }
+    .sel-panel.compact > :not(.sel-head):not(.sel-btns):not(.sel-actions) { display: none !important; }
+    .sel-panel.compact .sel-btns, .sel-panel.compact .sel-head { margin-bottom: 6px; }
+    .budget-bar { min-width: 0; padding: 6px 10px; left: 6px; bottom: 6px; max-width: 48%; }
+    .odo { font-size: 16px; }
+    .fit-box { right: 6px; bottom: 6px; max-width: 48%; }
+    .share-pop { position: fixed; top: 60px; left: 16px; right: 16px; width: auto; }
+  }
 
   .legend { font-size: 11px; color: #aaa; padding: 6px 12px; border-top: 1px solid #f0f0ec; background: #fafaf8; border-radius: 0 0 12px 12px; }
 </style>
@@ -263,6 +329,12 @@
       <span class="toolbar-hint" id="toolbarHint"></span>
       <button class="view-btn" id="shopListBtn" title="Everything in the room, with prices — download, copy or print it">🛒 Shopping list</button>
       <button class="view-btn" id="shareBtn" title="Copy a link that opens this layout">🔗 Share link</button>
+      <button class="view-btn" id="exportBtn" title="Save a picture of the plan or 3D view, or print it with the shopping list">⬇ Export</button>
+      <div class="share-pop export-pop" id="exportPop" hidden>
+        <button class="menu-item" id="exportPlan"><b>Plan picture (PNG)</b><span>Top-down, with wall lengths and a scale</span></button>
+        <button class="menu-item" id="export3d"><b>3D picture (PNG)</b><span>What the 3D view shows now</span></button>
+        <button class="menu-item" id="exportPrint"><b>Print or save as PDF</b><span>Plan, 3D view and the shopping list on a page</span></button>
+      </div>
       <div class="share-pop" id="sharePop" hidden>
         <div id="shareMsg"></div>
         <input type="text" id="shareUrl" readonly>
@@ -275,8 +347,10 @@
       <button class="view-btn" id="saveFileBtn" title="Download this layout as a .json file">Save file</button>
       <button class="view-btn" id="openFileBtn" title="Load a layout saved with Save file">Open file</button>
       <input type="file" id="openFileInput" accept=".json,application/json" hidden>
+      <button class="view-btn" id="helpBtn" title="How it works, and example rooms">? Help</button>
       <button class="clear-btn" id="clearBtn">Clear all</button>
     </div>
+    <div class="room-tabs" id="roomTabs"></div>
     <div class="canvas-wrap" id="canvasWrap">
       <canvas id="canvas"></canvas>
       <div class="elev-bar" id="elevBar" style="display:none">
@@ -299,7 +373,7 @@
         <button class="view-btn primary-btn" id="elevDone">Back to plan</button>
       </div>
       <div class="sel-panel" id="selPanel" hidden>
-        <div class="sel-head"><strong id="selName"></strong><button class="icon-btn" id="selClose" title="Deselect (Esc)">×</button></div>
+        <div class="sel-head"><strong id="selName"></strong><button class="icon-btn sel-more-btn" id="selMore" title="Size, shape, colour, price">⋯</button><button class="icon-btn" id="selClose" title="Deselect (Esc)">×</button></div>
         <a id="selLink" target="_blank" rel="noopener">Open product page ↗</a>
         <div class="sel-row">
           <span>Angle</span>
@@ -316,7 +390,9 @@
           <label>Width <input type="number" id="selW" min="0.1" max="10" step="0.05"></label>
           <label>Depth <input type="number" id="selD" min="0.1" max="10" step="0.05"></label>
           <label>Height <input type="number" id="selZ" min="0.05" max="4" step="0.05"></label>
+          <label title="Height off the floor: things on a wall, or on top of other furniture">Off floor <input type="number" id="selElev" min="0" max="4" step="0.05"></label>
         </div>
+        <div class="sel-note" id="selDoorFit"></div>
         <div class="sel-row" id="selShapeRow"><span>Shape</span>
           <select id="selShape">
             <option value="box">Box</option>
@@ -345,6 +421,13 @@
             <option value="seat:stool">Stool</option>
             <option value="seat:ottoman">Ottoman</option>
             <option value="seat:bench">Bench</option>
+            <option value="rug">Rug</option>
+            <option value="lamp:floor">Floor lamp</option>
+            <option value="lamp:table">Table lamp</option>
+            <option value="curtain">Curtains</option>
+            <option value="tv">TV on the wall</option>
+            <option value="art">Wall art / mirror</option>
+            <option value="wallshelf">Wall shelf</option>
           </select>
         </div>
         <div class="sel-row" id="selColorRow"><span>Colour</span><input type="color" id="selColor"></div>
@@ -361,14 +444,39 @@
       </div>
       <div class="budget-bar" id="budgetBar" hidden>
         <div class="budget-main">
-          <span class="lbl">Total</span><span class="odo" id="budgetTotal"></span><span class="budget-extra" id="budgetExtra"></span>
+          <span class="lbl" id="budgetLbl">Total</span><span class="odo" id="budgetTotal"></span><span class="budget-extra" id="budgetExtra"></span>
           <span class="budget-delta" id="budgetDelta"></span>
         </div>
         <div class="budget-sub"><span id="budgetCount"></span><a id="budgetMissing"></a></div>
         <div class="budget-meter" id="budgetMeter" hidden><div></div></div>
         <div class="budget-sub"><span id="budgetLeft" class="budget-left"></span><a id="budgetSet"></a></div>
       </div>
+      <div class="fit-box" id="fitBox" hidden>
+        <button class="fit-head" id="fitHead"></button>
+        <div class="fit-list" id="fitList" hidden></div>
+      </div>
       <div class="toast" id="toast" hidden></div>
+      <div class="welcome" id="welcome" hidden>
+        <div class="welcome-card" role="dialog" aria-labelledby="welcomeTitle">
+          <h2 id="welcomeTitle">Plan your room before you buy</h2>
+          <p>See whether furniture really fits, what it all costs, and how it looks in 3D.</p>
+          <div class="steps">
+            <div class="step"><span class="step-n">1</span><div><b>Draw your room.</b> Pick a shape on the left and type its size, or drag the walls. Double-click a wall to add doors and windows.</div></div>
+            <div class="step"><span class="step-n">2</span><div><b>Add furniture.</b> Paste a product link from a furniture shop to bring in its real size, photo and price (needs the Room Planner browser extension), or pick from the list.</div></div>
+            <div class="step"><span class="step-n">3</span><div><b>Check it fits.</b> Red means something's in the way or through a wall. The total adds up as you go; share a link or print a shopping list when you're done.</div></div>
+          </div>
+          <div class="welcome-foot" style="margin-bottom:6px"><b style="font-size:13px">Start from an example</b></div>
+          <div class="examples">
+            <button class="example" data-example="living"><span class="ico">🛋</span><b>Living room</b>5 × 4.2 m, sofa, TV wall, rug</button>
+            <button class="example" data-example="bedroom"><span class="ico">🛏</span><b>Bedroom</b>4 × 3.6 m, queen bed, wardrobe</button>
+            <button class="example" data-example="studio"><span class="ico">🏠</span><b>Studio</b>6 × 4.5 m, bed, sofa, dining</button>
+          </div>
+          <div class="welcome-foot">
+            <span class="note">Everything stays in your browser. Nothing is uploaded.</span>
+            <button class="add-btn primary" id="welcomeEmpty" style="width:auto;padding:7px 16px">Start with an empty room</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="legend">Scale: 1 grid square = 1 metre · <span id="buildTag"></span></div>
   </div>
@@ -399,6 +507,13 @@ const FURNITURE = [
   {id:'bathtub', label:'Bathtub',      emoji:'🛁', w:1.7, h:0.8, color:'#5DCAA5'},
   {id:'toilet',  label:'Toilet',       emoji:'🚽', w:0.5, h:0.7, color:'#888888'},
   {id:'couch',   label:'Armchair',     emoji:'💺', w:0.9, h:0.9, color:'#BA7517'},
+  {id:'rug',     label:'Rug',          emoji:'🟫', w:2.0, h:1.4, color:'#B9A58F', zHeight:0.015, shape:{kind:'rug'}},
+  {id:'floorlamp', label:'Floor lamp', emoji:'💡', w:0.4, h:0.4, color:'#E8DCC4', zHeight:1.6, shape:{kind:'lamp', style:'floor'}},
+  {id:'tablelamp', label:'Table lamp', emoji:'🕯', w:0.3, h:0.3, color:'#E8DCC4', zHeight:0.5, shape:{kind:'lamp', style:'table'}},
+  {id:'curtains', label:'Curtains',    emoji:'🪟', w:2.0, h:0.15, color:'#CFC6B8', zHeight:2.3, shape:{kind:'curtain'}},
+  {id:'walltv',  label:'TV on the wall', emoji:'🖥', w:1.45, h:0.06, color:'#222222', zHeight:0.83, shape:{kind:'tv'}},
+  {id:'art',     label:'Wall art',     emoji:'🖼', w:0.9, h:0.04, color:'#8FA3B0', zHeight:0.6, shape:{kind:'art'}},
+  {id:'wallshelf', label:'Wall shelf', emoji:'📚', w:1.0, h:0.25, color:'#B08A5E', zHeight:0.2, shape:{kind:'wallshelf'}},
 ];
 
 const STYLE_PRESETS = {
@@ -416,7 +531,7 @@ const STYLE_PRESETS = {
 // diag() keeps the last 150 steps/errors in localStorage ('rp-diag'), which
 // Claude can read back from the Edge profile on disk when something works in
 // tests but not in the user's browser (see CLAUDE.md).
-const BUILD = '2026-09-30.1';
+const BUILD = '2026-10-01.1';
 function diag(event, data) {
   try {
     const log = JSON.parse(localStorage.getItem('rp-diag') || '[]');
@@ -459,7 +574,8 @@ let pendingModelUrl = null;     // 3D model / product page from an extension pas
 let pendingPageUrl = null;
 
 const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+let ctx = canvas.getContext('2d');   // (swapped for a larger offscreen one while exporting a picture)
+let exporting = false;                // true / 'safe' while drawing the plan for export
 const wrap = document.getElementById('canvasWrap');
 
 function redraw() { if (view === '2d') draw2d(); else init3d(); }
@@ -1042,6 +1158,187 @@ function buildFurnitureGroup(item, colorHex) {
   return g;
 }
 
+// ── Rugs, lamps, curtains and things on the wall ──────────────────────────────
+// item.kind says how an item sits in the room (fit checks, drawing order,
+// dragging):
+//   'rug'    on the floor under everything; never "in the way"
+//   'wall'   hung on a wall (TV, art, shelf, curtains): dragged near a wall it
+//            snaps flat against it, back to the wall, item.elev metres up
+//   'decor'  small things that stand on furniture (table lamp): dropped on a
+//            table or cabinet it sits on top (item.elev = that one's height)
+// item.elev (metres off the floor) works for anything; 3D lifts the item.
+// Shapes: {kind: 'rug'}, {kind: 'lamp', style: 'floor'|'table'},
+// {kind: 'curtain'}, {kind: 'tv'}, {kind: 'art'}, {kind: 'wallshelf'}.
+const DECOR_KIND = {rug: 'rug', curtain: 'wall', tv: 'wall', art: 'wall', wallshelf: 'wall'};
+function kindForShape(sh) { return !sh ? null : sh.kind === 'lamp' ? (sh.style === 'table' ? 'decor' : null) : DECOR_KIND[sh.kind] || null; }
+
+function inferDecorShape(p) {
+  const name = p.name || '';
+  if (/\brugs?\b|carpet|\brunner\b|\bmat\b/i.test(name) && !/table runner|rug pad|underlay|mattress/i.test(name)) return {kind: 'rug'};
+  if (/floor lamp|standing lamp|\barc lamp|tripod lamp/i.test(name)) return {kind: 'lamp', style: 'floor'};
+  if (/table lamp|desk lamp|bedside lamp/i.test(name)) return {kind: 'lamp', style: 'table'};
+  if (/\bcurtains?\b|\bdrapes?\b|sheer panel/i.test(name) && !/\brod\b|track|hook|ring|tie ?back/i.test(name)) return {kind: 'curtain'};
+  if (/wall art|canvas print|framed print|art print|artwork|painting|poster|wall mirror|\bmirror\b/i.test(name) && !/floor mirror|standing mirror|cheval/i.test(name)) return {kind: 'art'};
+  if (/wall shel(?:f|ves)|floating shel/i.test(name)) return {kind: 'wallshelf'};
+  return null;
+}
+
+// Default height off the floor for things hung on a wall.
+function defaultElev(sh, h) {
+  if (!sh) return 0;
+  if (sh.kind === 'art') return Math.max(0.3, +(1.5 - h / 2).toFixed(2));     // centred at eye level
+  if (sh.kind === 'tv') return Math.max(0.3, +(1.15 - h / 2).toFixed(2));     // centred at seated eye level
+  if (sh.kind === 'wallshelf') return 1.4;
+  return 0;
+}
+
+// A rug's top: border, a simple lattice, fringe on the short ends.
+function rugCanvas(hex, W, D) {
+  const s = 96, c = document.createElement('canvas');
+  c.width = Math.min(512, Math.max(32, Math.round(W * s))); c.height = Math.min(512, Math.max(32, Math.round(D * s)));
+  const g = c.getContext('2d'), base = new THREE.Color(hex);
+  const tone = f => '#' + base.clone().multiplyScalar(f).getHexString();
+  const lite = '#' + base.clone().lerp(new THREE.Color(0xffffff), 0.35).getHexString();
+  const w = c.width, h = c.height, b = Math.round(Math.min(w, h) * 0.08);
+  g.fillStyle = hex; g.fillRect(0, 0, w, h);
+  g.strokeStyle = tone(0.7); g.lineWidth = b * 0.6; g.strokeRect(b, b, w - 2 * b, h - 2 * b);
+  g.strokeStyle = lite; g.lineWidth = 1.5; g.strokeRect(b * 1.8, b * 1.8, w - 3.6 * b, h - 3.6 * b);
+  g.save(); g.beginPath(); g.rect(b * 2.2, b * 2.2, w - 4.4 * b, h - 4.4 * b); g.clip();
+  g.strokeStyle = tone(0.82); g.lineWidth = 2;
+  const step = Math.max(14, Math.min(w, h) / 5);
+  for (let x = -h; x < w + h; x += step) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x + h, h); g.stroke(); g.beginPath(); g.moveTo(x, h); g.lineTo(x + h, 0); g.stroke(); }
+  g.restore();
+  g.strokeStyle = lite; g.lineWidth = 1;
+  const long = w >= h;
+  for (let k = 3; k < (long ? h : w) - 2; k += 4) {
+    if (long) { g.beginPath(); g.moveTo(0, k); g.lineTo(b * 0.5, k); g.moveTo(w, k); g.lineTo(w - b * 0.5, k); g.stroke(); }
+    else { g.beginPath(); g.moveTo(k, 0); g.lineTo(k, b * 0.5); g.moveTo(k, h); g.lineTo(k, h - b * 0.5); g.stroke(); }
+  }
+  return c;
+}
+
+// Front is +z (the room side), back -z (against the wall), like the bed's headboard.
+function buildDecorGroup(item, colorHex) {
+  const sh = item.shape, W = item.w, D = item.h, H = item.zHeight || 0.5;
+  const g = new THREE.Group(), col = new THREE.Color(colorHex);
+  const mat = (c, f = 1) => new THREE.MeshLambertMaterial({color: new THREE.Color(c).multiplyScalar(f)});
+  const metal = mat(0x2b2926);
+  const box = (x0, x1, y0, y1, z0, z1, m) => {
+    if (x1 - x0 < 0.002 || y1 - y0 < 0.002 || z1 - z0 < 0.002) return;
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), m);
+    mesh.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2);
+    g.add(mesh);
+  };
+  const cyl = (rBottom, rTop, y0, y1, m, open) => {
+    const mesh = new THREE.Mesh(new THREE.CylinderGeometry(rTop, rBottom, y1 - y0, 32, 1, !!open), m);
+    mesh.position.y = (y0 + y1) / 2;
+    g.add(mesh);
+  };
+  if (sh.kind === 'rug') {
+    const t = Math.max(0.008, Math.min(H, 0.03));
+    const tex = new THREE.CanvasTexture(rugCanvas(colorHex, W, D));
+    const side = mat(col, 0.75), top = new THREE.MeshLambertMaterial({map: tex});
+    const geo = new THREE.BoxGeometry(W, t, D); geo.translate(0, t / 2, 0);
+    g.add(new THREE.Mesh(geo, [side, side, top, side, side, side]));
+  } else if (sh.kind === 'lamp') {
+    const r = Math.min(W, D) / 2;
+    const shade = new THREE.MeshLambertMaterial({color: col, emissive: col.clone().multiplyScalar(0.35), side: THREE.DoubleSide});
+    if (sh.style === 'table') {
+      const baseH = H * 0.55;
+      cyl(r * 0.42, r * 0.36, 0, baseH * 0.92, mat(col, 0.8));
+      cyl(r * 0.05, r * 0.05, baseH * 0.9, baseH + 0.02, metal);
+      cyl(r, r * 0.72, baseH, H, shade, true);
+    } else {
+      cyl(r * 0.65, r * 0.65, 0, 0.025, metal);
+      cyl(0.012, 0.012, 0.025, H * 0.78, metal);
+      cyl(r, r * 0.75, H * 0.7, H, shade, true);
+    }
+  } else if (sh.kind === 'curtain') {
+    // Pleated fabric hanging from a rail near the top, close to the wall.
+    const folds = Math.max(3, Math.round(W / 0.14)), amp = Math.min(0.035, D / 3);
+    const geo = new THREE.PlaneGeometry(W, H - 0.04, folds * 6, 1);
+    const pos = geo.attributes.position;
+    for (let k = 0; k < pos.count; k++) pos.setZ(k, Math.sin((pos.getX(k) / W + 0.5) * folds * Math.PI * 2) * amp);
+    geo.computeVertexNormals();
+    const cloth = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({color: col, side: THREE.DoubleSide}));
+    cloth.position.set(0, (H - 0.04) / 2, -D / 2 + amp + 0.02);
+    g.add(cloth);
+    box(-W / 2 - 0.06, W / 2 + 0.06, H - 0.04, H - 0.015, -D / 2, -D / 2 + 0.03, metal);
+  } else if (sh.kind === 'tv') {
+    box(-W / 2, W / 2, 0, H, -D / 2, D / 2, mat(0x151515));
+    box(-W / 2 + 0.012, W / 2 - 0.012, 0.012, H - 0.012, D / 2, D / 2 + 0.002, new THREE.MeshLambertMaterial({color: 0x1c2733, emissive: 0x05080c}));
+  } else if (sh.kind === 'art') {
+    // A frame; the product photo as the picture when it can be used as a texture.
+    const f = Math.min(0.04, Math.min(W, H) * 0.06);
+    box(-W / 2, W / 2, 0, H, -D / 2, D / 2 - 0.004, mat(0x2b2926));
+    const e = item.imgUrl ? getImageEntry(item.imgUrl) : null;
+    let pic = mat(col);
+    if (e && e.status === 'ok' && e.cors) { const tex = new THREE.Texture(e.img); tex.needsUpdate = true; pic = new THREE.MeshLambertMaterial({map: tex}); }
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(W - 2 * f, H - 2 * f), pic);
+    plane.position.set(0, H / 2, D / 2);
+    g.add(plane);
+  } else if (sh.kind === 'wallshelf') {
+    const t = Math.min(0.04, H);
+    box(-W / 2, W / 2, H - t, H, -D / 2, D / 2, mat(col));
+    [-W / 2 + 0.12, W / 2 - 0.12].forEach(x => { box(x - 0.012, x + 0.012, Math.max(0, H - 0.18), H - t, -D / 2, -D / 2 + 0.02, metal); box(x - 0.012, x + 0.012, H - t - 0.02, H - t, -D / 2, D / 2 - 0.03, metal); });
+  } else return null;
+  return g;
+}
+
+// Outline segments of the room with their outward normals (canvas px).
+function wallSegments() {
+  const pts = getRoomOutline(), segs = [];
+  pts.forEach((a, i) => {
+    const b = pts[(i + 1) % pts.length], len = Math.hypot(b.x - a.x, b.y - a.y);
+    if (len < 1e-6) return;
+    let n = {x: (b.y - a.y) / len, y: -(b.x - a.x) / len};
+    if (pointInPoly(pts, (a.x + b.x) / 2 + n.x * 2, (a.y + b.y) / 2 + n.y * 2)) n = {x: -n.x, y: -n.y};
+    segs.push({a, b, n, len});
+  });
+  return segs;
+}
+
+// Flat against the nearest wall within ~60 cm, back (the item's -y side on
+// the plan) to the wall. Returns whether it snapped.
+function snapToWall(item) {
+  const cx = item.x + item.w * SCALE / 2, cy = item.y + item.h * SCALE / 2;
+  let best = null;
+  wallSegments().forEach(s => {
+    const t = Math.max(0, Math.min(1, ((cx - s.a.x) * (s.b.x - s.a.x) + (cy - s.a.y) * (s.b.y - s.a.y)) / (s.len * s.len)));
+    const f = {x: s.a.x + (s.b.x - s.a.x) * t, y: s.a.y + (s.b.y - s.a.y) * t}, d = Math.hypot(cx - f.x, cy - f.y);
+    if (!best || d < best.d) best = {d, f, n: s.n};
+  });
+  if (!best || best.d > (item.h / 2 + 0.6) * SCALE) return false;
+  setItemRot(item, Math.atan2(best.n.x, -best.n.y));
+  const c = {x: best.f.x - best.n.x * item.h * SCALE / 2, y: best.f.y - best.n.y * item.h * SCALE / 2};
+  item.x = c.x - item.w * SCALE / 2; item.y = c.y - item.h * SCALE / 2;
+  return true;
+}
+
+// After a move: wall things snap to the wall; decor sits on whatever
+// furniture is under its middle (or the floor).
+function settleItem(item) {
+  if (!item) return;
+  if (item.kind === 'wall') snapToWall(item);
+  else if (item.kind === 'decor') {
+    const cx = item.x + item.w * SCALE / 2, cy = item.y + item.h * SCALE / 2;
+    let top = 0;
+    placed.forEach(o => { if (o !== item && !o.kind && itemHit(o, cx, cy)) top = Math.max(top, (o.elev || 0) + (o.zHeight || 0.7)); });
+    item.elev = +top.toFixed(3);
+  }
+}
+
+// New items get their kind from their shape, and wall things a height.
+function applyKindDefaults(item) {
+  if (item.kind === undefined) { const k = kindForShape(item.shape); if (k) item.kind = k; else delete item.kind; }
+  if (item.kind === 'wall' && item.elev == null) item.elev = defaultElev(item.shape, item.zHeight || 0.5);
+}
+
+// Drawing and picking order on the plan: rugs, then furniture, then things
+// raised off the floor (on the wall, on top of furniture).
+const layerOf = it => it.kind === 'rug' ? 0 : it.kind === 'wall' || it.elev > 0.05 ? 2 : 1;
+function drawOrder() { return placed.map((_, i) => i).sort((a, b) => layerOf(placed[a]) - layerOf(placed[b]) || a - b); }
+
 // ── Sizes read off a dimension drawing ───────────────────────────────────────
 // Some shops give the size only as a line drawing in the gallery
 // (Furniture & Choice: "Chloe2seatersketch.jpg", measurements in mm). Its
@@ -1127,6 +1424,15 @@ async function readDrawing(url) {
 // by, for the status line), or null if it can't tell.
 function estimateSize(p, shape) {
   const name = p.name || '', text = name + ' ' + (p.description || '');
+  if (shape && shape.kind === 'rug') {
+    // Rugs name their size: "Rug 160 x 230 cm", "200x290cm".
+    const m = name.match(/(d{2,3})s*(?:cm)?s*[x×]s*(d{2,3})s*cm/i);
+    if (m) { const a = +m[1] / 100, b = +m[2] / 100; return {w: Math.max(a, b), d: Math.min(a, b), h: 0.015, basis: 'the size in its name'}; }
+    return /runner/i.test(name) ? {w: 2.4, d: 0.8, h: 0.015, basis: 'a typical hallway runner'} : {w: 2.3, d: 1.6, h: 0.015, basis: 'a typical 160 × 230 cm rug'};
+  }
+  const DECOR_SIZE = {curtain: [1.4, 0.12, 2.3, 'curtain panel'], tv: [1.45, 0.06, 0.83, '65" TV'], art: [0.7, 0.04, 0.9, 'framed print'], wallshelf: [0.8, 0.22, 0.2, 'wall shelf']};
+  if (shape && shape.kind === 'lamp') return shape.style === 'table' ? {w: 0.3, d: 0.3, h: 0.5, basis: 'a typical table lamp'} : {w: 0.4, d: 0.4, h: 1.6, basis: 'a typical floor lamp'};
+  if (shape && DECOR_SIZE[shape.kind]) { const [w, d, h, what] = DECOR_SIZE[shape.kind]; return {w, d, h, basis: `a typical ${what}`}; }
   const has = re => re.test(name) || (!SOFA_RE.test(name) && re.test(text));
   if (shape && shape.kind === 'sofa' || SOFA_RE.test(name) && !NOT_SOFA_RE.test(name)) {
     const m = name.match(/(\d(?:\.5)?)\s*(?:\+\s*\d(?:\.5)?\s*)?[- ]?(?:seat(?:er|s)?|str)\b/i) ||
@@ -1577,6 +1883,7 @@ function buildShapeGroup(item) {
   if (item.shape.kind === 'bed') return buildBedGroup(item, item.color);
   if (item.shape.kind === 'beanbag') return buildBeanBagGroup(item, item.color);
   if (/^(table|cabinet|shelf|seat)$/.test(item.shape.kind)) return buildFurnitureGroup(item, item.color);
+  if (/^(rug|lamp|curtain|tv|art|wallshelf)$/.test(item.shape.kind)) return buildDecorGroup(item, item.color);
   return null;
 }
 
@@ -1584,7 +1891,7 @@ function buildShapeGroup(item) {
 const sofaTopCache = {};
 function sofaTopImage(item) {
   const modelState = (item.modules || []).map(m => m.model ? (modelCache[m.model] || {}).status : 0);
-  const key = JSON.stringify([item.shape, item.modules, modelState, item.w, item.h, item.zHeight, item.color]);
+  const key = JSON.stringify([item.shape, item.modules, modelState, item.w, item.h, item.zHeight, item.color, item.shape.kind === 'art' && item.imgUrl ? (imgCache[item.imgUrl] || {}).status : 0]);
   if (!sofaTopCache[key]) {
     sofaTopCache[key] = {img: null};
     try {
@@ -1799,10 +2106,11 @@ function drawPlacedItem(item) {
   ctx.save();
   ctx.translate(item.x + iw/2, item.y + ih/2);
   ctx.rotate(item.rot || 0);
+  const upright = Math.cos(item.rot || 0) < -0.01;       // turned past 90°: flip the label so it reads upright
 
   const model = item.modelUrl ? getModelEntry(item.modelUrl) : null;
   const entry = item.imgUrl ? getImageEntry(item.imgUrl) : null;
-  const label = item.label.length > 28 ? item.label.slice(0, 26) + '…' : item.label;
+  const label = (item.label.length > 28 ? item.label.slice(0, 26) + '…' : item.label) + (item.elev > 0.05 ? ` · ${item.elev.toFixed(2)} m up` : '');
 
   const sofaTop = !(model && model.status === 'ok') && item.shape ? sofaTopImage(item) : null;
   const topImg = (model && model.topImg) || sofaTop;
@@ -1813,8 +2121,9 @@ function drawPlacedItem(item) {
     ctx.drawImage(topImg, -iw/2, -ih/2, iw, ih);
     ctx.strokeStyle = 'rgba(0,0,0,0.18)'; ctx.lineWidth = 1;
     ctx.strokeRect(-iw/2, -ih/2, iw, ih);
+    if (upright) ctx.rotate(Math.PI);
     drawLabelChip(label, ih/2 - 8);
-  } else if (entry && entry.status === 'ok') {
+  } else if (entry && entry.status === 'ok' && !(exporting === 'safe' && !entry.cors)) {
     // Draw the real image, cropped to fill the item's footprint (cover fit)
     drawItemShape2d(item, iw, ih);
     ctx.save();
@@ -1830,6 +2139,7 @@ function drawPlacedItem(item) {
     ctx.lineWidth = 1.5;
     drawItemShape2d(item, iw, ih);
     ctx.stroke();
+    if (upright) ctx.rotate(Math.PI);
     drawLabelChip(label, ih/2 - 8);
   } else {
     // Fallback: colored box. Shows a loading mark or broken-image mark if an
@@ -1843,6 +2153,7 @@ function drawPlacedItem(item) {
     ctx.fillStyle = item.color;
     ctx.font = '11px system-ui';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    if (upright) ctx.rotate(Math.PI);
     if ((entry && entry.status === 'loading') || (model && model.status === 'loading')) {
       ctx.fillText('⏳ ' + label, 0, 0);
     } else if (entry && entry.status === 'error') {
@@ -1942,7 +2253,8 @@ function draw2d() {
   }
 
   // placed furniture
-  placed.forEach(drawPlacedItem);
+  drawOrder().forEach(i => drawPlacedItem(placed[i]));
+  if (!exporting) drawFitOverlay();
   if (placed[selected]) drawSelection(placed[selected]);
 
   // drag ghost from sidebar
@@ -2003,7 +2315,7 @@ function toWorld(px, py) { return {x: (px - bbox3d.x) / SCALE, z: (py - bbox3d.y
 function applyItemTransform(item, group) {
   if (!group) return;
   const c = toWorld(item.x + item.w * SCALE / 2, item.y + item.h * SCALE / 2);
-  group.position.set(c.x, 0, c.z);
+  group.position.set(c.x, item.elev || 0, c.z);
   // Canvas rotation is clockwise in a y-down space; negate it for 3D.
   group.rotation.y = -(item.rot || 0);
 }
@@ -2103,7 +2415,7 @@ function build3d() {
   scene = new THREE.Scene();
   scene.environment = envMapFor(renderer);
   orbitTarget.set(spanX/2, 0, spanZ/2);
-  if (orbitRadius == null) orbitRadius = Math.max(spanX, spanZ) * 1.3;
+  if (orbitRadius == null) orbitRadius = Math.max(spanX, spanZ) * 1.3 * Math.pow(Math.max(1, 1 / camera.aspect), 0.8);
   updateCameraFromOrbit();
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.55));
@@ -2240,6 +2552,20 @@ function updateWallCutaway() {
     w.mesh.material.depthWrite = !facing;
     (w.parts || []).forEach(p => { p.mat.opacity = facing ? p.base * 0.25 : p.base; p.mat.depthWrite = !facing && p.base === 1; });
   });
+  // Things hung on a wall (their back, the plan's -y side, faces it) fade
+  // with that wall when the camera is on its far side.
+  placed.forEach((it, i) => {
+    const g = itemGroups[i];
+    if (it.kind !== 'wall' || !g) return;
+    const r = it.rot || 0, facing = (c.x - g.position.x) * Math.sin(r) + (c.z - g.position.z) * -Math.cos(r) > 0.05;
+    if (g.userData.faded === facing) return;
+    g.userData.faded = facing;
+    g.traverse(o => [].concat(o.material || []).forEach(m => {
+      if (o.name === 'sel') return;
+      if (m.userData.baseOpacity == null) m.userData.baseOpacity = m.opacity;
+      m.transparent = true; m.opacity = facing ? 0.15 : m.userData.baseOpacity; m.depthWrite = !facing;
+    }));
+  });
 }
 
 function animate() {
@@ -2334,6 +2660,7 @@ function onMove3d(clientX, clientY, shiftKey) {
       if (!p) return;
       const cx = (p.x + drag3d.offX) * SCALE + bbox3d.x, cy = (p.z + drag3d.offZ) * SCALE + bbox3d.y;
       item.x = cx - item.w * SCALE / 2; item.y = cy - item.h * SCALE / 2;
+      settleItem(item);
     }
     applyItemTransform(item, itemGroups[drag3d.idx]);
     updateSelPanel();
@@ -2358,19 +2685,45 @@ function onUp3d() {
 
 // Window-level listeners are registered once, so a drag keeps working when
 // the pointer leaves the canvas.
-window.addEventListener('mousemove', e => { if (view === '3d') onMove3d(e.clientX, e.clientY, e.shiftKey); });
-window.addEventListener('mouseup', onUp3d);
+// Two fingers on the 3D view: pinch to zoom (no dragging meanwhile).
+const touches3d = new Map();
+let pinch3d = null;
+window.addEventListener('pointermove', e => {
+  if (view !== '3d') return;
+  if (touches3d.has(e.pointerId)) {
+    touches3d.set(e.pointerId, {x: e.clientX, y: e.clientY});
+    if (touches3d.size === 2) {
+      const [a, b] = [...touches3d.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (pinch3d && d > 10) { orbitRadius = Math.min(60, Math.max(1.5, pinch3d.r * pinch3d.d / d)); updateCameraFromOrbit(); }
+      return;
+    }
+  }
+  onMove3d(e.clientX, e.clientY, e.shiftKey);
+});
+const pointerUp3d = e => {
+  touches3d.delete(e.pointerId);
+  if (touches3d.size < 2) pinch3d = null;
+  onUp3d();
+};
+window.addEventListener('pointerup', pointerUp3d);
+window.addEventListener('pointercancel', pointerUp3d);
 
 function attach3dControls(el) {
   el.style.cursor = 'grab';
-  el.addEventListener('mousedown', onDown3d);
+  el.style.touchAction = 'none';
+  el.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'touch') {
+      touches3d.set(e.pointerId, {x: e.clientX, y: e.clientY});
+      if (touches3d.size === 2) {
+        const [a, b] = [...touches3d.values()];
+        pinch3d = {d: Math.hypot(a.x - b.x, a.y - b.y), r: orbitRadius};
+        drag3d = null; orbitDragging = false;
+        return;
+      }
+    }
+    onDown3d(e);
+  });
   el.addEventListener('contextmenu', e => e.preventDefault());
-  el.addEventListener('touchstart', e => {
-    const t = e.touches[0];
-    orbitDragging = true; orbitLastX = t.clientX; orbitLastY = t.clientY;
-  }, {passive: true});
-  el.addEventListener('touchmove', e => { const t = e.touches[0]; onMove3d(t.clientX, t.clientY, false); }, {passive: true});
-  el.addEventListener('touchend', onUp3d);
   el.addEventListener('wheel', e => {
     e.preventDefault();
     orbitRadius = Math.min(60, Math.max(1.5, orbitRadius * (1 + e.deltaY * 0.001)));
@@ -2388,16 +2741,233 @@ function destroy3d() {
 
 // ── Canvas resize ─────────────────────────────────────────────────────────────
 
+// On a small screen the plan keeps at least MIN_CANVAS pixels of drawing
+// room and is shown scaled down, so a whole room still fits; pointer
+// positions go through canvasPoint() to get back to canvas pixels.
+const MIN_CANVAS = {w: 520, h: 420};
+function canvasPoint(e) {
+  const r = canvas.getBoundingClientRect(), k = r.width ? canvas.width / r.width : 1;
+  return {mx: (e.clientX - r.left) * k, my: (e.clientY - r.top) * k};
+}
+
 function resizeCanvas() {
   // Rooms are centred on the canvas, so shift everything stored in canvas
   // pixels by the change in centre to keep furniture where it was in the room.
   const ox = canvas.width / 2, oy = canvas.height / 2;
-  canvas.width  = wrap.clientWidth  - 2;
-  canvas.height = wrap.clientHeight - 2;
+  const cw = wrap.clientWidth - 2, ch = wrap.clientHeight - 2;
+  const k = Math.max(1, MIN_CANVAS.w / cw, MIN_CANVAS.h / ch);
+  canvas.width = Math.round(cw * k); canvas.height = Math.round(ch * k);
+  canvas.style.width = cw + 'px'; canvas.style.height = ch + 'px';
   const dx = canvas.width / 2 - ox, dy = canvas.height / 2 - oy;
   placed.forEach(it => { it.x += dx; it.y += dy; });
   customPts.forEach(p => { p.x += dx; p.y += dy; });
   if (view === '3d') init3d(); else draw2d();
+}
+
+// ── Fit checks ────────────────────────────────────────────────────────────────
+// What stops furniture fitting: overlapping another piece at the same height
+// (a lamp on a table, or a TV above a TV unit, is fine), going through a
+// wall, standing where a door swings, and narrow gaps between big pieces.
+// Drawn on the plan and listed in the box at the bottom right. For the
+// selected item the plan also shows the distance to the nearest wall or
+// piece on each side, and the inspector whether it goes through the door.
+
+const TIGHT_M = 0.5;      // a gap narrower than this between two big pieces is flagged
+const WALK_M = 0.6;       // about what it takes to walk through
+
+// The item's outline on the plan (canvas px), rotated; inset pulls it in so
+// pieces standing flush against each other or a wall don't count as touching.
+function itemPoly(it, inset = 0) {
+  const w = it.w * SCALE, h = it.h * SCALE, cx = it.x + w / 2, cy = it.y + h / 2, r = it.rot || 0, c = Math.cos(r), s = Math.sin(r);
+  let local = it.footprint && it.footprint.length > 2 ? it.footprint.map(p => ({x: p.x * SCALE, y: p.y * SCALE}))
+    : [{x: -w / 2, y: -h / 2}, {x: w / 2, y: -h / 2}, {x: w / 2, y: h / 2}, {x: -w / 2, y: h / 2}];
+  if (inset) local = local.map(p => { const d = Math.hypot(p.x, p.y) || 1, k = Math.max(0, d - inset) / d; return {x: p.x * k, y: p.y * k}; });
+  return local.map(p => ({x: cx + p.x * c - p.y * s, y: cy + p.x * s + p.y * c}));
+}
+
+function segsCross(p1, p2, p3, p4) {
+  const o = (a, b, c) => (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+  const d1 = o(p3, p4, p1), d2 = o(p3, p4, p2), d3 = o(p1, p2, p3), d4 = o(p1, p2, p4);
+  return d1 * d2 < 0 && d3 * d4 < 0;
+}
+function polysCross(A, B) {
+  for (let i = 0; i < A.length; i++) for (let j = 0; j < B.length; j++)
+    if (segsCross(A[i], A[(i + 1) % A.length], B[j], B[(j + 1) % B.length])) return true;
+  return false;
+}
+const polysOverlap = (A, B) => polysCross(A, B) || pointInPoly(B, A[0].x, A[0].y) || pointInPoly(A, B[0].x, B[0].y);
+function nearestOnSeg(p, a, b) {
+  const dx = b.x - a.x, dy = b.y - a.y, L = dx * dx + dy * dy;
+  const t = L ? Math.max(0, Math.min(1, ((p.x - a.x) * dx + (p.y - a.y) * dy) / L)) : 0;
+  return {x: a.x + dx * t, y: a.y + dy * t};
+}
+// Closest points between two outlines that don't overlap: {d, p, q}.
+function polyGap(A, B) {
+  let best = {d: Infinity};
+  const scan = (P, Q, swap) => P.forEach(p => Q.forEach((a, k) => {
+    const q = nearestOnSeg(p, a, Q[(k + 1) % Q.length]), d = Math.hypot(p.x - q.x, p.y - q.y);
+    if (d < best.d) best = swap ? {d, p: q, q: p} : {d, p, q};
+  }));
+  scan(A, B, false); scan(B, A, true);
+  return best;
+}
+
+const spanOf = it => [it.elev || 0, (it.elev || 0) + (it.zHeight || 0.7)];
+const solidItem = it => it.kind !== 'rug' && !(it.shape && it.shape.kind === 'curtain');
+const onFloor = it => (it.elev || 0) < 0.3 && it.kind !== 'wall';
+const bigItem = it => !it.kind && Math.min(it.w, it.h) >= 0.35 && it.w * it.h >= 0.3;
+const cm = m => Math.round(m * 100) + ' cm';
+
+// The floor area each door sweeps (canvas px polygons), as drawn on the plan.
+function doorSwings() {
+  const pts = getRoomPts(), out = [];
+  walls.forEach((w, i) => {
+    if (i >= pts.length) return;
+    const arc = wallArc(i, pts), len = arc.len;
+    if (len < 1) return;
+    w.openings.forEach((o, k) => {
+      if (o.type !== 'door') return;
+      const p = arc.at(o.x * SCALE / len), q = arc.at(Math.min(len, (o.x + o.w) * SCALE) / len), n = arc.normal(o.x * SCALE / len), r = o.w * SCALE;
+      const a0 = Math.atan2(q.y - p.y, q.x - p.x);
+      let d = Math.atan2(-n.y, -n.x) - a0;
+      while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
+      const poly = [p];
+      for (let s = 0; s <= 10; s++) { const a = a0 + d * s / 10; poly.push({x: p.x + Math.cos(a) * r, y: p.y + Math.sin(a) * r}); }
+      out.push({poly, key: i + ':' + k});
+    });
+  });
+  return out;
+}
+
+function fitCheck() {
+  const problems = [], tight = [], bad = new Set(), doors = new Map();
+  if (shape === 'custom' && drawing) return {problems, tight, bad, doors: []};
+  const polys = placed.map(it => itemPoly(it, 1.5)), room = getRoomOutline();
+  placed.forEach((it, i) => {
+    const P = polys[i];
+    if (P.some(p => !pointInPoly(room, p.x, p.y)) || polysCross(P, room)) {
+      problems.push({i, text: `${it.label} goes through a wall`}); bad.add(i);
+    }
+  });
+  for (let i = 0; i < placed.length; i++) for (let j = i + 1; j < placed.length; j++) {
+    const A = placed[i], B = placed[j];
+    if (!solidItem(A) || !solidItem(B)) continue;
+    const sa = spanOf(A), sb = spanOf(B);
+    if (Math.min(sa[1], sb[1]) - Math.max(sa[0], sb[0]) < 0.01) continue;     // one above the other
+    if (polysOverlap(polys[i], polys[j])) { problems.push({i, j, text: `${A.label} overlaps ${B.label}`}); bad.add(i); bad.add(j); }
+    else if (onFloor(A) && onFloor(B) && bigItem(A) && bigItem(B)) {
+      const g = polyGap(itemPoly(A), itemPoly(B)), m = g.d / SCALE;
+      if (m > 0.02 && m < TIGHT_M) tight.push({i, j, p: g.p, q: g.q, m, text: `${cm(m)} between ${A.label} and ${B.label}`});
+    }
+  }
+  doorSwings().forEach(dz => placed.forEach((it, i) => {
+    if (!solidItem(it) || !onFloor(it) || !polysOverlap(polys[i], dz.poly)) return;
+    problems.push({i, text: `${it.label} is in the way of a door`}); bad.add(i); doors.set(dz.key, dz);
+  }));
+  return {problems, tight, bad, doors: [...doors.values()]};
+}
+
+// Distances from the selected item's four sides to the nearest wall or piece.
+function drawClearances(item) {
+  const w = item.w * SCALE, h = item.h * SCALE, cx = item.x + w / 2, cy = item.y + h / 2, r = item.rot || 0, c = Math.cos(r), s = Math.sin(r);
+  const rot = (x, y) => ({x: x * c - y * s, y: x * s + y * c});
+  const segs = wallSegments().map(sg => [sg.a, sg.b]);
+  const span = spanOf(item);
+  placed.forEach(o => {
+    if (o === item || !solidItem(o)) return;
+    const so = spanOf(o);
+    if (Math.min(span[1], so[1]) - Math.max(span[0], so[0]) < 0.01) return;
+    const P = itemPoly(o);
+    P.forEach((a, k) => segs.push([a, P[(k + 1) % P.length]]));
+  });
+  [[0, -1, 0, -h / 2], [1, 0, w / 2, 0], [0, 1, 0, h / 2], [-1, 0, -w / 2, 0]].forEach(([dx, dy, sx, sy]) => {
+    const d = rot(dx, dy), o = rot(sx, sy), st = {x: cx + o.x, y: cy + o.y};
+    if (placed.some(p => p !== item && solidItem(p) && itemHit(p, st.x + d.x * 2, st.y + d.y * 2))) return;
+    let best = Infinity;
+    segs.forEach(([a, b]) => {
+      const ex = b.x - a.x, ey = b.y - a.y, den = d.x * ey - d.y * ex;
+      if (Math.abs(den) < 1e-9) return;
+      const t = ((a.x - st.x) * ey - (a.y - st.y) * ex) / den, u = ((a.x - st.x) * d.y - (a.y - st.y) * d.x) / den;
+      if (t > 0.5 && u >= 0 && u <= 1 && t < best) best = t;
+    });
+    const m = best / SCALE;
+    if (!(m > 0.03 && m < 4)) return;
+    const en = {x: st.x + d.x * best, y: st.y + d.y * best};
+    ctx.strokeStyle = '#2a7ae2'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(st.x, st.y); ctx.lineTo(en.x, en.y); ctx.stroke(); ctx.setLineDash([]);
+    [st, en].forEach(p => { ctx.beginPath(); ctx.moveTo(p.x - d.y * 4, p.y + d.x * 4); ctx.lineTo(p.x + d.y * 4, p.y - d.x * 4); ctx.stroke(); });
+    fitChip(`${m.toFixed(2)} m`, (st.x + en.x) / 2, (st.y + en.y) / 2, '#2a7ae2');
+  });
+}
+
+function fitChip(text, x, y, color) {
+  ctx.font = '600 10px system-ui';
+  const tw = ctx.measureText(text).width;
+  ctx.fillStyle = color; ctx.beginPath(); ctx.roundRect(x - tw / 2 - 4, y - 8, tw + 8, 16, 4); ctx.fill();
+  ctx.fillStyle = '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, x, y + 0.5);
+}
+
+let fitShown = true;
+function drawFitOverlay() {
+  const fit = fitCheck();
+  renderFitBox(fit);
+  if (!fitShown) return;
+  ctx.save();
+  fit.doors.forEach(dz => { tracePath(dz.poly); ctx.fillStyle = 'rgba(220,50,50,0.16)'; ctx.fill(); });
+  fit.bad.forEach(i => {
+    tracePath(itemPoly(placed[i]));
+    ctx.fillStyle = 'rgba(220,40,40,0.14)'; ctx.fill();
+    ctx.strokeStyle = '#d03030'; ctx.lineWidth = 2.5; ctx.stroke();
+  });
+  fit.tight.forEach(t => {
+    ctx.strokeStyle = '#e08a10'; ctx.lineWidth = 2; ctx.setLineDash([5, 3]);
+    ctx.beginPath(); ctx.moveTo(t.p.x, t.p.y); ctx.lineTo(t.q.x, t.q.y); ctx.stroke(); ctx.setLineDash([]);
+    fitChip(cm(t.m), (t.p.x + t.q.x) / 2, (t.p.y + t.q.y) / 2, '#e08a10');
+  });
+  if (placed[selected] && !rotating2d) drawClearances(placed[selected]);
+  ctx.restore();
+}
+
+let lastFitKey = null, fitOpen = false;
+function renderFitBox(fit) {
+  const box = document.getElementById('fitBox');
+  const key = JSON.stringify([placed.length, fit.problems.map(p => p.text), fit.tight.map(t => t.text), fitOpen, fitShown]);
+  if (key === lastFitKey) return;
+  lastFitKey = key;
+  box.hidden = !placed.length;
+  const n = fit.problems.length, head = document.getElementById('fitHead');
+  head.className = 'fit-head ' + (n ? 'bad' : fit.tight.length ? 'warn' : 'good');
+  head.textContent = (n ? `⚠ ${n} problem${n > 1 ? 's' : ''}` : '✓ Everything fits') +
+    (fit.tight.length ? ` · ${fit.tight.length} tight gap${fit.tight.length > 1 ? 's' : ''}` : '') + (n || fit.tight.length ? (fitOpen ? ' ▾' : ' ▸') : '');
+  const list = document.getElementById('fitList');
+  list.hidden = !fitOpen || !(n || fit.tight.length);
+  list.innerHTML = '';
+  [...fit.problems.map(p => ({...p, cls: 'bad'})), ...fit.tight.map(t => ({...t, cls: 'warn', text: t.text + (t.m < WALK_M ? ` — about ${cm(WALK_M)} is needed to walk through` : '')}))].forEach(p => {
+    const a = document.createElement('a');
+    a.className = p.cls; a.textContent = p.text;
+    a.addEventListener('click', () => select(p.i));
+    list.appendChild(a);
+  });
+  const toggle = document.createElement('label');
+  toggle.innerHTML = '<input type="checkbox"> Show on the plan';
+  toggle.firstChild.checked = fitShown;
+  toggle.firstChild.addEventListener('change', e => { fitShown = e.target.checked; draw2d(); });
+  list.appendChild(toggle);
+}
+setInterval(() => { if (view === '3d') renderFitBox(fitCheck()); }, 500);
+
+// Carried upright or on its side, does it go through the widest door (or a
+// standard 82 × 204 cm one if none is drawn)?
+function doorFit(item) {
+  if (item.kind === 'rug' || item.kind === 'wall' || (item.shape && item.shape.kind === 'curtain')) return null;
+  const doors = walls.flatMap(w => w.openings.filter(o => o.type === 'door'));
+  const door = doors.length ? doors.reduce((a, b) => (a.w > b.w ? a : b)) : {w: 0.82, h: 2.04};
+  const the = doors.length ? 'the' : 'a standard';
+  const [a, b] = [item.w, item.h, item.zHeight || 0.7].sort((x, y) => x - y);
+  if (a <= door.w - 0.01 && b <= door.h - 0.01) return {ok: true, text: `✓ Goes through ${the} ${cm(door.w)} door`};
+  const parts = item.modules ? ' It comes in parts, so check each part.' : ' Check whether it comes flat-packed or in parts.';
+  return {ok: false, text: a > door.w - 0.01 ? `✗ Its narrowest side is ${cm(a)}: wider than ${the} ${cm(door.w)} door.` + parts
+                                             : `✗ ${cm(a)} × ${cm(b)} even on its side: too big for ${the} ${cm(door.w)} × ${cm(door.h)} door.` + parts};
 }
 
 // ── Selection, rotation & the inspector panel ─────────────────────────────────
@@ -2433,7 +3003,9 @@ function updateSelPanel() {
   if (document.activeElement !== selAngle) selAngle.value = deg;
   if (document.activeElement !== selAngleNum) selAngleNum.value = deg;
   const setVal = (id, v) => { const el = document.getElementById(id); if (document.activeElement !== el) el.value = (+v).toFixed(2); };
-  setVal('selW', item.w); setVal('selD', item.h); setVal('selZ', item.zHeight || 0.7);
+  setVal('selW', item.w); setVal('selD', item.h); setVal('selZ', item.zHeight || 0.7); setVal('selElev', item.elev || 0);
+  const door = doorFit(item), df = document.getElementById('selDoorFit');
+  df.textContent = door ? door.text : ''; df.className = 'sel-note' + (door ? (door.ok ? ' good' : ' bad') : ''); df.hidden = !door;
   // A real 3D model brings its own materials and shape, so colour and shape
   // only apply to boxes / generated sofas.
   const hasModel = !!(item.modelUrl && modelCache[item.modelUrl] && modelCache[item.modelUrl].status === 'ok');
@@ -2442,7 +3014,7 @@ function updateSelPanel() {
   const shapeSel = document.getElementById('selShape');
   shapeSel.querySelector('option[value="modular"]').hidden = !item.modules;
   const sh = item.shape;
-  shapeSel.value = !sh ? 'box' : sh.kind === 'modular' ? 'modular' : sh.kind === 'chair' ? `chair:${sh.style}:${sh.base}` : sh.kind === 'bed' ? 'bed' : sh.kind === 'beanbag' ? (sh.arms ? 'beanbag-arms' : 'beanbag') : sh.kind === 'table' ? `table:${sh.top}:${sh.base}` : sh.kind === 'cabinet' ? `cabinet:${sh.front}` : sh.kind === 'shelf' ? 'shelf' : sh.kind === 'seat' ? `seat:${sh.style}` : sh.style === 'curved' ? 'curved' : sh.chaise;
+  shapeSel.value = !sh ? 'box' : sh.kind === 'modular' ? 'modular' : sh.kind === 'chair' ? `chair:${sh.style}:${sh.base}` : sh.kind === 'bed' ? 'bed' : sh.kind === 'beanbag' ? (sh.arms ? 'beanbag-arms' : 'beanbag') : sh.kind === 'table' ? `table:${sh.top}:${sh.base}` : sh.kind === 'cabinet' ? `cabinet:${sh.front}` : sh.kind === 'shelf' ? 'shelf' : sh.kind === 'seat' ? `seat:${sh.style}` : sh.kind === 'lamp' ? `lamp:${sh.style}` : DECOR_KIND[sh.kind] ? sh.kind : sh.style === 'curved' ? 'curved' : sh.chaise;
   document.getElementById('selColor').value = /^#[0-9a-f]{6}$/i.test(item.color) ? item.color : '#888888';
   const priceEl = document.getElementById('selPrice');
   if (document.activeElement !== priceEl) priceEl.value = item.price > 0 ? +item.price.toFixed(2) : '';
@@ -2503,6 +3075,12 @@ function resizeSelected(key, value) {
 document.getElementById('selW').addEventListener('input', e => resizeSelected('w', +e.target.value));
 document.getElementById('selD').addEventListener('input', e => resizeSelected('h', +e.target.value));
 document.getElementById('selZ').addEventListener('input', e => resizeSelected('zHeight', +e.target.value));
+document.getElementById('selElev').addEventListener('input', e => {
+  const item = placed[selected], v = +e.target.value;
+  if (!item || e.target.value === '' || !(v >= 0)) return;
+  item.elev = v;
+  itemChanged(selected);
+});
 document.getElementById('selColor').addEventListener('input', e => {
   if (!placed[selected]) return;
   placed[selected].color = e.target.value;
@@ -2528,15 +3106,24 @@ document.getElementById('selShape').addEventListener('change', e => {
     : v === 'beanbag' ? {kind: 'beanbag'}
     : v === 'beanbag-arms' ? {kind: 'beanbag', arms: true}
     : v === 'shelf' ? {kind: 'shelf'}
+    : v.startsWith('lamp:') ? {kind: 'lamp', style: v.split(':')[1]}
+    : DECOR_KIND[v] ? {kind: v}
     : v.startsWith('table:') ? {kind: 'table', top: v.split(':')[1], base: v.split(':')[2]}
     : v.startsWith('cabinet:') ? {kind: 'cabinet', front: v.split(':')[1]}
     : v.startsWith('seat:') ? {kind: 'seat', style: v.split(':')[1]}
     : v.startsWith('chair:') ? {...(item.shape && item.shape.kind === 'chair' ? item.shape : {}), kind: 'chair', style: v.split(':')[1], base: v.split(':')[2]}
     : v === 'curved' ? {kind: 'sofa', seatH: 0.45, seatD: null, armW: 0.18, armH: null, ...prevSofa, chaise: 'none', style: 'curved'}
     : {kind: 'sofa', seatH: 0.45, seatD: null, armW: 0.18, armH: null, ...prevSofa, chaise: v};
+  const wasWall = item.kind === 'wall';
+  delete item.kind;
+  applyKindDefaults(item);
+  if (wasWall && item.kind !== 'wall' && item.kind !== 'decor') item.elev = 0;
+  settleItem(item);
   itemChanged(selected, true);
 });
 document.getElementById('selClose').addEventListener('click', () => select(-1));
+selPanel.classList.add('compact');
+document.getElementById('selMore').addEventListener('click', () => selPanel.classList.toggle('compact'));
 document.getElementById('selDelete').addEventListener('click', () => deleteItem(selected));
 document.getElementById('selDuplicate').addEventListener('click', () => {
   const item = placed[selected];
@@ -2560,6 +3147,7 @@ document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight') item.x += step;
     if (e.key === 'ArrowUp') item.y -= step;
     if (e.key === 'ArrowDown') item.y += step;
+    settleItem(item);
     itemChanged(selected);
     e.preventDefault();
   }
@@ -2574,9 +3162,9 @@ FURNITURE.forEach(f => {
   el.innerHTML = `<span class="furn-emoji">${f.emoji}</span><span>${f.label}</span>`;
   el.draggable = true;
   el.title = 'Drag onto the plan, or click to add';
-  el.addEventListener('dragstart', () => { draggingFurn = {...f}; });
+  el.addEventListener('dragstart', () => { draggingFurn = {...f, shape: f.shape && {...f.shape}}; });
   // Click adds to the room centre — the only way in while the 3D view is showing.
-  el.addEventListener('click', () => addItem({...f, zHeight: null}));
+  el.addEventListener('click', () => addItem({...f, shape: f.shape && {...f.shape}}));
   furnList.appendChild(el);
 });
 
@@ -2587,6 +3175,8 @@ function addItem(props) {
   const item = {rot: 0, color: '#888780', emoji: '🖼', ...props};
   if (!item.zHeight) delete item.zHeight;
   item.x = cx - item.w * SCALE / 2; item.y = cy - item.h * SCALE / 2;
+  applyKindDefaults(item);
+  settleItem(item);
   placed.push(item);
   selected = placed.length - 1;
   updateSelPanel();
@@ -2599,23 +3189,25 @@ function addItem(props) {
 canvas.addEventListener('dragover', e => {
   e.preventDefault();
   if (!draggingFurn) return;
-  const r = canvas.getBoundingClientRect();
-  draggingFurn._x = e.clientX - r.left;
-  draggingFurn._y = e.clientY - r.top;
+  const {mx, my} = canvasPoint(e);
+  draggingFurn._x = mx;
+  draggingFurn._y = my;
   draw2d();
 });
 
 canvas.addEventListener('drop', e => {
   e.preventDefault();
   if (!draggingFurn) return;
-  const r = canvas.getBoundingClientRect();
+  const {mx, my} = canvasPoint(e);
   const {_x, _y, ...f} = draggingFurn;
   placed.push({
     ...f,
-    x: e.clientX - r.left - f.w * SCALE / 2,
-    y: e.clientY - r.top  - f.h * SCALE / 2,
+    x: mx - f.w * SCALE / 2,
+    y: my - f.h * SCALE / 2,
     rot: 0
   });
+  applyKindDefaults(placed[placed.length - 1]);
+  settleItem(placed[placed.length - 1]);
   draggingFurn = null;
   select(placed.length - 1);
 });
@@ -2637,7 +3229,8 @@ function itemHit(it, mx, my) {
 }
 
 function itemIndexAt(mx, my) {
-  for (let i = placed.length - 1; i >= 0; i--) if (itemHit(placed[i], mx, my)) return i;
+  const order = drawOrder();
+  for (let k = order.length - 1; k >= 0; k--) if (itemHit(placed[order[k]], mx, my)) return order[k];
   return -1;
 }
 
@@ -2648,10 +3241,19 @@ function onHandle(mx, my) {
   return Math.hypot(mx - h.x, my - h.y) <= 10;
 }
 
-canvas.addEventListener('mousedown', e => {
+// Pointer events: mouse, touch and pen alike. On touch, a quick second tap
+// is the double-click (rotate 90°, open a wall), and a long press doesn't
+// delete (a right-click does).
+let lastPointerType = 'mouse', lastTap = null;
+canvas.addEventListener('pointerdown', e => {
+  lastPointerType = e.pointerType;
   if (e.button !== 0) return; // right-click is handled by contextmenu
-  const r = canvas.getBoundingClientRect();
-  const mx = e.clientX - r.left, my = e.clientY - r.top;
+  const {mx, my} = canvasPoint(e);
+  if (e.pointerType === 'touch') {
+    const now = performance.now();
+    if (lastTap && now - lastTap.t < 350 && Math.hypot(mx - lastTap.x, my - lastTap.y) < 30) { lastTap = null; draggingPlaced = null; doubleClickAt(mx, my); return; }
+    lastTap = {t: now, x: mx, y: my};
+  }
   if (elevWall != null) { elevMouseDown(mx, my); return; }
   if (drawingItemShape) { itemShapePts.push({x: mx, y: my}); draw2d(); return; }
   if (shape === 'custom' && drawing) {
@@ -2675,10 +3277,9 @@ canvas.addEventListener('mousedown', e => {
   select(i);
 });
 
-window.addEventListener('mousemove', e => {
+window.addEventListener('pointermove', e => {
   if (view !== '2d') return;
-  const r = canvas.getBoundingClientRect();
-  const mx = e.clientX - r.left, my = e.clientY - r.top;
+  const {mx, my} = canvasPoint(e);
   if (rotating2d && placed[selected]) {
     const h = handlePos(placed[selected]);
     // Free rotation; hold Shift to snap to 15° steps
@@ -2689,6 +3290,7 @@ window.addEventListener('mousemove', e => {
   if (draggingPlaced != null) {
     placed[draggingPlaced].x = mx - dragOff.x;
     placed[draggingPlaced].y = my - dragOff.y;
+    settleItem(placed[draggingPlaced]);
     draw2d();
     return;
   }
@@ -2712,37 +3314,39 @@ window.addEventListener('mousemove', e => {
   }
 });
 
-window.addEventListener('mouseup', e => {
+const pointerUp2d = e => {
   if (rotating2d) { rotating2d = false; draw2d(); }
   draggingPlaced = null;
   if (roomEdit) { roomEdit = null; redraw(); checkpoint(); }
   if (elevDrag) { elevDrag = null; draw2d(); checkpoint(); }
   if (drawDrag && shape === 'custom' && drawing) {
     // A drag of more than a few pixels drew a wall: its end is here.
-    const r = canvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+    const {mx, my} = canvasPoint(e);
     if (Math.hypot(mx - drawDrag.x, my - drawDrag.y) > 6) addDrawPoint(snapDrawPoint(mx, my, e.altKey));
   }
   drawDrag = null;
-});
+};
+window.addEventListener('pointerup', pointerUp2d);
+window.addEventListener('pointercancel', pointerUp2d);
 
-canvas.addEventListener('dblclick', e => {
+function doubleClickAt(mx, my) {
   if (shape === 'custom' && drawing) { finishDrawing(); return; }
   if (elevWall != null) return;
-  const r = canvas.getBoundingClientRect();
   // Double-click a wall (not furniture): its elevation, for height, windows and doors.
-  const wh = roomHitAt(e.clientX - r.left, e.clientY - r.top);
-  if (wh && (wh.type === 'wall' || wh.type === 'curve') && itemIndexAt(e.clientX - r.left, e.clientY - r.top) < 0) { openElevation(wh.i); return; }
-  const i = itemIndexAt(e.clientX - r.left, e.clientY - r.top);
+  const wh = roomHitAt(mx, my);
+  if (wh && (wh.type === 'wall' || wh.type === 'curve') && itemIndexAt(mx, my) < 0) { openElevation(wh.i); return; }
+  const i = itemIndexAt(mx, my);
   if (i >= 0) { select(i); rotateSelected(90); }
-});
+}
+canvas.addEventListener('dblclick', e => { if (lastPointerType !== 'touch') { const {mx, my} = canvasPoint(e); doubleClickAt(mx, my); } });
 
 canvas.addEventListener('contextmenu', e => {
   e.preventDefault();
-  if (elevWall != null) return;
+  if (elevWall != null || lastPointerType === 'touch') return;
   if (drawingItemShape) { finishItemFootprint(); return; }
   if (shape === 'custom' && drawing) { finishDrawing(); return; }
-  const r = canvas.getBoundingClientRect();
-  deleteItem(itemIndexAt(e.clientX - r.left, e.clientY - r.top));
+  const {mx, my} = canvasPoint(e);
+  deleteItem(itemIndexAt(mx, my));
 });
 
 // ── Room outline: drawing, wall lengths, reshaping, undo ─────────────────────
@@ -2931,8 +3535,9 @@ function canvasNumberInput(x, y, value, apply, {min = '0.1', title = ''} = {}) {
   const input = document.createElement('input');
   input.type = 'number'; input.step = '0.01'; input.min = min; input.className = 'wall-len-input'; input.title = title;
   input.value = value;
-  input.style.left = (canvas.offsetLeft + x) + 'px';
-  input.style.top = (canvas.offsetTop + y) + 'px';
+  const k = canvas.clientWidth / canvas.width || 1;
+  input.style.left = (canvas.offsetLeft + x * k) + 'px';
+  input.style.top = (canvas.offsetTop + y * k) + 'px';
   canvas.parentElement.appendChild(input);
   input.focus(); input.select();
   let done = false;
@@ -3010,6 +3615,7 @@ function drawRoomOverlay() {
       const text = (arc.len / SCALE).toFixed(2) + ' m', tw = ctx.measureText(text).width + 10;
       const off = 12 + Math.abs(nrm.x) * tw / 2 + Math.abs(nrm.y) * 17 / 2;
       label(text, mid.x + nrm.x * off, mid.y + nrm.y * off, i, hot && !bending);
+      if (exporting) return;
       // the ◆ that bends the wall; while bending, how far it bows and the radius
       const curveHot = bending || roomHover && roomHover.type === 'curve' && roomHover.i === i;
       ctx.save();
@@ -3022,7 +3628,7 @@ function drawRoomOverlay() {
         label(s ? `curve ${s > 0 ? '+' : ''}${s.toFixed(2)} m · radius ${(arc.R / SCALE).toFixed(2)} m` : 'straight', mid.x - nrm.x * 22, mid.y - nrm.y * 22, null, true);
       }
     });
-    pts.forEach((p, i) => {
+    if (!exporting) pts.forEach((p, i) => {
       const hot = roomHover && roomHover.type === 'vertex' && roomHover.i === i || roomEdit && roomEdit.type === 'vertex' && roomEdit.i === i;
       ctx.fillStyle = hot ? '#4a7fe8' : '#fff'; ctx.strokeStyle = '#4a7fe8'; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.rect(p.x - 4, p.y - 4, 8, 8); ctx.fill(); ctx.stroke();
@@ -3138,13 +3744,13 @@ function openElevation(i) {
   select(-1);
   if (view !== '2d') document.getElementById('btn2d').click();
   document.getElementById('elevBar').style.display = 'flex';
-  toolbarHint.textContent = 'Drag the top of the wall to set its height (each end separately for a sloping wall) · Add windows and doors, drag to move, drag their edges to resize · Delete removes the selected one';
+  toolbarHint.title = toolbarHint.textContent = 'Drag the top of the wall to set its height (each end separately for a sloping wall) · Add windows and doors, drag to move, drag their edges to resize · Delete removes the selected one';
   draw2d();
 }
 function closeElevation() {
   elevWall = null; elevSel = null; elevDrag = null;
   document.getElementById('elevBar').style.display = 'none';
-  toolbarHint.textContent = HINT_2D;
+  toolbarHint.title = toolbarHint.textContent = HINT_2D;
   draw2d();
 }
 
@@ -3400,12 +4006,12 @@ document.getElementById('elevCurve').addEventListener('input', e => {
   draw2d();
 }));
 
-// Undo / redo: snapshots of the whole layout (room, style, furniture), taken
+// Undo / redo: snapshots of the whole home (rooms, style, furniture), taken
 // once things settle (checked twice a second, never mid-drag) and before an undo.
 let undoStack = [], histPos = -1, pointerDown = false;
 function checkpoint() {
   if (drawing || roomEdit || elevDrag || draggingPlaced != null || rotating2d) return;
-  const s = layoutToJson();
+  const s = homeToJson();
   if (s === undoStack[histPos]) return;
   undoStack = undoStack.slice(0, histPos + 1);
   undoStack.push(s);
@@ -3414,8 +4020,8 @@ function checkpoint() {
 }
 function restoreSnapshot(pos) {
   histPos = pos;
-  applyLayout(JSON.parse(undoStack[pos]));
-  undoStack[pos] = layoutToJson();       // (same layout, as this build writes it)
+  applyHome(JSON.parse(undoStack[pos]));
+  undoStack[pos] = homeToJson();         // (same home, as this build writes it)
   updateRoomHint();
 }
 function undo() {
@@ -3429,8 +4035,9 @@ function undo() {
   if (histPos > 0) restoreSnapshot(histPos - 1);
 }
 function redo() { if (histPos < undoStack.length - 1) restoreSnapshot(histPos + 1); }
-window.addEventListener('mousedown', () => { pointerDown = true; }, true);
-window.addEventListener('mouseup', () => { pointerDown = false; }, true);
+window.addEventListener('pointerdown', () => { pointerDown = true; }, true);
+window.addEventListener('pointerup', () => { pointerDown = false; }, true);
+window.addEventListener('pointercancel', () => { pointerDown = false; }, true);
 setInterval(() => { if (!pointerDown) checkpoint(); }, 500);
 
 // Keys: undo / redo anywhere but a text box; while drawing, typed lengths,
@@ -3514,7 +4121,7 @@ const autoRotateBtn = document.getElementById('autoRotateBtn');
 const toolbarHint = document.getElementById('toolbarHint');
 const HINT_2D = 'Drag to move · Drag ↻ handle to rotate (Shift snaps 15°) · Double-click +90° · Right-click deletes';
 const HINT_3D = 'Drag furniture to move · Shift+drag to rotate · Drag empty space to orbit · Scroll to zoom';
-toolbarHint.textContent = HINT_2D;
+toolbarHint.title = toolbarHint.textContent = HINT_2D;
 
 document.getElementById('btn2d').addEventListener('click', () => {
   if (elevWall != null) closeElevation();
@@ -3522,7 +4129,7 @@ document.getElementById('btn2d').addEventListener('click', () => {
   document.getElementById('btn2d').classList.add('active');
   document.getElementById('btn3d').classList.remove('active');
   autoRotateBtn.style.display = 'none';
-  toolbarHint.textContent = HINT_2D;
+  toolbarHint.title = toolbarHint.textContent = HINT_2D;
   draw2d();
 });
 
@@ -3532,7 +4139,7 @@ document.getElementById('btn3d').addEventListener('click', () => {
   document.getElementById('btn2d').classList.remove('active');
   document.getElementById('btn3d').classList.add('active');
   autoRotateBtn.style.display = 'inline-block';
-  toolbarHint.textContent = HINT_3D;
+  toolbarHint.title = toolbarHint.textContent = HINT_3D;
   diag('view 3d', {items: placed.map(it => ({label: it.label.slice(0, 30), model: it.modelUrl ? (modelCache[it.modelUrl] || {}).status : null, img: it.imgUrl ? (imgCache[it.imgUrl] || {}).status : null}))});
   init3d();
 });
@@ -3875,7 +4482,7 @@ async function generateFromPage(url) {
       if (p.width == null) p.width = Math.max(...lay.map(m => m.x + m.w));
       if (p.depth == null) p.depth = Math.max(...lay.map(m => m.z + m.d));
     }
-    const shape = p.model ? null : modules ? {kind: 'modular'} : inferBeanBagShape(p) || inferSofaShape(p) || inferBedShape(p) || inferChairShape(p) || inferFurnitureShape(p);
+    const shape = p.model ? null : modules ? {kind: 'modular'} : inferDecorShape(p) || inferBeanBagShape(p) || inferSofaShape(p) || inferBedShape(p) || inferChairShape(p) || inferFurnitureShape(p);
     // Width and depth swapped on the page (Life Interiors lists the Jack
     // 3-seater sofa as "89W x 178D"): sofas, cabinets, shelves, tables and
     // benches are never much deeper than wide, unless they have a chaise.
@@ -3919,7 +4526,10 @@ async function generateFromPage(url) {
         names.join(' + ') + (arms ? ` + ${arms} armrest${arms > 1 ? 's' : ''}` : '') + '.', 'ok');
       return;
     }
-    const shapeName = item.shape && item.shape.kind === 'bed' ? 'bed frame with a mattress' :
+    const decorNames = {rug: 'rug', curtain: 'curtain', tv: 'wall-mounted TV', art: 'framed picture on the wall', wallshelf: 'wall shelf'};
+    const shapeName = item.shape && decorNames[item.shape.kind] ? decorNames[item.shape.kind] :
+      item.shape && item.shape.kind === 'lamp' ? `${item.shape.style} lamp` :
+      item.shape && item.shape.kind === 'bed' ? 'bed frame with a mattress' :
       item.shape && item.shape.kind === 'beanbag' ? (item.shape.arms ? 'bean bag chair with armrests' : 'bean bag') :
       item.shape && item.shape.kind === 'table' ? (item.shape.top === 'round' ? 'round table' : 'table') :
       item.shape && item.shape.kind === 'cabinet' ? (item.shape.front === 'drawers' ? 'chest of drawers' : 'cabinet with doors') :
@@ -4165,13 +4775,18 @@ pasteBox.addEventListener('paste', e => {
 });
 
 // ── Save / load ───────────────────────────────────────────────────────────────
-// A layout stores positions in metres from the canvas centre (the room is
-// centred there), so it restores correctly at any window size. It's autosaved
-// to localStorage (shared by every copy of this file opened via file://) and
-// can also be downloaded / opened as a .json file.
+// A layout (one room) stores positions in metres from the canvas centre (the
+// room is centred there), so it restores correctly at any window size. A
+// home is several rooms: {app, version: 2, rooms: [{name, layout}], current,
+// budget}; the room on screen lives in the usual globals (placed, shape,
+// walls…), the others as their saved layouts in rooms[i].data. The home is
+// autosaved to localStorage (shared by every copy of this file opened via
+// file://), and is what Save file, Open file and share links carry. A single
+// room's layout (older files and links) still opens, as a one-room home.
 
 const LAYOUT_KEY = 'rp-layout';
 let lastSavedLayout = null;
+let rooms = [{name: 'Room 1', data: null}], curRoom = 0;
 
 function layoutToJson() {
   const cx = canvas.width / 2, cy = canvas.height / 2;
@@ -4186,9 +4801,36 @@ function layoutToJson() {
     shape, roomW, roomH, roomStyle,
     customPts: shape === 'custom' && !drawing ? customPts.map(p => toM(p.x, p.y)) : null,
     walls: walls.map(w => ({hStart: w.hStart, hEnd: w.hEnd, bulge: w.bulge || 0, openings: w.openings.map(o => ({...o}))})),
-    budget: budget.amount > 0 ? {...budget} : null,
     items,
   });
+}
+
+function homeToJson() {
+  const here = JSON.parse(layoutToJson());
+  return JSON.stringify({
+    app: 'room-planner', version: 2,
+    budget: budget.amount > 0 ? {...budget} : null,
+    current: curRoom,
+    rooms: rooms.map((r, i) => ({name: r.name, layout: i === curRoom ? here : r.data})),
+  });
+}
+
+// A home, or a single room's layout.
+function applyHome(data) {
+  const before = curRoom;
+  if (data && data.app === 'room-planner' && Array.isArray(data.rooms) && data.rooms.length) {
+    if (!data.rooms.every(r => r && r.layout && Array.isArray(r.layout.items))) throw new Error('not a Room Planner layout');
+    rooms = data.rooms.map((r, i) => ({name: String(r.name || `Room ${i + 1}`).slice(0, 40), data: r.layout}));
+    curRoom = Math.min(Math.max(0, data.current | 0), rooms.length - 1);
+    budget = data.budget && data.budget.amount > 0 ? {amount: +data.budget.amount, currency: data.budget.currency || null} : {amount: null, currency: null};
+    applyLayout(rooms[curRoom].data);
+  } else {
+    budget = {amount: null, currency: null};
+    applyLayout(data);            // (a single-room layout may carry its own budget)
+    rooms = [{name: 'Room 1', data: null}]; curRoom = 0;
+  }
+  if (curRoom !== before) orbitRadius = null;      // (a different room: frame it afresh in 3D)
+  renderRoomTabs();
 }
 
 function applyLayout(data) {
@@ -4205,13 +4847,13 @@ function applyLayout(data) {
   if (elevWall != null) { elevSel = null; if (elevWall >= getRoomPts().length) closeElevation(); }
   syncStyleControls();
   placed = data.items.map(it => ({...it, ...toPx(it)}));
-  budget = data.budget && data.budget.amount > 0 ? {amount: +data.budget.amount, currency: data.budget.currency || null} : {amount: null, currency: null};
+  if (data.budget && data.budget.amount > 0) budget = {amount: +data.budget.amount, currency: data.budget.currency || null};
   select(-1);
   redraw();
 }
 
 function autosave() {
-  const json = layoutToJson();
+  const json = homeToJson();
   if (json === lastSavedLayout) return;
   try { localStorage.setItem(LAYOUT_KEY, json); lastSavedLayout = json; }
   catch (err) { diag('autosave failed', String(err).slice(0, 200)); }
@@ -4222,16 +4864,16 @@ function restoreLayout() {
   try { json = localStorage.getItem(LAYOUT_KEY); } catch (err) {}
   if (!json) return;
   try {
-    applyLayout(JSON.parse(json));
+    applyHome(JSON.parse(json));
     lastSavedLayout = json;
-    diag('layout restored', {items: placed.length, shape});
+    diag('layout restored', {items: placed.length, shape, rooms: rooms.length});
   } catch (err) { diag('layout restore failed', String(err).slice(0, 200)); }
 }
 
 document.getElementById('saveFileBtn').addEventListener('click', () => {
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([layoutToJson()], {type: 'application/json'}));
-  a.download = 'room-plan-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.href = URL.createObjectURL(new Blob([homeToJson()], {type: 'application/json'}));
+  a.download = 'room-plan-' + new Date().toLocaleDateString('en-CA') + '.json';
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 });
@@ -4243,7 +4885,9 @@ openFileInput.addEventListener('change', async () => {
   openFileInput.value = '';
   if (!file) return;
   try {
-    applyLayout(JSON.parse(await file.text()));
+    checkpoint();
+    applyHome(JSON.parse(await file.text()));
+    checkpoint();
     autosave();
   } catch (err) {
     alert('Couldn\'t open "' + file.name + '": ' + (err instanceof SyntaxError ? 'the file isn\'t valid JSON' : err.message) + '.');
@@ -4266,7 +4910,7 @@ const REGION_CURRENCY = {AU: 'AUD', US: 'USD', MY: 'MYR', SG: 'SGD', NZ: 'NZD', 
 function mainCurrency() {
   if (budget.currency) return budget.currency;
   const n = {};
-  placed.forEach(it => { if (it.price > 0 && it.currency) n[it.currency] = (n[it.currency] || 0) + 1; });
+  allRoomItems().forEach(({it}) => { if (it.price > 0 && it.currency) n[it.currency] = (n[it.currency] || 0) + 1; });
   const top = Object.keys(n).sort((a, b) => n[b] - n[a])[0];
   if (top) return top;
   const region = (navigator.language || '').split('-')[1];
@@ -4299,11 +4943,18 @@ function setItemPrice(item, value, currency) {
 }
 const hasPrice = it => it.price > 0 || !!it.inSet;
 
-// Totals per currency, the main one first.
+// Everything in the home: [{it, room}], the room on screen from placed.
+function allRoomItems() {
+  return rooms.flatMap((r, i) => (i === curRoom ? placed : (r.data && r.data.items) || []).map(it => ({it, room: i})));
+}
+
+// Totals per currency over the whole home, the main one first; this room's
+// total in the main currency; this room's items without a price.
 function priceTotals() {
-  const main = mainCurrency(), sums = {[main]: 0};
-  placed.forEach(it => { if (it.price > 0) sums[it.currency || main] = (sums[it.currency || main] || 0) + it.price; });
-  return {main, sums, unpriced: placed.filter(it => !hasPrice(it))};
+  const main = mainCurrency(), sums = {[main]: 0}, all = allRoomItems();
+  all.forEach(({it}) => { if (it.price > 0) sums[it.currency || main] = (sums[it.currency || main] || 0) + it.price; });
+  const here = placed.reduce((t, it) => t + (it.price > 0 && (it.currency || main) === main ? it.price : 0), 0);
+  return {main, sums, here, count: all.length, unpriced: placed.filter(it => !hasPrice(it))};
 }
 
 // A rolling-digit counter: each digit is a 0–9 strip slid into place. Slots
@@ -4332,11 +4983,12 @@ function setOdometer(el, text, animate) {
 const budgetBar = document.getElementById('budgetBar');
 let lastBudgetKey = null, lastMainTotal = null, editingBudget = false;
 function refreshBudget() {
-  const {main, sums, unpriced} = priceTotals();
-  const key = JSON.stringify([sums, unpriced.length, placed.length, budget]);
+  const {main, sums, here, count, unpriced} = priceTotals();
+  const key = JSON.stringify([sums, here, count, unpriced.length, placed.length, rooms.length, budget]);
   if (key === lastBudgetKey) return;
   lastBudgetKey = key;
-  budgetBar.hidden = !placed.length && !(budget.amount > 0);
+  budgetBar.hidden = !count && !(budget.amount > 0);
+  document.getElementById('budgetLbl').textContent = rooms.length > 1 ? 'Home total' : 'Total';
   const total = sums[main];
   setOdometer(document.getElementById('budgetTotal'), fmtMoney(total, main), lastMainTotal != null);
   // A price came in or went out: flash the difference over the total.
@@ -4348,7 +5000,8 @@ function refreshBudget() {
   }
   lastMainTotal = total;
   document.getElementById('budgetExtra').textContent = Object.keys(sums).filter(c => c !== main && sums[c] > 0).map(c => '+ ' + fmtMoney(sums[c], c)).join(' ');
-  document.getElementById('budgetCount').textContent = placed.length === 1 ? '1 item' : placed.length + ' items';
+  document.getElementById('budgetCount').textContent = (count === 1 ? '1 item' : count + ' items') +
+    (rooms.length > 1 ? ` in ${rooms.length} rooms · this room ${fmtMoney(here, main)}` : '');
   const miss = document.getElementById('budgetMissing');
   miss.textContent = unpriced.length ? `${unpriced.length} without a price` : '';
   miss.title = unpriced.length ? 'Select the next one without a price, to fill it in' : '';
@@ -4366,6 +5019,7 @@ function refreshBudget() {
 }
 setInterval(refreshBudget, 200);
 
+document.getElementById('fitHead').addEventListener('click', () => { fitOpen = !fitOpen; lastFitKey = null; if (view === '2d') draw2d(); else renderFitBox(fitCheck()); });
 document.getElementById('budgetMissing').addEventListener('click', () => {
   const list = placed.map((it, i) => i).filter(i => !hasPrice(placed[i]));
   if (!list.length) return;
@@ -4399,9 +5053,9 @@ document.getElementById('budgetSet').addEventListener('click', () => {
 const shopDialog = document.getElementById('shopDialog');
 function shoppingLines() {
   const lines = [], byKey = {};
-  placed.forEach(it => {
-    const key = JSON.stringify([it.label, it.pageUrl || null, it.price || null, it.currency || null, !!it.inSet]);
-    if (!byKey[key]) lines.push(byKey[key] = {key, label: it.label || 'Item', pageUrl: it.pageUrl || null, price: it.price > 0 ? it.price : null,
+  allRoomItems().forEach(({it, room}) => {
+    const key = JSON.stringify([room, it.label, it.pageUrl || null, it.price || null, it.currency || null, !!it.inSet]);
+    if (!byKey[key]) lines.push(byKey[key] = {key, room, label: it.label || 'Item', pageUrl: it.pageUrl || null, price: it.price > 0 ? it.price : null,
       currency: it.currency || mainCurrency(), inSet: !!it.inSet, items: [], w: it.w, d: it.h, z: it.zHeight || null, imgUrl: it.imgUrl, modelUrl: it.modelUrl, color: it.color});
     byKey[key].items.push(it);
   });
@@ -4430,7 +5084,14 @@ function renderShoppingList() {
   const table = document.getElementById('shopTable');
   table.innerHTML = '<thead><tr><th></th><th>Item</th><th class="num">Qty</th><th class="num">Price each</th><th class="num">Subtotal</th></tr></thead>';
   const body = document.createElement('tbody');
-  lines.forEach(l => {
+  lines.forEach((l, k) => {
+    if (rooms.length > 1 && (k === 0 || lines[k - 1].room !== l.room)) {
+      const h = document.createElement('tr');
+      h.className = 'shop-room';
+      h.innerHTML = '<td colspan="5"></td>';
+      h.firstChild.textContent = rooms[l.room].name;
+      body.appendChild(h);
+    }
     const tr = document.createElement('tr');
     const td = () => tr.appendChild(document.createElement('td'));
     td().appendChild(shopThumb(l));
@@ -4468,12 +5129,13 @@ function renderShoppingList() {
   Object.keys(sums).filter(c => c === main || sums[c] > 0).forEach(c => {
     const tr = document.createElement('tr');
     tr.innerHTML = '<td></td><td>Total</td><td class="num"></td><td></td><td class="num"></td>';
-    tr.children[2].textContent = placed.length;
+    tr.children[2].textContent = allRoomItems().length;
     tr.children[4].textContent = fmtMoney(sums[c], c, true);
     foot.appendChild(tr);
   });
   table.appendChild(foot);
   if (!lines.length) table.innerHTML = '<tr><td style="color:#999;padding:24px 6px">Nothing in the room yet.</td></tr>';
+  document.querySelector('.shop-head h2').textContent = rooms.length > 1 ? `Shopping list · ${rooms.length} rooms` : 'Shopping list';
   const b = budget.amount > 0 ? budget : null, spent = b ? sums[b.currency || main] || 0 : 0;
   document.getElementById('shopNote').textContent =
     (b ? (spent > b.amount ? `${fmtMoney(spent - b.amount, b.currency || main, true)} over budget. ` : `${fmtMoney(b.amount - spent, b.currency || main, true)} of the budget left. `) : '') +
@@ -4482,18 +5144,19 @@ function renderShoppingList() {
 
 function shoppingCsv() {
   const q = v => { const s = String(v == null ? '' : v); return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; };
-  const rows = [['Item', 'Qty', 'Price each', 'Currency', 'Subtotal', 'Width (m)', 'Depth (m)', 'Height (m)', 'Link']];
+  const rows = [['Item', 'Qty', 'Price each', 'Currency', 'Subtotal', 'Width (m)', 'Depth (m)', 'Height (m)', 'Link', 'Room']];
   shoppingLines().forEach(l => rows.push([l.label + (l.inSet ? ' (price included in the set)' : ''), l.items.length,
     l.price != null ? l.price.toFixed(2) : '', l.currency, l.price != null ? (l.price * l.items.length).toFixed(2) : '',
-    l.w.toFixed(2), l.d.toFixed(2), l.z ? l.z.toFixed(2) : '', l.pageUrl || '']));
-  const {sums} = priceTotals();
-  Object.keys(sums).filter(c => sums[c] > 0).forEach(c => rows.push(['Total', placed.length, '', c, sums[c].toFixed(2), '', '', '', '']));
+    l.w.toFixed(2), l.d.toFixed(2), l.z ? l.z.toFixed(2) : '', l.pageUrl || '', rooms[l.room].name]));
+  const {sums, count} = priceTotals();
+  Object.keys(sums).filter(c => sums[c] > 0).forEach(c => rows.push(['Total', count, '', c, sums[c].toFixed(2), '', '', '', '', '']));
   return '﻿' + rows.map(r => r.map(q).join(',')).join('\r\n');   // BOM: Excel then reads non-English names right
 }
 
 function shoppingText() {
   const {main, sums} = priceTotals();
-  const out = shoppingLines().map(l => `${l.items.length} × ${l.label}` +
+  const heading = (l, k, all) => rooms.length > 1 && (k === 0 || all[k - 1].room !== l.room) ? `${k ? '\n' : ''}== ${rooms[l.room].name} ==\n` : '';
+  const out = shoppingLines().map((l, k, all) => heading(l, k, all) + `${l.items.length} × ${l.label}` +
     (l.price != null ? ` — ${fmtMoney(l.price, l.currency, true)}${l.items.length > 1 ? ` each = ${fmtMoney(l.price * l.items.length, l.currency, true)}` : ''}` : l.inSet ? ' — included in the set' : ' — no price yet') +
     `\n   ${sizeText(l)}${l.pageUrl ? '\n   ' + l.pageUrl : ''}`);
   out.push('', 'Total: ' + Object.keys(sums).filter(c => c === main || sums[c] > 0).map(c => fmtMoney(sums[c], c, true)).join(' + '));
@@ -4524,33 +5187,39 @@ shopDialog.addEventListener('click', e => { if (e.target === shopDialog) shopDia
 document.getElementById('shopCsv').addEventListener('click', () => {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([shoppingCsv()], {type: 'text/csv;charset=utf-8'}));
-  a.download = 'shopping-list-' + new Date().toISOString().slice(0, 10) + '.csv';
+  a.download = 'shopping-list-' + new Date().toLocaleDateString('en-CA') + '.csv';
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 });
 document.getElementById('shopCopy').addEventListener('click', async e => {
   flashButton(e.target, (await copyText(shoppingText())) ? 'Copied ✓' : 'Couldn\'t copy');
 });
-document.getElementById('shopPrint').addEventListener('click', () => {
+// A printable page (the browser's print dialog also saves it as a PDF).
+const escHtml = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'})[c]);
+function printPage(title, body) {
   const w = window.open('', '_blank');
   if (!w) { alert('The browser blocked the print window — allow pop-ups for this page and try again.'); return; }
-  const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'})[c]);
-  const {main, sums} = priceTotals();
-  const rows = shoppingLines().map(l => `<tr><td>${esc(l.label)}<div class="m">${esc(sizeText(l))}${l.pageUrl ? ' · ' + esc(l.pageUrl) : ''}</div></td>` +
-    `<td class="n">${l.items.length}</td><td class="n">${l.price != null ? esc(fmtMoney(l.price, l.currency, true)) : l.inSet ? 'in set' : '—'}</td>` +
-    `<td class="n">${l.price != null ? esc(fmtMoney(l.price * l.items.length, l.currency, true)) : ''}</td></tr>`).join('');
-  const totals = Object.keys(sums).filter(c => c === main || sums[c] > 0).map(c => `<tr class="t"><td>Total</td><td class="n">${placed.length}</td><td></td><td class="n">${esc(fmtMoney(sums[c], c, true))}</td></tr>`).join('');
-  w.document.write(`<!doctype html><meta charset="utf-8"><title>Shopping list</title><style>
-    body{font:13px system-ui,sans-serif;margin:32px;color:#111} h1{font-size:20px;margin:0 0 4px} p{color:#777;margin:0 0 16px}
+  w.document.write(`<!doctype html><meta charset="utf-8"><title>${escHtml(title)}</title><style>
+    body{font:13px system-ui,sans-serif;margin:32px;color:#111} h1{font-size:20px;margin:0 0 4px} h2{font-size:15px;margin:22px 0 8px} p{color:#777;margin:0 0 16px}
     table{width:100%;border-collapse:collapse} th{text-align:left;font-size:11px;color:#777;border-bottom:2px solid #333;padding:6px}
     td{padding:8px 6px;border-bottom:1px solid #ddd;vertical-align:top} .n{text-align:right;white-space:nowrap} .m{font-size:11px;color:#777;word-break:break-all}
-    .t td{font-weight:600;border-bottom:none;font-size:14px}</style>
-    <h1>Shopping list</h1><p>${esc(new Date().toLocaleDateString())}${budget.amount > 0 ? ' · Budget ' + esc(fmtMoney(budget.amount, budget.currency || main, true)) : ''}</p>
-    <table><tr><th>Item</th><th class="n">Qty</th><th class="n">Each</th><th class="n">Subtotal</th></tr>${rows}${totals}</table>`);
+    .t td{font-weight:600;border-bottom:none;font-size:14px} img{display:block;max-width:100%;max-height:520px;border:1px solid #ddd;border-radius:6px;page-break-inside:avoid}</style>
+    <h1>${escHtml(title)}</h1><p>${escHtml(new Date().toLocaleDateString())}${budget.amount > 0 ? ' · Budget ' + escHtml(fmtMoney(budget.amount, budget.currency || mainCurrency(), true)) : ''}</p>${body}`);
   w.document.close();
   w.focus();
-  w.print();
-});
+  // (after the pictures have loaded)
+  const imgs = [...w.document.images];
+  Promise.all(imgs.map(i => i.complete ? null : new Promise(r => { i.onload = i.onerror = r; }))).then(() => w.print());
+}
+function shoppingTableHtml() {
+  const esc = escHtml, {main, sums} = priceTotals();
+  const rows = shoppingLines().map((l, k, all) => (rooms.length > 1 && (k === 0 || all[k - 1].room !== l.room) ? `<tr><td colspan="4" style="font-weight:600;padding-top:16px;border-bottom:1px solid #999">${esc(rooms[l.room].name)}</td></tr>` : '') + `<tr><td>${esc(l.label)}<div class="m">${esc(sizeText(l))}${l.pageUrl ? ' · ' + esc(l.pageUrl) : ''}</div></td>` +
+    `<td class="n">${l.items.length}</td><td class="n">${l.price != null ? esc(fmtMoney(l.price, l.currency, true)) : l.inSet ? 'in set' : '—'}</td>` +
+    `<td class="n">${l.price != null ? esc(fmtMoney(l.price * l.items.length, l.currency, true)) : ''}</td></tr>`).join('');
+  const totals = Object.keys(sums).filter(c => c === main || sums[c] > 0).map(c => `<tr class="t"><td>Total</td><td class="n">${allRoomItems().length}</td><td></td><td class="n">${esc(fmtMoney(sums[c], c, true))}</td></tr>`).join('');
+  return `<table><tr><th>Item</th><th class="n">Qty</th><th class="n">Each</th><th class="n">Subtotal</th></tr>${rows}${totals}</table>`;
+}
+document.getElementById('shopPrint').addEventListener('click', () => printPage('Shopping list', shoppingTableHtml()));
 
 // ── Share links ───────────────────────────────────────────────────────────────
 // The whole layout goes in the link itself (#layout=<deflated JSON,
@@ -4570,10 +5239,10 @@ async function unpackLayout(code) {
 }
 
 async function makeShareLink() {
-  const data = JSON.parse(layoutToJson());
+  const data = JSON.parse(homeToJson());
   // Pictures pasted in as data: URLs would make the link enormous.
   let dropped = 0;
-  data.items.forEach(it => { if (/^data:/.test(it.imgUrl || '')) { it.imgUrl = null; dropped++; } });
+  data.rooms.forEach(r => r.layout.items.forEach(it => { if (/^data:/.test(it.imgUrl || '')) { it.imgUrl = null; dropped++; } }));
   const base = location.protocol === 'file:' ? SITE_URL : location.origin + location.pathname;
   return {url: base + '#layout=' + await packLayout(JSON.stringify(data)), dropped};
 }
@@ -4600,7 +5269,7 @@ document.getElementById('shareCopy').addEventListener('click', async e => {
   flashButton(e.target, (await copyText(document.getElementById('shareUrl').value)) ? 'Copied ✓' : 'Couldn\'t copy');
 });
 document.getElementById('shareClose').addEventListener('click', () => { sharePop.hidden = true; });
-document.addEventListener('mousedown', e => { if (!sharePop.hidden && !sharePop.contains(e.target) && e.target.id !== 'shareBtn') sharePop.hidden = true; });
+document.addEventListener('pointerdown', e => { if (!sharePop.hidden && !sharePop.contains(e.target) && e.target.id !== 'shareBtn') sharePop.hidden = true; });
 
 function toast(text, ms = 6000) {
   const el = document.getElementById('toast');
@@ -4622,24 +5291,282 @@ async function openSharedFromHash() {
     toast('That layout link is incomplete or damaged — ask for it again, or check it was copied in full.', 9000);
     return;
   }
-  if (placed.length && !confirm('Open the shared layout? It replaces the layout you have here (Ctrl+Z brings yours back).')) return;
+  const hadAny = allRoomItems().length || rooms.length > 1;
+  if (hadAny && !confirm('Open the shared layout? It replaces the rooms you have here (Ctrl+Z brings them back).')) return;
+  checkpoint();                                 // (what was here, for Ctrl+Z)
+  try { applyHome(data); } catch (err) { toast('That link isn\'t a Room Planner layout.'); return; }
   checkpoint();
-  try { applyLayout(data); } catch (err) { toast('That link isn\'t a Room Planner layout.'); return; }
   autosave();
-  checkpoint();
   diag('shared layout opened', {items: placed.length, shape});
-  toast(`Opened the shared layout: ${placed.length} item${placed.length === 1 ? '' : 's'}. It's saved in this browser now; your changes don't affect the sender's copy.`);
+  const n = allRoomItems().length;
+  toast(`Opened the shared layout: ${rooms.length > 1 ? rooms.length + ' rooms, ' : ''}${n} item${n === 1 ? '' : 's'}. It's saved in this browser now; your changes don't affect the sender's copy.`);
 }
 window.addEventListener('hashchange', openSharedFromHash);
+
+// ── Rooms: tabs over the plan ─────────────────────────────────────────────────
+// Click a tab to switch rooms, double-click to rename, × to delete; "+ Room"
+// adds an empty one with the same style. Undo covers all of it (its
+// snapshots are the whole home).
+
+function emptyRoom() {
+  return {app: 'room-planner', version: 1, shape: 'rect', roomW: 4, roomH: 3.5, roomStyle: {...roomStyle}, customPts: null, walls: [], items: []};
+}
+function switchRoom(i) {
+  if (i === curRoom || !rooms[i]) return;
+  if (elevWall != null) closeElevation();
+  rooms[curRoom].data = JSON.parse(layoutToJson());
+  curRoom = i;
+  applyLayout(rooms[i].data);
+  orbitRadius = null;
+  renderRoomTabs();
+}
+function addRoom() {
+  rooms[curRoom].data = JSON.parse(layoutToJson());
+  let n = rooms.length + 1;
+  while (rooms.some(r => r.name === `Room ${n}`)) n++;
+  rooms.push({name: `Room ${n}`, data: emptyRoom()});
+  switchRoom(rooms.length - 1);
+  toast('New room added. Set its size on the left, then add furniture.');
+}
+function deleteRoom(i) {
+  if (rooms.length < 2) return;
+  const n = i === curRoom ? placed.length : ((rooms[i].data || {}).items || []).length;
+  if (!confirm(`Delete "${rooms[i].name}"${n ? ` and the ${n} item${n > 1 ? 's' : ''} in it` : ''}? (Ctrl+Z brings it back.)`)) return;
+  checkpoint();
+  if (i !== curRoom) rooms[curRoom].data = JSON.parse(layoutToJson());
+  rooms.splice(i, 1);
+  if (i === curRoom) { curRoom = Math.max(0, i - 1); applyLayout(rooms[curRoom].data); orbitRadius = null; }
+  else if (i < curRoom) curRoom--;
+  renderRoomTabs();
+  checkpoint();
+}
+function renameRoom(i) {
+  const name = prompt('Room name', rooms[i].name);
+  if (name && name.trim()) { rooms[i].name = name.trim().slice(0, 40); renderRoomTabs(); }
+}
+function renderRoomTabs() {
+  const bar = document.getElementById('roomTabs');
+  bar.innerHTML = '';
+  rooms.forEach((r, i) => {
+    const t = document.createElement('div');
+    t.className = 'room-tab' + (i === curRoom ? ' active' : '');
+    t.title = i === curRoom ? 'Double-click to rename' : 'Switch to this room';
+    const label = document.createElement('span');
+    label.textContent = r.name;
+    t.appendChild(label);
+    if (rooms.length > 1) {
+      const x = document.createElement('span');
+      x.className = 'x'; x.textContent = '×'; x.title = 'Delete this room';
+      x.addEventListener('click', e => { e.stopPropagation(); deleteRoom(i); });
+      t.appendChild(x);
+    }
+    t.addEventListener('click', () => switchRoom(i));
+    t.addEventListener('dblclick', () => renameRoom(i));
+    bar.appendChild(t);
+  });
+  const add = document.createElement('div');
+  add.className = 'room-tab add'; add.textContent = '+ Room'; add.title = 'Add another room to this home';
+  add.addEventListener('click', addRoom);
+  bar.appendChild(add);
+}
+
+// ── Export: pictures of the plan and the 3D view, a printable page ────────────
+
+function downloadUrl(url, name) {
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  a.click();
+}
+const today = () => new Date().toLocaleDateString('en-CA');   // YYYY-MM-DD, local date
+
+// The plan drawn again at 2× into an offscreen canvas without the editing
+// handles or selection, cropped to the room and furniture, with a title and
+// a 1 m scale bar. Product photos that can't be read back (no CORS) would
+// lock the picture, so if that happens it's drawn again without them.
+function planImage() {
+  const saved = {view, selected, elevWall, ctx};
+  const R = 2, off = document.createElement('canvas');
+  off.width = canvas.width * R; off.height = canvas.height * R;
+  const shoot = mode => {
+    exporting = mode; view = '2d'; selected = -1; elevWall = null;
+    ctx = off.getContext('2d');
+    ctx.setTransform(R, 0, 0, R, 0, 0);
+    draw2d();
+    // bounds: the room, the furniture and the wall-length labels around it
+    const pts = [...getRoomOutline(), ...placed.flatMap(it => itemPoly(it))];
+    const x0 = Math.max(0, Math.min(...pts.map(p => p.x)) - 50), y0 = Math.max(0, Math.min(...pts.map(p => p.y)) - 40);
+    const x1 = Math.min(canvas.width, Math.max(...pts.map(p => p.x)) + 50), y1 = Math.min(canvas.height, Math.max(...pts.map(p => p.y)) + 40);
+    const head = 44, foot = 36, out = document.createElement('canvas');
+    out.width = (x1 - x0) * R; out.height = (y1 - y0 + head + foot) * R;
+    const g = out.getContext('2d');
+    g.fillStyle = '#fff'; g.fillRect(0, 0, out.width, out.height);
+    g.drawImage(off, x0 * R, y0 * R, (x1 - x0) * R, (y1 - y0) * R, 0, head * R, (x1 - x0) * R, (y1 - y0) * R);
+    g.scale(R, R);
+    const bb = getRoomBBox();
+    g.fillStyle = '#1a1a1a'; g.font = '600 15px system-ui'; g.textBaseline = 'middle';
+    g.fillText(roomName(), 12, 16);
+    g.fillStyle = '#777'; g.font = '11px system-ui';
+    g.fillText(`${((bb.x2 - bb.x) / SCALE).toFixed(2)} × ${((bb.y2 - bb.y) / SCALE).toFixed(2)} m · ${placed.length} item${placed.length === 1 ? '' : 's'} · ${new Date().toLocaleDateString()}`, 12, 33);
+    const sy = head + (y1 - y0) + foot / 2;
+    g.strokeStyle = '#333'; g.lineWidth = 2;
+    g.beginPath(); g.moveTo(12, sy); g.lineTo(12 + SCALE, sy); g.moveTo(12, sy - 4); g.lineTo(12, sy + 4); g.moveTo(12 + SCALE, sy - 4); g.lineTo(12 + SCALE, sy + 4); g.stroke();
+    g.fillStyle = '#333'; g.fillText('1 m', 18 + SCALE, sy);
+    return out.toDataURL('image/png');          // throws if a photo locked the canvas
+  };
+  try {
+    try { return shoot(true); }
+    catch (err) { diag('plan picture without photos', String(err).slice(0, 120)); return shoot('safe'); }
+  } finally {
+    exporting = false; ctx = saved.ctx; view = saved.view; selected = saved.selected; elevWall = saved.elevWall;
+    if (view === '2d') draw2d();
+  }
+}
+
+// What the 3D view shows (switching to it for a moment if needed), without
+// the orange selection pad.
+async function view3dImage() {
+  const was = view;
+  if (view !== '3d') { document.getElementById('btn3d').click(); await new Promise(r => setTimeout(r, 700)); }
+  const pads = itemGroups.map(g => g.getObjectByName('sel')).filter(Boolean), vis = pads.map(p => p.visible);
+  pads.forEach(p => { p.visible = false; });
+  renderer.render(scene, camera);
+  const url = renderer.domElement.toDataURL('image/png');
+  pads.forEach((p, k) => { p.visible = vis[k]; });
+  if (was !== '3d') document.getElementById('btn2d').click();
+  return url;
+}
+
+const exportPop = document.getElementById('exportPop');
+document.getElementById('exportBtn').addEventListener('click', () => { exportPop.hidden = !exportPop.hidden; });
+document.addEventListener('pointerdown', e => { if (!exportPop.hidden && !exportPop.contains(e.target) && e.target.id !== 'exportBtn') exportPop.hidden = true; });
+document.getElementById('exportPlan').addEventListener('click', () => {
+  exportPop.hidden = true;
+  downloadUrl(planImage(), `room-plan-${today()}.png`);
+});
+document.getElementById('export3d').addEventListener('click', async () => {
+  exportPop.hidden = true;
+  downloadUrl(await view3dImage(), `room-3d-${today()}.png`);
+});
+document.getElementById('exportPrint').addEventListener('click', async () => {
+  exportPop.hidden = true;
+  const plan = planImage(), view3d = await view3dImage();
+  printPage(roomName(), `<img src="${plan}" alt="Plan"><h2>3D view</h2><img src="${view3d}" alt="3D view"><h2>Shopping list</h2>${shoppingTableHtml()}`);
+});
+function roomName() { return rooms.length > 1 ? rooms[curRoom].name : 'Room plan'; }
+
+// ── Help: the welcome card and example rooms ──────────────────────────────────
+// Shown on a first visit (nothing saved, not opening a share link) and from
+// "? Help". Example rooms are laid out in metres from the room's top-left
+// corner: [furniture id, centre x, centre y, turn in degrees, changes].
+
+const EXAMPLES = {
+  living: {w: 5, h: 4.2, preset: 'scandi',
+    openings: {3: [{type: 'door', x: 0.25, w: 0.82, y: 0, h: 2.04}], 1: [{type: 'window', x: 1.3, w: 1.8, y: 0.8, h: 1.3}]},
+    items: [
+      ['rug', 2.5, 2.7, 0, {w: 2.4, h: 1.7}],
+      ['sofa', 2.5, 3.75, 180],
+      ['table', 2.5, 2.45, 0, {label: 'Coffee table', w: 1.1, h: 0.6, zHeight: 0.42, color: '#8a6a4a', shape: {kind: 'table', top: 'rect', base: 'legs'}}],
+      ['tv', 2.5, 0.2, 0, {label: 'TV unit', h: 0.4, zHeight: 0.5, color: '#b08a5e', shape: {kind: 'cabinet', front: 'doors'}}],
+      ['walltv', 2.5, 0.03, 0],
+      ['couch', 0.5, 2.3, 270, {zHeight: 0.82, shape: {kind: 'chair', style: 'armchair', base: 'legs'}}],
+      ['table', 3.85, 3.85, 0, {label: 'Side table', w: 0.45, h: 0.45, zHeight: 0.55, color: '#8a6a4a', shape: {kind: 'table', top: 'round', base: 'pedestal'}}],
+      ['tablelamp', 3.85, 3.85, 0],
+      ['floorlamp', 0.3, 0.3, 0],
+      ['plant', 4.6, 0.35, 0, {zHeight: 1.1}],
+      ['curtains', 4.95, 2.2, 0, {w: 2.2}],
+    ]},
+  bedroom: {w: 4, h: 3.6, preset: 'warm',
+    openings: {1: [{type: 'door', x: 2.5, w: 0.82, y: 0, h: 2.04}], 3: [{type: 'window', x: 1.2, w: 1.4, y: 0.9, h: 1.2}]},
+    items: [
+      ['rug', 2.0, 2.3, 0, {w: 2.0, h: 1.4, color: '#c9b8a6'}],
+      ['bed', 2.0, 1.03, 0, {label: 'Queen bed', w: 1.6, h: 2.05}],
+      ['wardrobe', 0.7, 3.3, 180, {h: 0.6, zHeight: 2.0, color: '#d8cbb8', shape: {kind: 'cabinet', front: 'doors'}}],
+      ['table', 0.95, 0.25, 0, {label: 'Bedside table', w: 0.45, h: 0.4, zHeight: 0.55, color: '#b08a5e', shape: {kind: 'cabinet', front: 'drawers'}}],
+      ['table', 3.05, 0.25, 0, {label: 'Bedside table', w: 0.45, h: 0.4, zHeight: 0.55, color: '#b08a5e', shape: {kind: 'cabinet', front: 'drawers'}}],
+      ['tablelamp', 0.95, 0.25, 0],
+      ['tablelamp', 3.05, 0.25, 0],
+      ['art', 2.0, 0.02, 0],
+      ['curtains', 0.05, 1.7, 0, {w: 1.8}],
+    ]},
+  studio: {w: 6, h: 4.5, preset: 'modern',
+    openings: {1: [{type: 'door', x: 1.3, w: 0.82, y: 0, h: 2.04}], 0: [{type: 'window', x: 1.9, w: 1.6, y: 0.9, h: 1.3}]},
+    items: [
+      ['bed', 1.0, 1.05, 0, {w: 1.4, h: 1.95, label: 'Double bed'}],
+      ['wardrobe', 0.65, 4.2, 180, {zHeight: 2.0, color: '#d8cbb8', shape: {kind: 'cabinet', front: 'doors'}}],
+      ['rug', 4.6, 2.9, 0, {w: 2.0, h: 1.4, color: '#9aa3a8'}],
+      ['sofa', 4.6, 3.95, 180, {w: 2.0}],
+      ['table', 4.6, 2.7, 0, {label: 'Coffee table', w: 1.0, h: 0.5, zHeight: 0.4, color: '#6b6b6b', shape: {kind: 'table', top: 'rect', base: 'legs'}}],
+      ['tv', 4.6, 0.2, 0, {label: 'TV unit', h: 0.4, zHeight: 0.5, color: '#444444', shape: {kind: 'cabinet', front: 'doors'}}],
+      ['walltv', 4.6, 0.03, 0],
+      ['table', 2.3, 3.7, 0, {label: 'Dining table', w: 0.9, h: 0.9, zHeight: 0.75, color: '#b08a5e', shape: {kind: 'table', top: 'round', base: 'pedestal'}}],
+      ['couch', 1.55, 3.7, 270, {label: 'Dining chair', w: 0.47, h: 0.52, zHeight: 0.85, color: '#333333', shape: {kind: 'chair', style: 'dining', base: 'legs'}}],
+      ['couch', 3.05, 3.7, 90, {label: 'Dining chair', w: 0.47, h: 0.52, zHeight: 0.85, color: '#333333', shape: {kind: 'chair', style: 'dining', base: 'legs'}}],
+      ['floorlamp', 5.75, 3.2, 0],
+      ['plant', 5.6, 0.4, 0, {zHeight: 1.1}],
+      ['curtains', 2.7, 0.05, 0, {w: 2.0}],
+    ]},
+};
+
+function exampleLayout(name) {
+  const ex = EXAMPLES[name];
+  const walls4 = [0, 1, 2, 3].map(i => ({hStart: null, hEnd: null, bulge: 0, openings: (ex.openings[i] || []).map(o => ({...o}))}));
+  const items = ex.items.map(([id, cx, cy, deg, extra = {}]) => {
+    const f = FURNITURE.find(x => x.id === id);
+    const it = {...f, shape: f.shape && {...f.shape}, rot: deg * Math.PI / 180, ...extra};
+    // (a rectangular room is centred on the canvas; layouts count from the centre)
+    return Object.assign(it, {x: cx - ex.w / 2 - it.w / 2, y: cy - ex.h / 2 - it.h / 2});
+  });
+  return {app: 'room-planner', version: 1, shape: 'rect', roomW: ex.w, roomH: ex.h,
+    roomStyle: {...STYLE_PRESETS[ex.preset], preset: ex.preset, wallHeight: 2.4}, customPts: null, walls: walls4, items};
+}
+
+function loadExample(name) {
+  if (placed.length && !confirm('Replace what\'s in this room with the example? (Ctrl+Z brings it back.)')) return;
+  checkpoint();
+  applyLayout(exampleLayout(name));
+  placed.forEach(it => { applyKindDefaults(it); settleItem(it); });
+  if (/^(Room \d+|Living room|Bedroom|Studio)$/.test(rooms[curRoom].name)) { rooms[curRoom].name = {living: 'Living room', bedroom: 'Bedroom', studio: 'Studio'}[name]; renderRoomTabs(); }
+  redraw();
+  checkpoint();
+  hideWelcome();
+  diag('example', name);
+  toast('Example loaded. Drag things around, or paste a product link to add your own furniture.');
+}
+
+const welcomeEl = document.getElementById('welcome');
+function hideWelcome() {
+  welcomeEl.hidden = true;
+  try { localStorage.setItem('rp-welcomed', '1'); } catch (e) {}
+}
+document.getElementById('helpBtn').addEventListener('click', () => { welcomeEl.hidden = !welcomeEl.hidden; });
+document.getElementById('welcomeEmpty').addEventListener('click', hideWelcome);
+welcomeEl.addEventListener('click', e => { if (e.target === welcomeEl) hideWelcome(); });
+document.querySelectorAll('.example').forEach(b => b.addEventListener('click', () => loadExample(b.dataset.example)));
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !welcomeEl.hidden) hideWelcome(); });
+function maybeWelcome() {
+  let seen = false;
+  try { seen = !!localStorage.getItem('rp-welcomed'); } catch (e) {}
+  if (!seen && !placed.length && !/^#layout=/.test(location.hash)) welcomeEl.hidden = false;
+}
 
 window.addEventListener('resize', resizeCanvas);
 document.getElementById('buildTag').textContent = 'build ' + BUILD;
 syncStyleControls();
+renderRoomTabs();             // (before sizing the canvas: the tabs take room above it)
 resizeCanvas();
+// The plan's box can change size without the window changing (the room
+// tabs wrapping to a second row): fit the canvas to it again.
+let wrapSize = wrap.clientWidth + 'x' + wrap.clientHeight;
+new ResizeObserver(() => {
+  const now = wrap.clientWidth + 'x' + wrap.clientHeight;
+  if (now !== wrapSize) { wrapSize = now; resizeCanvas(); }
+}).observe(wrap);
 restoreLayout();
 updateRoomHint();
 checkpoint();                 // the starting point for undo
+renderRoomTabs();
 refreshBudget();
+maybeWelcome();
 openSharedFromHash();
 setInterval(autosave, 1000);
 window.addEventListener('pagehide', autosave);
