@@ -17,9 +17,11 @@
   header h1 { font-size: 18px; font-weight: 500; }
   header span { font-size: 12px; color: #888; }
 
-  .app { display: grid; grid-template-columns: 240px 1fr; gap: 16px; padding: 16px; height: calc(100vh - 57px); }
+  /* The plan on the left, the tool panels on the right (user's choice, 2026-10-02) */
+  .app { display: grid; grid-template-columns: 1fr 240px; gap: 16px; padding: 16px; height: calc(100vh - 57px); }
 
-  .sidebar { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+  .sidebar { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; grid-column: 2; grid-row: 1; }
+  .canvas-area { grid-column: 1; grid-row: 1; }
 
   .panel { background: #fff; border: 1px solid #e0e0d8; border-radius: 12px; padding: 14px; }
   .panel h3 { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
@@ -37,7 +39,7 @@
   .hint-text { font-size: 11px; color: #aaa; margin-top: 8px; line-height: 1.5; }
 
   .presets { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 10px; }
-  .preset { display: flex; align-items: center; gap: 6px; font-size: 11px; padding: 5px 6px; cursor: pointer; border-radius: 6px; border: 1px solid #ddd; background: #fafaf8; color: #333; }
+  .preset { display: flex; align-items: center; gap: 6px; font-size: 11px; white-space: nowrap; padding: 5px 6px; cursor: pointer; border-radius: 6px; border: 1px solid #ddd; background: #fafaf8; color: #333; }
   .preset:hover { border-color: #aaa; }
   .preset.active { background: #e8f0fe; border-color: #4a7fe8; color: #2a5cc8; }
   .swatch { width: 18px; height: 14px; border-radius: 3px; flex: none; border: 1px solid rgba(0,0,0,.15); }
@@ -162,7 +164,7 @@
   .fit-list label { color: #888; font-size: 11px; display: flex; gap: 4px; align-items: center; margin-top: 4px; }
 
   /* Shopping list */
-  .shop-dialog { border: none; border-radius: 12px; padding: 0; width: min(760px, calc(100vw - 32px)); max-height: calc(100vh - 64px); box-shadow: 0 12px 40px rgba(0,0,0,.25); color: #1a1a1a; }
+  .shop-dialog { border: none; border-radius: 12px; padding: 0; margin: auto;   /* (the * reset above took away the dialog's centring) */ width: min(760px, calc(100vw - 32px)); max-height: calc(100vh - 64px); box-shadow: 0 12px 40px rgba(0,0,0,.25); color: #1a1a1a; }
   .shop-dialog::backdrop { background: rgba(20,20,20,.35); }
   .shop-inner { display: flex; flex-direction: column; max-height: calc(100vh - 64px); }
   .shop-head { display: flex; align-items: center; padding: 14px 18px; border-bottom: 1px solid #eee; }
@@ -222,7 +224,8 @@
     header span { display: none; }
     .app { grid-template-columns: 1fr; height: auto; padding: 10px; gap: 10px; }
     .canvas-area { order: -1; height: 78vh; min-height: 420px; }
-    .sidebar { overflow: visible; }
+    .sidebar { overflow: visible; grid-column: auto; grid-row: auto; }
+    .canvas-area { grid-column: auto; grid-row: auto; }
     .toolbar { gap: 6px; }
     .toolbar-hint { display: none; }
     .view-btn, .clear-btn { padding: 6px 9px; }
@@ -285,6 +288,7 @@
         <label>Width (m) <input type="number" id="roomW" value="6" min="2" max="20" step="0.5"></label>
         <label>Depth (m) <input type="number" id="roomH" value="5" min="2" max="20" step="0.5"></label>
       </div>
+      <button class="view-btn" id="editWallsBtn" style="width: 100%; margin-top: 8px">Wall heights, windows &amp; doors…</button>
       <div class="hint-text" id="drawHint" style="display:none">Click on canvas to place corners. Right-click to close the shape.</div>
     </div>
 
@@ -311,7 +315,6 @@
           </select>
         </label>
         <label>Wall height (m) <input type="number" id="wallHeight" min="2" max="5" step="0.1"></label>
-        <button class="view-btn" id="editWallsBtn" style="grid-column: 1 / -1">Wall heights, windows &amp; doors…</button>
       </div>
     </div>
 
@@ -416,6 +419,7 @@
             <option value="chair:armchair:rocker">Armchair, rocking</option>
             <option value="chair:lounge:legs">Lounge chair</option>
             <option value="chair:lounge:rocker">Lounge chair, rocking</option>
+            <option value="chair:sunlounger:legs">Sun lounger</option>
             <option value="chair:egg:pedestal">Egg chair</option>
             <option value="chair:egg:hanging">Egg chair, hanging</option>
             <option value="bed">Bed</option>
@@ -424,6 +428,8 @@
             <option value="table:rect:legs">Table</option>
             <option value="table:round:legs">Table, round</option>
             <option value="table:round:pedestal">Table, round on a pedestal</option>
+            <option value="table:rect:block">Table, solid block</option>
+            <option value="table:round:block">Table, round solid block</option>
             <option value="cabinet:doors">Cabinet with doors</option>
             <option value="cabinet:drawers">Chest of drawers</option>
             <option value="shelf">Bookshelf</option>
@@ -470,7 +476,7 @@
           <h2 id="welcomeTitle">Plan your room before you buy</h2>
           <p>See whether furniture really fits, what it all costs, and how it looks in 3D.</p>
           <div class="steps">
-            <div class="step"><span class="step-n">1</span><div><b>Draw your room.</b> Pick a shape on the left and type its size, or drag the walls. Double-click a wall to add doors and windows.</div></div>
+            <div class="step"><span class="step-n">1</span><div><b>Draw your room.</b> Pick a shape in the Room shape panel and type its size, or drag the walls. Double-click a wall to add doors and windows.</div></div>
             <div class="step"><span class="step-n">2</span><div><b>Add furniture.</b> Paste a product link from a furniture shop to bring in its real size, photo and price (needs the Room Planner browser extension), or pick from the list.</div></div>
             <div class="step"><span class="step-n">3</span><div><b>Check it fits.</b> Red means something's in the way or through a wall. The total adds up as you go; share a link or print a shopping list when you're done.</div></div>
           </div>
@@ -532,6 +538,17 @@ const STYLE_PRESETS = {
   industrial: {name: 'Industrial',   wallColor: '#9a5a44', wallStyle: 'brick', floorColor: '#6d6d6d', floorStyle: 'concrete'},
   coastal:    {name: 'Coastal',      wallColor: '#d5e6ee', wallStyle: 'panel', floorColor: '#ece8df', floorStyle: 'tile'},
   cosy:       {name: 'Cosy',         wallColor: '#c9b8a6', wallStyle: 'paint', floorColor: '#b9a58f', floorStyle: 'carpet'},
+  // From interior-design style guides (2026-10-02): Japandi's parchment walls
+  // and mid-tone oak; mid-century teak panelling over a light tiled floor;
+  // Hamptons white panelling and grey-washed oak; farmhouse cream shiplap and
+  // reclaimed wood; Mediterranean limewash and terracotta tiles; minimalist
+  // white over a plain warm-white floor.
+  japandi:    {name: 'Japandi',       wallColor: '#e8dfd1', wallStyle: 'paint', floorColor: '#c19a6b', floorStyle: 'wood'},
+  midcentury: {name: 'Mid-century',   wallColor: '#a87449', wallStyle: 'panel', floorColor: '#cdbb9f', floorStyle: 'tile'},
+  hamptons:   {name: 'Hamptons',      wallColor: '#f4f3ee', wallStyle: 'panel', floorColor: '#c4bcb0', floorStyle: 'wood'},
+  farmhouse:  {name: 'Farmhouse',     wallColor: '#eee7db', wallStyle: 'panel', floorColor: '#8b6a4c', floorStyle: 'wood'},
+  mediterranean: {name: 'Mediterranean', wallColor: '#efe7da', wallStyle: 'paint', floorColor: '#b8683f', floorStyle: 'tile'},
+  minimal:    {name: 'Minimalist',    wallColor: '#f7f7f5', wallStyle: 'paint', floorColor: '#ece7df', floorStyle: 'plain'},
 };
 
 // ── Diagnostics ───────────────────────────────────────────────────────────────
@@ -540,7 +557,7 @@ const STYLE_PRESETS = {
 // diag() keeps the last 150 steps/errors in localStorage ('rp-diag'), which
 // Claude can read back from the Edge profile on disk when something works in
 // tests but not in the user's browser (see CLAUDE.md).
-const BUILD = '2026-10-02.6';
+const BUILD = '2026-10-03.1';
 function diag(event, data) {
   try {
     const log = JSON.parse(localStorage.getItem('rp-diag') || '[]');
@@ -587,6 +604,7 @@ let ctx = canvas.getContext('2d');   // (swapped for a larger offscreen one whil
 let exporting = false;                // true / 'safe' while drawing the plan for export
 // 2D zoom and pan (see "2D zoom and pan"): screen canvas px = plan px * k + (x, y).
 const view2d = {k: 1, x: 0, y: 0};
+let selCorner = null;      // index of the room corner selected for Delete (getRoomPts), or null
 const IDENTITY_VIEW = {k: 1, x: 0, y: 0};
 const viewOf2d = () => elevWall == null && !exporting ? view2d : IDENTITY_VIEW;
 let pan2d = null;                     // {sx, sy, x, y}: dragging empty space
@@ -1041,7 +1059,7 @@ function buildBeanBagGroup(item, colorHex) {
 // shops on 2026-09-29 found half of it still drawn as plain boxes: dining /
 // coffee / side tables, sideboards, TV units, chests, bookshelves, stools…).
 // Told apart by name, sized to the item's W×D×H, coloured from the photo.
-//   {kind: 'table', top: 'rect'|'round', base: 'legs'|'pedestal'}
+//   {kind: 'table', top: 'rect'|'round', base: 'legs'|'pedestal'|'block'}
 //   {kind: 'cabinet', front: 'doors'|'drawers'}
 //   {kind: 'shelf'}
 //   {kind: 'seat', style: 'stool'|'ottoman'|'bench'}
@@ -1053,6 +1071,12 @@ function inferFurnitureShape(p) {
   if (/chest|drawers?\b|dresser|tallboy|lowboy|bedside|night ?stand/i.test(name)) return {kind: 'cabinet', front: 'drawers'};
   if (/\btables?\b|\bdesk\b|\bconsole\b|workstation/i.test(name) && !/table ?(?:lamp|runner|cloth|top only)/i.test(name)) {
     const round = /round|circular|oval|\bdisc\b|\bdrum\b/i.test(name);
+    // Stone and block coffee tables are one solid piece down to the floor,
+    // unless the stone is only the top (on legs, a frame, "accents",
+    // sintered stone: catalog check, Cellini's ARC has two slab legs).
+    if (/coffee table/i.test(name) && /\bblock\b|plinth|\bstone\b|travertine|marble/i.test(name) &&
+        !/\blegs?\b|legged|trestle|frame|metal|steel|brass|iron|chrome|\bgold\b|accents?|sintered/i.test(name))
+      return {kind: 'table', top: round ? 'round' : 'rect', base: 'block'};
     // Round and oval tops mostly stand on one central base (catalog check:
     // ASTAKA oval dining table); four legs only if the name says so.
     return {kind: 'table', top: round ? 'round' : 'rect', base: round && !/\blegs?\b|legged|trestle/i.test(name) ? 'pedestal' : 'legs'};
@@ -1088,7 +1112,12 @@ function buildFurnitureGroup(item, colorHex) {
     const leg = Math.min(0.06, Math.max(0.03, Math.min(W, D) * 0.07));
     if (sh.top === 'round') cyl(0, 0, W / 2, D / 2, H - t, H, body, 48);
     else box(x0, x1, H - t, H, z0, z1, body);
-    if (sh.base === 'pedestal') {
+    if (sh.base === 'block') {
+      // A solid plinth under the top, set in a little so the top reads as a slab.
+      const ix = Math.min(0.04, W * 0.05), iz = Math.min(0.04, D * 0.05);
+      if (sh.top === 'round') cyl(0, 0, W / 2 - ix, D / 2 - iz, 0, H - t, mat(0.96), 48);
+      else box(x0 + ix, x1 - ix, 0, H - t, z0 + iz, z1 - iz, mat(0.96));
+    } else if (sh.base === 'pedestal') {
       const r = Math.min(W, D);
       cyl(0, 0, r * 0.08, r * 0.08, 0.02, H - t, dark);
       cyl(0, 0, r * 0.3, r * 0.3, 0, 0.03, dark);
@@ -1442,7 +1471,7 @@ function estimateSize(p, shape) {
   const name = p.name || '', text = name + ' ' + (p.description || '');
   if (shape && shape.kind === 'rug') {
     // Rugs name their size: "Rug 160 x 230 cm", "200x290cm".
-    const m = name.match(/(d{2,3})s*(?:cm)?s*[x×]s*(d{2,3})s*cm/i);
+    const m = name.match(/(\d{2,3})\s*(?:cm)?\s*[x×]\s*(\d{2,3})\s*cm/i);
     if (m) { const a = +m[1] / 100, b = +m[2] / 100; return {w: Math.max(a, b), d: Math.min(a, b), h: 0.015, basis: 'the size in its name'}; }
     return /runner/i.test(name) ? {w: 2.4, d: 0.8, h: 0.015, basis: 'a typical hallway runner'} : {w: 2.3, d: 1.6, h: 0.015, basis: 'a typical 160 × 230 cm rug'};
   }
@@ -1462,6 +1491,8 @@ function estimateSize(p, shape) {
     else if (shape && shape.chaise && shape.chaise !== 'none') d = 1.55;
     return {w, d, h: 0.8, basis: `a typical ${seats}-seater${curved ? ' curved' : ''} sofa`};
   }
+  if (shape && shape.kind === 'chair' && shape.style === 'sunlounger')
+    return /day ?bed/i.test(name) ? {w: 0.9, d: 2.0, h: 0.75, basis: 'a typical outdoor daybed'} : {w: 0.65, d: 1.95, h: 0.8, basis: 'a typical sun lounger with its back up'};
   if (shape && shape.kind === 'chair' && shape.style === 'egg')
     return shape.base === 'hanging' ? {w: 1.05, d: 1.05, h: 1.95, basis: 'a typical hanging egg chair on its stand'} : {w: 0.95, d: 0.85, h: 1.3, basis: 'a typical egg chair'};
   if (shape && shape.kind === 'beanbag') {
@@ -1610,6 +1641,23 @@ function buildModularGroup(item, colorHex) {
 // "leisure" chairs); 'armchair' is seat + reclined back + arms.
 const CHAIR_RE = /\b(chair|armchair|recliner|rocker|rocking|lounger|papasan)\b|椅/i;
 
+// Outdoor sun loungers (and outdoor daybeds): a long, low pad with a raised
+// backrest, not the bowl-shaped lounge chair. Checked before sofas and beds
+// ("chaise", "daybed").
+// ("Sun lounge" is the Australian name.) Accessories for one aren't one.
+const LOUNGER_RE = /\bsun ?lounge(?:r|rs|s)?\b|\bsun ?beds?\b|\bpool ?(?:side )?loungers?\b/i;
+const OUTDOOR_RE = /\b(outdoor|outdoors|garden|patio|pool|poolside|alfresco|terrace)\b/i;
+const NOT_LOUNGER_RE = /\b(cushions?|covers?|umbrellas?|parasols?|pads?|mattress|indoor)\b/i;
+function inferLoungerShape(p) {
+  const name = p.name || '';
+  if (NOT_LOUNGER_RE.test(name)) return null;
+  // A daybed counts if the name or description says it's for outdoors; a
+  // chaise lounge(r) or plain "lounger" only if the name does.
+  const outdoorDaybed = /\bday ?beds?\b/i.test(name) && OUTDOOR_RE.test(name + ' ' + (p.description || ''));
+  const outdoorChaise = /\bchaise lounge(?:r|rs|s)?\b|\bloungers?\b/i.test(name) && OUTDOOR_RE.test(name);
+  return LOUNGER_RE.test(name) || outdoorDaybed || outdoorChaise ? {kind: 'chair', style: 'sunlounger', base: 'legs'} : null;
+}
+
 function inferChairShape(p) {
   const name = p.name || '';
   if (!CHAIR_RE.test(name)) return null;
@@ -1628,6 +1676,51 @@ function inferChairShape(p) {
     ...(/tufted|button/i.test(name) && style === 'armchair' ? {tufted: true} : {}),
     ...(style === 'dining' && /\barm\b|armrest|arm ?chair|carver/i.test(name) ? {arms: true} : {}),
   };
+}
+
+// Sun lounger: a long frame on four short legs, a thin pad, and a backrest
+// hinged a third of the way along, raised so its top is the item's height.
+// Head end at the back (-z), like a bed.
+function buildLoungerGroup(item, colorHex) {
+  const W = item.w, D = item.h, H = item.zHeight || 0.8;
+  const g = new THREE.Group(), base = new THREE.Color(colorHex);
+  const frameMat = new THREE.MeshLambertMaterial({color: base.clone().multiplyScalar(0.7)});
+  const padMat = new THREE.MeshLambertMaterial({color: base.clone()});
+  const box = (w, h, d, m) => new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m);
+  const bedY = Math.min(0.32, H * 0.6), padT = Math.min(0.06, bedY * 0.3), railT = Math.min(0.05, bedY * 0.25);
+  const backL = Math.min(D * 0.6, Math.max(Math.min(D * 0.38, 0.8), (H - bedY) / 0.95)), hingeZ = -D / 2 + backL;
+  // frame: side rails and end rails just under the pad, legs at the corners
+  [-1, 1].forEach(sx => {
+    const rail = box(0.04, railT, D, frameMat); rail.position.set(sx * (W / 2 - 0.02), bedY - padT - railT / 2, 0); g.add(rail);
+  });
+  [-1, 1].forEach(sz => {
+    const end = box(W, railT, 0.04, frameMat); end.position.set(0, bedY - padT - railT / 2, sz * (D / 2 - 0.02)); g.add(end);
+  });
+  const legH = bedY - padT - railT;
+  [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([sx, sz]) => {
+    const leg = box(0.04, legH, 0.04, frameMat); leg.position.set(sx * (W / 2 - 0.03), legH / 2, sz * (D / 2 - 0.06)); g.add(leg);
+  });
+  // the flat part of the pad, from the hinge to the foot
+  const flat = box(W - 0.02, padT, D / 2 - hingeZ, padMat);
+  flat.position.set(0, bedY - padT / 2, (hingeZ + D / 2) / 2); g.add(flat);
+  // the backrest: hinged at hingeZ, leaning back towards -z so its top reaches H
+  const rise = Math.max(0, H - bedY), ang = Math.asin(Math.min(0.95, rise / backL));
+  const back = new THREE.Group();
+  const pad = box(W - 0.02, padT, backL, padMat); pad.position.set(0, padT / 2, -backL / 2); back.add(pad);
+  const brace = box(W * 0.9, 0.03, 0.03, frameMat); brace.position.set(0, -0.015, -backL + 0.02); back.add(brace);
+  back.position.set(0, bedY - padT, hingeZ);
+  back.rotation.x = ang;                           // (the far end, at -z, goes up)
+  g.add(back);
+  // a prop from the frame up to the back of the backrest
+  const top = new THREE.Vector3(0, 0, -backL * 0.8).applyEuler(back.rotation).add(back.position);
+  [-1, 1].forEach(sx => {
+    const a = new THREE.Vector3(sx * (W / 2 - 0.05), bedY - padT - railT, hingeZ - backL * 0.1), b = new THREE.Vector3(sx * (W / 2 - 0.05), top.y, top.z);
+    const len = a.distanceTo(b), rod = box(0.025, len, 0.025, frameMat);
+    rod.position.copy(a).add(b).multiplyScalar(0.5);
+    rod.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize());
+    g.add(rod);
+  });
+  return g;
 }
 
 function buildChairGroup(item, colorHex) {
@@ -1649,6 +1742,7 @@ function buildChairGroup(item, colorHex) {
     g.add(mesh);
   };
   if (sh.style === 'egg') return buildEggChairGroup(item, colorHex);
+  if (sh.style === 'sunlounger') return buildLoungerGroup(item, colorHex);
   const rocker = sh.base === 'rocker';
   // Optional parameters (set from a Claude analysis): seatH, arms
   // ('none'|'low'|'high'|'wraparound'), tufted, base ('legs'|'rocker'|
@@ -2625,6 +2719,9 @@ function updateCameraFromOrbit() {
     t.z + r * Math.cos(orbitTheta) * Math.sin(orbitPhi)
   );
   camera.lookAt(t);
+  // (The camera isn't in the scene, and lookAt() refreshes its world matrix
+  // before turning it: picks before the next frame would aim the old way.)
+  camera.updateMatrixWorld();
 }
 
 // ── 3D: moving around ────────────────────────────────────────────────────────
@@ -2750,6 +2847,10 @@ function setRay(clientX, clientY) {
 // Index of the placed item under a screen point in 3D, or -1.
 function pickItemAt(clientX, clientY) {
   if (!renderer || view !== '3d') return -1;
+  // init3d() builds new groups whose world matrices are only worked out when
+  // a frame is drawn; a tap just after a rebuild (a photo or model finished
+  // loading) would otherwise be tested against stale positions.
+  scene.updateMatrixWorld();
   setRay(clientX, clientY);
   const hits = raycaster.intersectObjects(itemGroups, true);
   for (const h of hits) {
@@ -3224,6 +3325,7 @@ function setItemRot(item, rad, snap) {
 
 function select(i) {
   selected = i >= 0 && i < placed.length ? i : -1;
+  if (selected >= 0) selCorner = null;
   updateSelPanel();
   if (view === '2d') draw2d(); else update3dSelection();
 }
@@ -3491,6 +3593,11 @@ function startPinch2d() {
   if (touchUndo && drawingItemShape) itemShapePts.length = Math.min(itemShapePts.length, touchUndo.shapeLen);
   if (touchUndo && selected !== touchUndo.sel) select(touchUndo.sel);
   draggingPlaced = null; rotating2d = false; drawDrag = null; pan2d = null; lastTap = null;
+  if (roomEdit && roomEdit.before) {
+    const b = roomEdit.before;
+    if (b.shape !== 'custom') setShape(b.shape); else customPts = b.pts;
+    walls = b.walls;
+  }
   if (roomEdit) { roomEdit = null; redraw(); }
   const [a, b] = [...touches2d.values()];
   pinch2d = {d: Math.max(10, Math.hypot(a.x - b.x, a.y - b.y)), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2, k: view2d.k, x: view2d.x, y: view2d.y};
@@ -3535,10 +3642,20 @@ canvas.addEventListener('pointerdown', e => {
   // The room outline: a wall's length label, a corner, then furniture, then a wall.
   const hit = roomHitAt(mx, my);
   // (preventDefault: the press would otherwise move focus off the new box, closing it)
+  selCorner = null;
   if (hit && hit.type === 'label') { e.preventDefault(); select(-1); editWallLength(hit.i); return; }
-  if (hit && (hit.type === 'vertex' || hit.type === 'curve')) { e.preventDefault(); select(-1); startRoomEdit(hit, mx, my); return; }
+  if (hit && hit.type === 'diameter') { e.preventDefault(); select(-1); editCircleDiameter(); return; }
+  if (hit && hit.type === 'radius' && hit.handle) { e.preventDefault(); select(-1); startRoomEdit(hit, mx, my); return; }
   const i = itemIndexAt(mx, my);
-  if (i < 0 && hit && hit.type === 'wall') { select(-1); startRoomEdit(hit, mx, my); return; }
+  if (i < 0 && hit && hit.type === 'add') {
+    e.preventDefault(); select(-1);
+    const before = {shape, pts: customPts.map(p => ({...p})), walls: JSON.parse(JSON.stringify(walls))};
+    startRoomEdit({type: 'vertex', i: insertCorner(hit.i, hit.t)}, mx, my);
+    roomEdit.before = before;              // (taken back if this finger turns into a pinch)
+    redraw(); return;
+  }
+  if (hit && (hit.type === 'vertex' || hit.type === 'curve')) { e.preventDefault(); select(-1); startRoomEdit(hit, mx, my); return; }
+  if (i < 0 && hit && (hit.type === 'wall' || hit.type === 'radius')) { select(-1); startRoomEdit(hit, mx, my); return; }
   if (i >= 0) { draggingPlaced = i; dragOff = {x: mx - placed[i].x, y: my - placed[i].y}; }
   else pan2d = {sx, sy, x: view2d.x, y: view2d.y};   // (empty space: drag to pan)
   select(i);
@@ -3583,12 +3700,12 @@ window.addEventListener('pointermove', e => {
   if (e.target === canvas) {
     // (A wall under a piece of furniture doesn't count; corners and length labels do.)
     const rh = roomHitAt(mx, my), onItem = itemIndexAt(mx, my) >= 0;
-    const hit = rh && (rh.type !== 'wall' || !onItem) ? rh : null;
+    const hit = rh && (rh.type !== 'wall' && rh.type !== 'add' && !(rh.type === 'radius' && !rh.handle) || !onItem) ? rh : null;
     const changed = JSON.stringify(hit) !== JSON.stringify(roomHover);
     roomHover = hit;
     const pts = hit && hit.type === 'wall' ? getRoomPts() : null;
     const along = pts && Math.abs(pts[(hit.i + 1) % pts.length].x - pts[hit.i].x) > Math.abs(pts[(hit.i + 1) % pts.length].y - pts[hit.i].y);
-    canvas.style.cursor = onHandle(mx, my) ? 'grab' : hit && hit.type === 'label' ? 'text' : hit && hit.type === 'vertex' ? 'move' : hit && hit.type === 'curve' ? 'grab'
+    canvas.style.cursor = onHandle(mx, my) ? 'grab' : hit && hit.type === 'label' ? 'text' : hit && hit.type === 'vertex' ? 'move' : hit && hit.type === 'curve' ? 'grab' : hit && hit.type === 'add' ? 'copy' : hit && hit.type === 'diameter' ? 'text' : hit && hit.type === 'radius' ? 'ew-resize'
       : itemIndexAt(mx, my) >= 0 ? 'move' : hit ? (along ? 'ns-resize' : 'ew-resize') : 'default';
     if (changed) draw2d();
   }
@@ -3607,7 +3724,11 @@ const pointerUp2d = e => {
   if (pan2d) { pan2d = null; canvas.style.cursor = 'default'; }
   if (rotating2d) { rotating2d = false; draw2d(); }
   draggingPlaced = null;
-  if (roomEdit) { roomEdit = null; redraw(); checkpoint(); }
+  if (roomEdit) {
+    // (a click on a corner, without dragging it, selects it for Delete)
+    if (roomEdit.type === 'vertex' && !roomEdit.moved) selCorner = roomEdit.i;
+    roomEdit = null; redraw(); checkpoint();
+  }
   if (elevDrag) { elevDrag = null; draw2d(); checkpoint(); }
   if (drawDrag && shape === 'custom' && drawing) {
     // A drag of more than a few pixels drew a wall: its end is here.
@@ -3624,7 +3745,7 @@ function doubleClickAt(mx, my) {
   if (elevWall != null) return;
   // Double-click a wall (not furniture): its elevation, for height, windows and doors.
   const wh = roomHitAt(mx, my);
-  if (wh && (wh.type === 'wall' || wh.type === 'curve') && itemIndexAt(mx, my) < 0) { openElevation(wh.i); return; }
+  if (wh && (wh.type === 'wall' || wh.type === 'curve' || wh.type === 'radius') && itemIndexAt(mx, my) < 0) { openElevation(wh.i); return; }
   const i = itemIndexAt(mx, my);
   if (i >= 0) { select(i); rotateSelected(90); }
 }
@@ -3731,6 +3852,7 @@ function distToSegment(px, py, a, b) {
 
 // What part of the room outline is at (mx, my): a length label, a corner or a wall.
 function roomHitAt(mx, my) {
+  if (shape === 'circle') return circleHitAt(mx, my);
   if (!polyEditable()) return null;
   const lab = wallLabels.find(l => mx >= l.x && mx <= l.x + l.w && my >= l.y && my <= l.y + l.h);
   if (lab) return {type: 'label', i: lab.i};
@@ -3741,10 +3863,44 @@ function roomHitAt(mx, my) {
   const c = arcs.findIndex(arc => { const m = arc.at(0.5); return Math.hypot(mx - m.x, my - m.y) <= 8; });
   if (c >= 0) return {type: 'curve', i: c};
   for (let i = 0; i < pts.length; i++) {
+    const ad = addCornerAt(arcs[i]);
+    if (ad && Math.hypot(mx - ad.x, my - ad.y) <= 7) return {type: 'add', i, t: ad.t};
+  }
+  for (let i = 0; i < pts.length; i++) {
     const arc = arcs[i], n = arc.straight ? 1 : 24;
     for (let k = 0; k < n; k++) if (distToSegment(mx, my, arc.at(k / n), arc.at((k + 1) / n)) <= 6) return {type: 'wall', i};
   }
   return null;
+}
+
+// ── Circle rooms: drag the edge (or its ● handle) to resize; click the
+// diameter to type it. The circle stays centred, so furniture stays put.
+const CIRCLE_D = {min: 1, max: 20};
+function circleGeom() {
+  const r = Math.min(roomW, roomH) * SCALE / 2, cx = canvas.width / 2, cy = canvas.height / 2;
+  return {cx, cy, r, handle: {x: cx + r, y: cy}};
+}
+function circleHitAt(mx, my) {
+  const c = circleGeom();
+  const lab = wallLabels.find(l => mx >= l.x && mx <= l.x + l.w && my >= l.y && my <= l.y + l.h);
+  if (lab) return {type: 'diameter', i: 0};
+  const n = getRoomPts().length, a = (Math.atan2(my - c.cy, mx - c.cx) + 2 * Math.PI) % (2 * Math.PI);
+  const i = Math.min(n - 1, Math.floor(a / (2 * Math.PI) * n));
+  if (Math.hypot(mx - c.handle.x, my - c.handle.y) <= 9) return {type: 'radius', i, handle: true};
+  if (Math.abs(Math.hypot(mx - c.cx, my - c.cy) - c.r) <= 6) return {type: 'radius', i};
+  return null;
+}
+// (Dragged: the radius in 5 cm steps. Typed: as typed.)
+function setCircleDiameter(d, snap = true) {
+  if (snap) d = Math.round(d / (2 * SNAP_M)) * 2 * SNAP_M;
+  d = Math.min(CIRCLE_D.max, Math.max(CIRCLE_D.min, d));
+  roomW = roomH = +d.toFixed(2);
+  document.getElementById('roomW').value = roomW; document.getElementById('roomH').value = roomH;
+}
+function editCircleDiameter() {
+  const lab = wallLabels[0];
+  if (!lab) return;
+  canvasNumberInput(lab.x - 6, lab.y - 3, Math.min(roomW, roomH).toFixed(2), v => { if (v > 0) { setCircleDiameter(v, false); redraw(); checkpoint(); } else draw2d(); }, {min: String(CIRCLE_D.min), title: 'Diameter (m)'});
 }
 
 function startRoomEdit(hit, mx, my) {
@@ -3756,6 +3912,12 @@ function moveRoomEdit(mx, my, free) {
   const {type, i, start, orig} = roomEdit, n = orig.length;
   if (!roomEdit.moved && Math.hypot(mx - start.x, my - start.y) < 3) return;   // (a click, or the start of a double-click)
   roomEdit.moved = true;
+  if (type === 'radius') {
+    const c = circleGeom();
+    setCircleDiameter(2 * Math.hypot(mx - c.cx, my - c.cy) / SCALE);
+    draw2d();
+    return;
+  }
   if (type === 'curve') {
     // Bend the wall: its middle follows the pointer across the straight line
     // between its corners (5 cm steps; back within 8 px snaps straight).
@@ -3848,6 +4010,58 @@ function editWallLength(i) {
   canvasNumberInput(lab.x - 6, lab.y - 3, wallLen(i).toFixed(2), v => { if (v > 0) setWallLength(i, v); else draw2d(); });
 }
 
+// ── Adding and deleting corners ──
+// Each wall long enough has a small "+" just past its middle (the ◆ is at
+// the middle): pressing it puts a new corner there, on the wall, and drags
+// it straight away (a click just leaves it on the line). Clicking a corner
+// without dragging selects it; Delete / Backspace then removes it, joining
+// its two walls (a room keeps at least 3 corners). Both are undoable.
+const ADD_GAP = 18;        // plan px from the middle of the wall to its "+"
+// Where wall i's "+" sits (t along the wall, and the point), or null on a short wall.
+function addCornerAt(arc) {
+  if (arc.len < 4 * ADD_GAP) return null;
+  const t = 0.5 + ADD_GAP / arc.len;
+  return {t, ...arc.at(t)};
+}
+// Split wall i at t (0..1 along it) with a new corner; returns its index.
+function insertCorner(i, t) {
+  toCustom(); syncWalls();
+  const pts = getRoomPts(), arc = wallArc(i, pts), p = arc.at(t);
+  const w = walls[i], L = wallLen(i), at = L * t;
+  const [ha, hb] = wallHeights(i), hm = ha + (hb - ha) * t, keepH = w.hStart == null && w.hEnd == null;
+  // A curved wall splits into two arcs of the same circle.
+  const sag = f => arc.straight ? 0 : Math.sign(w.bulge) * arc.R * (1 - Math.cos(f * arc.len / arc.R / 2)) / SCALE;
+  const second = {hStart: keepH ? null : hm, hEnd: w.hEnd, bulge: sag(1 - t),
+    openings: w.openings.filter(o => o.x + o.w / 2 >= at).map(o => ({...o, x: o.x - at}))};
+  w.openings = w.openings.filter(o => o.x + o.w / 2 < at);
+  if (!keepH) w.hEnd = hm;
+  w.bulge = sag(t);
+  customPts.splice(i + 1, 0, {x: p.x, y: p.y});
+  walls.splice(i + 1, 0, second);
+  syncWalls();
+  return i + 1;
+}
+// Remove corner v: its two walls become one straight wall.
+function deleteCorner(v) {
+  const n = getRoomPts().length;
+  if (v == null || v >= n) return;
+  if (n <= 3) { toast('A room needs at least 3 corners.'); return; }
+  toCustom(); syncWalls();
+  const p = (v + n - 1) % n, A = walls[p], B = walls[v];
+  // Windows and doors stay where they are, moved straight onto the joined wall.
+  const at = (j, o) => wallArc(j).at((o.x + o.w / 2) / (wallLen(j) || 1));
+  const openings = [...A.openings.map(o => ({o, c: at(p, o)})), ...B.openings.map(o => ({o, c: at(v, o)}))];
+  const s0 = customPts[p], s1 = customPts[(v + 1) % n], len = Math.hypot(s1.x - s0.x, s1.y - s0.y) || 1;
+  openings.forEach(({o, c}) => { o.x = ((c.x - s0.x) * (s1.x - s0.x) + (c.y - s0.y) * (s1.y - s0.y)) / len / SCALE - o.w / 2; });
+  walls[p] = {hStart: A.hStart, hEnd: B.hEnd, bulge: 0, openings: openings.map(({o}) => o)};
+  customPts.splice(v, 1);
+  walls.splice(v, 1);
+  syncWalls();
+  selCorner = null;
+  redraw();
+  checkpoint();
+}
+
 // Wall lengths, corner handles and, while drawing, the wall being drawn.
 function drawRoomOverlay() {
   wallLabels = [];
@@ -3888,6 +4102,18 @@ function drawRoomOverlay() {
     } else if (drawHover) {
       ctx.beginPath(); ctx.arc(drawHover.x, drawHover.y, 5, 0, Math.PI * 2); ctx.fillStyle = '#4a7fe8'; ctx.fill();
     }
+  } else if (shape === 'circle') {
+    const c = circleGeom();
+    const hot = roomHover && (roomHover.type === 'radius' || roomHover.type === 'diameter') || roomEdit && roomEdit.type === 'radius';
+    if (hot && !exporting) {
+      ctx.strokeStyle = 'rgba(74,127,232,0.55)'; ctx.lineWidth = 9;
+      ctx.beginPath(); ctx.arc(c.cx, c.cy, c.r, 0, Math.PI * 2); ctx.stroke();
+    }
+    label(Math.min(roomW, roomH).toFixed(2) + ' m across', c.cx, c.cy - c.r - 20, 0, hot);
+    if (!exporting) {
+      ctx.fillStyle = hot ? '#4a7fe8' : '#fff'; ctx.strokeStyle = '#4a7fe8'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(c.handle.x, c.handle.y, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    }
   } else if (polyEditable()) {
     const pts = getRoomPts();
     pts.forEach((a, i) => {
@@ -3918,11 +4144,27 @@ function drawRoomOverlay() {
         label(s ? `curve ${s > 0 ? '+' : ''}${s.toFixed(2)} m · radius ${(arc.R / SCALE).toFixed(2)} m` : 'straight', mid.x - nrm.x * 22, mid.y - nrm.y * 22, null, true);
       }
     });
+    if (!exporting) pts.forEach((a, i) => {
+      // the "+" that adds a corner
+      const ad = addCornerAt(wallArc(i, pts));
+      if (!ad) return;
+      const hot = roomHover && roomHover.type === 'add' && roomHover.i === i;
+      ctx.fillStyle = hot ? '#4a7fe8' : '#fff'; ctx.strokeStyle = '#4a7fe8'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(ad.x, ad.y, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.strokeStyle = hot ? '#fff' : '#4a7fe8';
+      ctx.beginPath(); ctx.moveTo(ad.x - 3, ad.y); ctx.lineTo(ad.x + 3, ad.y); ctx.moveTo(ad.x, ad.y - 3); ctx.lineTo(ad.x, ad.y + 3); ctx.stroke();
+    });
     if (!exporting) pts.forEach((p, i) => {
       const hot = roomHover && roomHover.type === 'vertex' && roomHover.i === i || roomEdit && roomEdit.type === 'vertex' && roomEdit.i === i;
-      ctx.fillStyle = hot ? '#4a7fe8' : '#fff'; ctx.strokeStyle = '#4a7fe8'; ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.rect(p.x - 4, p.y - 4, 8, 8); ctx.fill(); ctx.stroke();
+      const sel = selCorner === i, r = sel ? 6 : 4;
+      ctx.fillStyle = sel ? '#e8834a' : hot ? '#4a7fe8' : '#fff'; ctx.strokeStyle = sel ? '#e8834a' : '#4a7fe8'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.rect(p.x - r, p.y - r, 2 * r, 2 * r); ctx.fill(); ctx.stroke();
     });
+    if (!exporting && selCorner != null && pts[selCorner] && lastPointerType !== 'touch') {
+      // (inside the room, off the corner's two walls)
+      const p = pts[selCorner], n1 = wallNormal(pts, selCorner), n2 = wallNormal(pts, (selCorner + pts.length - 1) % pts.length);
+      label(pts.length > 3 ? 'Delete removes this corner' : 'A room needs 3 corners', p.x - (n1.x + n2.x) * 40, p.y - (n1.y + n2.y) * 40, null, true);
+    }
   }
   ctx.restore();
 }
@@ -4256,12 +4498,14 @@ function updateElevBar() {
 }
 
 function updateRoomHint() {
+  // (no walls to edit yet while a room is being drawn)
+  document.getElementById('editWallsBtn').style.display = shape === 'custom' && drawing ? 'none' : '';
   const hint = document.getElementById('drawHint');
   hint.style.display = 'block';
   hint.textContent = shape === 'custom' && drawing
     ? 'Click (or drag) to place each corner — the wall\'s length shows as you go. Type a number and press Enter for an exact length. Click the first corner, double-click or press Enter to finish. Ctrl+Z removes the last corner; hold Alt for any angle.'
-    : shape === 'circle' ? 'Set the size above. Double-click a wall for its height, windows and doors.'
-    : 'Drag a corner or a wall to reshape the room; click a wall\'s length to type it. Double-click a wall for its height, windows and doors. Ctrl+Z undoes, Ctrl+Y redoes.';
+    : shape === 'circle' ? 'Drag the edge of the room (or its round handle) to change its size; click the diameter to type it. Double-click the edge for its height, windows and doors. Ctrl+Z undoes, Ctrl+Y redoes.'
+    : 'Drag a corner or a wall to reshape the room; click a wall\'s length to type it. The + on a wall adds a corner; click a corner and press Delete to remove it. Double-click a wall for its height, windows and doors. Ctrl+Z undoes, Ctrl+Y redoes.';
 }
 
 // Elevation toolbar
@@ -4345,6 +4589,10 @@ document.addEventListener('keydown', e => {
     e.preventDefault(); e.stopImmediatePropagation();
     return;
   }
+  if (selCorner != null && selected < 0 && view === '2d' && elevWall == null && !(shape === 'custom' && drawing)) {
+    if (e.key === 'Delete' || e.key === 'Backspace') { deleteCorner(selCorner); e.preventDefault(); e.stopImmediatePropagation(); return; }
+    if (e.key === 'Escape') { selCorner = null; draw2d(); }
+  }
   if (!(shape === 'custom' && drawing) || e.ctrlKey || e.metaKey) return;
   let handled = true;
   if (/^[0-9]$/.test(e.key) || (e.key === '.' || e.key === ',') && !/[.,]/.test(lenBuffer)) { if (customPts.length) lenBuffer += e.key; }
@@ -4365,7 +4613,7 @@ function setShape(s, pts) {
   document.getElementById('sizeInputs').style.display = (s === 'circle' || s === 'custom') ? 'none' : 'flex';
   drawing = s === 'custom' && !pts;
   customPts = s === 'custom' && pts ? pts : [];
-  drawHover = null; lenBuffer = ''; roomEdit = null; roomHover = null;
+  drawHover = null; lenBuffer = ''; roomEdit = null; roomHover = null; selCorner = null;
   document.querySelectorAll('.wall-len-input').forEach(el => el.remove());
   updateRoomHint();
 }
@@ -4428,7 +4676,7 @@ document.getElementById('btn2d').addEventListener('click', () => {
 
 document.getElementById('btn3d').addEventListener('click', () => {
   if (elevWall != null) closeElevation();
-  view = '3d';
+  view = '3d'; selCorner = null;
   document.getElementById('btn2d').classList.remove('active');
   document.getElementById('btn3d').classList.add('active');
   autoRotateBtn.style.display = 'inline-block';
@@ -4648,7 +4896,7 @@ function shapeFromAnalysis(piece) {
               arms: s.arms || 'low', tufted: !!s.tufted, ...(seatH ? {seatH} : {})};
     case 'bean_bag': return {kind: 'beanbag', ...(s.arms && s.arms !== 'none' ? {arms: true} : {})};
     case 'bed': return {kind: 'bed'};
-    case 'table': return {kind: 'table', top: s.round_top ? 'round' : 'rect', base: s.base === 'pedestal' ? 'pedestal' : 'legs'};
+    case 'table': return {kind: 'table', top: s.round_top ? 'round' : 'rect', base: s.base === 'pedestal' ? 'pedestal' : s.base === 'floor' ? 'block' : 'legs'};
     case 'cabinet': return {kind: 'cabinet', front: s.storage_front === 'drawers' ? 'drawers' : 'doors'};
     case 'shelf': return {kind: 'shelf'};
     case 'stool': case 'ottoman': case 'bench': return {kind: 'seat', style: cat};
@@ -4660,12 +4908,16 @@ function addFromAnalysis(p, url, image, ai) {
   const pieces = ai.analysis.pieces.slice(0, 4);
   const m = v => (v > 0.05 && v < 6 ? v : null);
   const items = pieces.map(piece => {
-    const shape = shapeFromAnalysis(piece);
+    // (Claude's categories have no sun lounger: if the name says it is one, it is.)
+    const lounger = /chair|sofa|bed/.test(piece.category || '') && inferLoungerShape({name: pieces.length > 1 ? piece.name : (p.name || piece.name), description: p.description});
+    const shape = lounger || shapeFromAnalysis(piece);
     const typical = piece.size_source === 'typical_estimate';
     // One piece and the page text gave a size Claude only estimated: keep the page's.
     const usePage = pieces.length === 1 && typical && p.width != null;
     const est = estimateSize({...p, name: piece.name}, shape) || {w: 1, d: 1, h: 0.8};
-    const w = usePage ? p.width : m(piece.width_m) || est.w, d = usePage ? (p.depth || est.d) : m(piece.depth_m) || est.d, h = usePage ? (p.height || est.h) : m(piece.height_m) || est.h;
+    let w = usePage ? p.width : m(piece.width_m) || est.w, d = usePage ? (p.depth || est.d) : m(piece.depth_m) || est.d;
+    const h = usePage ? (p.height || est.h) : m(piece.height_m) || est.h;
+    if (lounger && w > d * 1.15) [w, d] = [d, w];               // (you lie along its depth)
     const item = addItem({id: 'product', label: pieces.length > 1 ? piece.name : (p.name || piece.name), w, h: d, zHeight: h,
       imgUrl: image || null, pageUrl: p.pageUrl || url, shape,
       ...(/^#[0-9a-f]{6}$/i.test(piece.color_hex || '') && shape ? {color: piece.color_hex} : {})});
@@ -4681,7 +4933,7 @@ function addFromAnalysis(p, url, image, ai) {
   redraw();
   if (image) showPreviewWhenLoaded(image);
   const from = {page_text: 'from the page text', image: 'read off a product picture', typical_estimate: 'typical size — the page doesn\'t give one'};
-  const drawn = it => !it.shape ? 'a box with the product photo' : it.shape.kind === 'chair' ? `${it.shape.style === 'egg' ? (it.shape.base === 'hanging' ? 'hanging egg chair' : 'egg chair') : it.shape.style === 'dining' ? 'dining chair' : it.shape.style === 'lounge' ? 'lounge chair' : 'armchair'}${it.shape.base && it.shape.base !== 'legs' ? ` (${it.shape.base} base)` : ''}${it.shape.tufted ? ', button-tufted' : ''}`
+  const drawn = it => !it.shape ? 'a box with the product photo' : it.shape.kind === 'chair' ? `${it.shape.style === 'egg' ? (it.shape.base === 'hanging' ? 'hanging egg chair' : 'egg chair') : it.shape.style === 'dining' ? 'dining chair' : it.shape.style === 'lounge' ? 'lounge chair' : it.shape.style === 'sunlounger' ? 'sun lounger' : 'armchair'}${it.shape.base && it.shape.base !== 'legs' ? ` (${it.shape.base} base)` : ''}${it.shape.tufted ? ', button-tufted' : ''}`
     : it.shape.kind === 'sofa' ? (it.shape.style === 'curved' ? 'curved sofa' : it.shape.chaise !== 'none' ? `sofa with a chaise (${it.shape.chaise})` : 'sofa')
     : it.shape.kind === 'beanbag' ? (it.shape.arms ? 'bean bag chair with armrests' : 'bean bag') : it.shape.kind === 'seat' ? it.shape.style : it.shape.kind === 'cabinet' ? (it.shape.front === 'drawers' ? 'chest of drawers' : 'cabinet') : it.shape.kind;
   const modelName = {'claude-opus-5': 'Claude Opus 5', 'claude-sonnet-5': 'Claude Sonnet 5', 'claude-haiku-4-5': 'Claude Haiku 4.5'}[ai.model] || ai.model || 'Claude';
@@ -4777,13 +5029,18 @@ async function generateFromPage(url) {
       if (p.width == null) p.width = Math.max(...lay.map(m => m.x + m.w));
       if (p.depth == null) p.depth = Math.max(...lay.map(m => m.z + m.d));
     }
-    const shape = p.model ? null : modules ? {kind: 'modular'} : inferDecorShape(p) || inferBeanBagShape(p) || inferSofaShape(p) || inferBedShape(p) || inferChairShape(p) || inferFurnitureShape(p);
+    const shape = p.model ? null : modules ? {kind: 'modular'} : inferDecorShape(p) || inferBeanBagShape(p) || inferLoungerShape(p) || inferSofaShape(p) || inferBedShape(p) || inferChairShape(p) || inferFurnitureShape(p);
     // Width and depth swapped on the page (Life Interiors lists the Jack
     // 3-seater sofa as "89W x 178D"): sofas, cabinets, shelves, tables and
     // benches are never much deeper than wide, unless they have a chaise.
     if (shape && p.width != null && p.depth > p.width * 1.15 &&
         (/^(cabinet|shelf|table)$/.test(shape.kind) || shape.kind === 'seat' && shape.style === 'bench' ||
          shape.kind === 'sofa' && shape.chaise === 'none')) {
+      diag('width/depth swapped', {width: p.width, depth: p.depth});
+      [p.width, p.depth] = [p.depth, p.width];
+    }
+    // A sun lounger is the other way round: you lie along its depth.
+    if (shape && shape.style === 'sunlounger' && p.depth != null && p.width > p.depth * 1.15) {
       diag('width/depth swapped', {width: p.width, depth: p.depth});
       [p.width, p.depth] = [p.depth, p.width];
     }
@@ -4826,13 +5083,13 @@ async function generateFromPage(url) {
       item.shape && item.shape.kind === 'lamp' ? `${item.shape.style} lamp` :
       item.shape && item.shape.kind === 'bed' ? 'bed frame with a mattress' :
       item.shape && item.shape.kind === 'beanbag' ? (item.shape.arms ? 'bean bag chair with armrests' : 'bean bag') :
-      item.shape && item.shape.kind === 'table' ? (item.shape.top === 'round' ? 'round table' : 'table') :
+      item.shape && item.shape.kind === 'table' ? (item.shape.base === 'block' ? 'solid block table' : item.shape.top === 'round' ? 'round table' : 'table') :
       item.shape && item.shape.kind === 'cabinet' ? (item.shape.front === 'drawers' ? 'chest of drawers' : 'cabinet with doors') :
       item.shape && item.shape.kind === 'shelf' ? 'bookshelf' :
       item.shape && item.shape.kind === 'seat' ? item.shape.style :
       item.shape && item.shape.kind === 'sofa' && item.shape.style === 'curved' ? 'curved sofa' :
       item.shape && item.shape.kind === 'chair' &&
-      `${item.shape.style === 'lounge' ? 'lounge chair' : item.shape.style === 'dining' ? 'dining chair' : item.shape.style === 'egg' ? (item.shape.base === 'hanging' ? 'hanging egg chair' : 'egg chair') : 'armchair'}${item.shape.base === 'rocker' ? ' on rockers' : ''}`;
+      `${item.shape.style === 'lounge' ? 'lounge chair' : item.shape.style === 'sunlounger' ? 'sun lounger' : item.shape.style === 'dining' ? 'dining chair' : item.shape.style === 'egg' ? (item.shape.base === 'hanging' ? 'hanging egg chair' : 'egg chair') : 'armchair'}${item.shape.base === 'rocker' ? ' on rockers' : ''}`;
     const estNote = (fromDrawing ? ' The page gives its size only in a dimension drawing, so it was read off that automatically — check it against the page.' : '') +
       (est ? ` The page doesn't list ${missing.length === 3 ? 'its size' : 'its ' + missing.join('/')}, so that's the size of ${est.basis} — set the real size in the panel on the plan if you know it.` : '');
     if (p.fromLinkOnly) {
@@ -5627,7 +5884,7 @@ function addRoom() {
   while (rooms.some(r => r.name === `Room ${n}`)) n++;
   rooms.push({name: `Room ${n}`, data: emptyRoom()});
   switchRoom(rooms.length - 1);
-  toast('New room added. Set its size on the left, then add furniture.');
+  toast('New room added. Set its size in the Room shape panel, then add furniture.');
 }
 function deleteRoom(i) {
   if (rooms.length < 2) return;
