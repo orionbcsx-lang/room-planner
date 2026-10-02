@@ -540,7 +540,7 @@ const STYLE_PRESETS = {
 // diag() keeps the last 150 steps/errors in localStorage ('rp-diag'), which
 // Claude can read back from the Edge profile on disk when something works in
 // tests but not in the user's browser (see CLAUDE.md).
-const BUILD = '2026-10-02.3';
+const BUILD = '2026-10-02.6';
 function diag(event, data) {
   try {
     const log = JSON.parse(localStorage.getItem('rp-diag') || '[]');
@@ -2438,11 +2438,8 @@ function build3d() {
   // How far you can move: the room's farthest point from its centre + 3 m.
   const cx = spanX / 2, cz = spanZ / 2;
   move3dBounds = {cx, cz, r: Math.max(...getRoomOutline().map(p => { const w = toWorld(p.x, p.y); return Math.hypot(w.x - cx, w.z - cz); })) + MOVE3D_MARGIN};
-  // (init3d runs again on every image/model load, so only a new view goes back to the centre)
-  if (orbitRadius == null) {
-    orbitTarget.set(cx, 0, cz);
-    orbitRadius = Math.max(spanX, spanZ) * 1.3 * Math.pow(Math.max(1, 1 / camera.aspect), 0.8);
-  }
+  // (init3d runs again on every image/model load, so only a new view goes back to the overview)
+  if (orbitRadius == null) frameWholeRoom();
   updateCameraFromOrbit();
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.55));
@@ -2598,10 +2595,7 @@ function updateWallCutaway() {
 function animate() {
   animId = requestAnimationFrame(animate);
   stepMoveKeys();
-  if (autoRotate && !orbitDragging && !moveDragging && !drag3d) {
-    orbitTheta += 0.004;
-    updateCameraFromOrbit();
-  }
+  if (autoRotate && !orbitDragging && !moveDragging && !drag3d) autoRotateStep();
   updateWallCutaway();
   renderer.render(scene, camera);
 }
@@ -2722,8 +2716,29 @@ function stepMoveKeys(now = performance.now()) {
   if (right || fwd || up) moveOrbitTarget(right * speed, fwd * speed, up * speed);
 }
 
+// The starting overview: looking down at the room's centre from a corner, far
+// enough back to see it all. Needs bbox3d (set by build3d).
+function frameWholeRoom() {
+  const spanX = (bbox3d.x2 - bbox3d.x) / SCALE, spanZ = (bbox3d.y2 - bbox3d.y) / SCALE;
+  orbitTheta = Math.PI / 4; orbitPhi = 0.85;
+  orbitTarget.set(spanX / 2, 0, spanZ / 2);
+  orbitRadius = Math.max(spanX, spanZ) * 1.3 * Math.pow(Math.max(1, 1 / camera.aspect), 0.8);
+}
+
+// Auto-rotate circles the look point, unless that would take the camera
+// outside the boundary (after walking, the look point can be metres away):
+// then it turns on the spot instead.
+function autoRotateStep() {
+  const b = move3dBounds, before = camera.position.clone();
+  orbitTheta += 0.004; updateCameraFromOrbit();
+  if (!b) return;
+  const lim = Math.max(b.r, Math.hypot(before.x - b.cx, before.z - b.cz)), p = camera.position;
+  if (Math.hypot(p.x - b.cx, p.z - b.cz) > lim + 1e-9) { orbitTheta -= 0.004; updateCameraFromOrbit(); lookAround(-0.004 / LOOK_SPEED, 0); }
+}
+
+// Back to the overview (orbitRadius = null makes the next build3d frame the room).
 function resetView3d() {
-  orbitTheta = Math.PI / 4; orbitPhi = 0.85; orbitRadius = null;
+  orbitRadius = null;
   if (view === '3d') init3d();
 }
 
@@ -2751,6 +2766,7 @@ function floorPointAt(clientX, clientY) {
 }
 
 function onDown3d(e) {
+  lookByTouch = e.pointerType === 'touch';
   // Right button anywhere (over furniture too, which fills the view once
   // you're in the room): look around, as in game editors.
   if (e.button === 2) {
@@ -2768,25 +2784,47 @@ function onDown3d(e) {
     return;
   }
   if (e.button !== 0) return;
-  if (idx >= 0) {
-    select(idx);
-    const item = placed[idx];
-    if (e.shiftKey) {
-      drag3d = {idx, mode: 'rotate', startX: e.clientX, startRot: item.rot || 0};
-    } else {
-      const p = floorPointAt(e.clientX, e.clientY);
-      const g = itemGroups[idx];
-      drag3d = {idx, mode: 'move', offX: g.position.x - (p ? p.x : g.position.x), offZ: g.position.z - (p ? p.z : g.position.z)};
-    }
-    renderer.domElement.style.cursor = 'grabbing';
+  // A finger on a piece: from inside the room nearly everything on screen is
+  // furniture or rug, so a swipe still looks around; holding the finger still
+  // for HOLD_MS picks the piece up, and a quick tap selects it.
+  if (idx >= 0 && e.pointerType === 'touch') {
+    orbitDragging = true; orbitLastX = e.clientX; orbitLastY = e.clientY;
+    const h = holdPick3d = {idx, x: e.clientX, y: e.clientY, moved: false};
+    h.timer = setTimeout(() => {
+      if (holdPick3d !== h || h.moved) return;
+      holdPick3d = null; orbitDragging = false;
+      startItemDrag3d(h.idx, h.x, h.y, false);
+      if (navigator.vibrate) navigator.vibrate(15);
+    }, HOLD_MS);
     return;
   }
+  if (idx >= 0) { startItemDrag3d(idx, e.clientX, e.clientY, e.shiftKey); return; }
   select(-1);
   orbitDragging = true; orbitLastX = e.clientX; orbitLastY = e.clientY;
   renderer.domElement.style.cursor = 'grabbing';
 }
 
+const HOLD_MS = 400;
+let lookByTouch = false;        // the current look drag is a finger (it turns the other way to the mouse)
+let holdPick3d = null;          // {idx, x, y, moved, timer}: a finger down on a piece, not yet a look or a pick-up
+function cancelHoldPick3d() { if (holdPick3d) { clearTimeout(holdPick3d.timer); holdPick3d = null; } }
+
+// Start dragging piece idx from screen point (x, y): along the floor, or turning it (Shift).
+function startItemDrag3d(idx, x, y, rotate) {
+  select(idx);
+  const item = placed[idx];
+  if (rotate) {
+    drag3d = {idx, mode: 'rotate', startX: x, startRot: item.rot || 0};
+  } else {
+    const p = floorPointAt(x, y);
+    const g = itemGroups[idx];
+    drag3d = {idx, mode: 'move', offX: g.position.x - (p ? p.x : g.position.x), offZ: g.position.z - (p ? p.z : g.position.z)};
+  }
+  renderer.domElement.style.cursor = 'grabbing';
+}
+
 function onMove3d(clientX, clientY, shiftKey) {
+  if (holdPick3d && !holdPick3d.moved && Math.hypot(clientX - holdPick3d.x, clientY - holdPick3d.y) > 8) { holdPick3d.moved = true; clearTimeout(holdPick3d.timer); }
   if (drag3d) {
     const item = placed[drag3d.idx];
     if (!item) { drag3d = null; return; }
@@ -2811,13 +2849,16 @@ function onMove3d(clientX, clientY, shiftKey) {
   if (orbitDragging) {
     const dx = clientX - orbitLastX, dy = clientY - orbitLastY;
     orbitLastX = clientX; orbitLastY = clientY;
-    lookAround(dx, dy);
+    // A finger drags the scene (like Street View: swipe right, look left);
+    // the mouse turns the view like a game (drag right, look right).
+    if (lookByTouch) lookAround(-dx, -dy); else lookAround(dx, dy);
     return;
   }
   if (view === '3d' && renderer) renderer.domElement.style.cursor = pickItemAt(clientX, clientY) >= 0 ? 'move' : 'grab';
 }
 
 function onUp3d() {
+  if (holdPick3d) { if (!holdPick3d.moved) select(holdPick3d.idx); cancelHoldPick3d(); }   // (a tap on a piece selects it)
   orbitDragging = false; moveDragging = false;
   drag3d = null;
   if (renderer) renderer.domElement.style.cursor = 'grab';
@@ -2865,7 +2906,7 @@ function attach3dControls(el) {
       if (touches3d.size === 2) {
         const [a, b] = [...touches3d.values()];
         pinch3d = {d: Math.hypot(a.x - b.x, a.y - b.y), r: orbitRadius, v: orbitRadius, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2};
-        drag3d = null; orbitDragging = false; moveDragging = false;
+        drag3d = null; orbitDragging = false; moveDragging = false; cancelHoldPick3d();
         return;
       }
     }
@@ -2932,7 +2973,13 @@ canvas.addEventListener('wheel', e => {
   if (view !== '2d' || elevWall != null) return;
   e.preventDefault();
   const {sx, sy} = screenPoint(e);
-  // (a touchpad pinch arrives as a wheel event with ctrlKey and small deltas)
+  // A two-finger touchpad scroll with any sideways part pans (a mouse wheel
+  // only scrolls up/down); a touchpad pinch arrives with ctrlKey and zooms.
+  if (!e.ctrlKey && e.deltaX) {
+    const k = canvas.width / (canvas.getBoundingClientRect().width || canvas.width);
+    view2d.x -= e.deltaX * k; view2d.y -= e.deltaY * k; clampView2d(); draw2d();
+    return;
+  }
   zoom2dAt(view2d.k * Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)), sx, sy);
 }, {passive: false});
 document.getElementById('zoomIn').addEventListener('click', () => zoom2dAt(view2d.k * 1.25, canvas.width / 2, canvas.height / 2));
@@ -3442,6 +3489,7 @@ let touchUndo = null;   // what the latest first finger added, taken back if it 
 function startPinch2d() {
   if (touchUndo && shape === 'custom' && drawing) { customPts.length = Math.min(customPts.length, touchUndo.drawLen); drawHover = null; }
   if (touchUndo && drawingItemShape) itemShapePts.length = Math.min(itemShapePts.length, touchUndo.shapeLen);
+  if (touchUndo && selected !== touchUndo.sel) select(touchUndo.sel);
   draggingPlaced = null; rotating2d = false; drawDrag = null; pan2d = null; lastTap = null;
   if (roomEdit) { roomEdit = null; redraw(); }
   const [a, b] = [...touches2d.values()];
@@ -3465,7 +3513,7 @@ canvas.addEventListener('pointerdown', e => {
     touches2d.set(e.pointerId, {x: sx, y: sy});
     if (touches2d.size === 2) { startPinch2d(); return; }
     if (touches2d.size > 2) return;
-    touchUndo = {drawLen: customPts.length, shapeLen: itemShapePts.length};
+    touchUndo = {drawLen: customPts.length, shapeLen: itemShapePts.length, sel: selected};
   }
   if (e.pointerType === 'touch') {
     const now = performance.now();
@@ -5131,12 +5179,16 @@ openFileInput.addEventListener('change', async () => {
   const file = openFileInput.files[0];
   openFileInput.value = '';
   if (!file) return;
+  const keepRadius = orbitRadius;   // (put back if the file can't be opened, or the 3D camera is left broken)
   try {
     checkpoint();
-    applyHome(JSON.parse(await file.text()));
+    const data = JSON.parse(await file.text());
+    orbitRadius = null;             // (a different layout: frame it afresh in 3D)
+    applyHome(data);
     checkpoint();
     autosave();
   } catch (err) {
+    if (orbitRadius == null) orbitRadius = keepRadius;
     alert('Couldn\'t open "' + file.name + '": ' + (err instanceof SyntaxError ? 'the file isn\'t valid JSON' : err.message) + '.');
   }
 });
@@ -5541,7 +5593,9 @@ async function openSharedFromHash() {
   const hadAny = allRoomItems().length || rooms.length > 1;
   if (hadAny && !confirm('Open the shared layout? It replaces the rooms you have here (Ctrl+Z brings them back).')) return;
   checkpoint();                                 // (what was here, for Ctrl+Z)
-  try { applyHome(data); } catch (err) { toast('That link isn\'t a Room Planner layout.'); return; }
+  const keepRadius = orbitRadius;
+  orbitRadius = null;                           // (a different layout: frame it afresh in 3D)
+  try { applyHome(data); } catch (err) { if (orbitRadius == null) orbitRadius = keepRadius; toast('That link isn\'t a Room Planner layout.'); return; }
   checkpoint();
   autosave();
   diag('shared layout opened', {items: placed.length, shape});
@@ -5676,8 +5730,13 @@ async function view3dImage() {
   if (view !== '3d') { document.getElementById('btn3d').click(); await new Promise(r => setTimeout(r, 700)); }
   const pads = itemGroups.map(g => g.getObjectByName('sel')).filter(Boolean), vis = pads.map(p => p.visible);
   pads.forEach(p => { p.visible = false; });
+  // The picture is of the whole room, not wherever the user has walked to.
+  const saved = {theta: orbitTheta, phi: orbitPhi, r: orbitRadius, t: orbitTarget.clone()};
+  frameWholeRoom(); updateCameraFromOrbit(); updateWallCutaway();
   renderer.render(scene, camera);
   const url = renderer.domElement.toDataURL('image/png');
+  orbitTheta = saved.theta; orbitPhi = saved.phi; orbitRadius = saved.r; orbitTarget.copy(saved.t);
+  updateCameraFromOrbit(); updateWallCutaway();
   pads.forEach((p, k) => { p.visible = vis[k]; });
   if (was !== '3d') document.getElementById('btn2d').click();
   return url;
@@ -5770,6 +5829,7 @@ function exampleLayout(name) {
 function loadExample(name) {
   if (placed.length && !confirm('Replace what\'s in this room with the example? (Ctrl+Z brings it back.)')) return;
   checkpoint();
+  orbitRadius = null;      // (a different room: frame it afresh in 3D)
   applyLayout(exampleLayout(name));
   placed.forEach(it => { applyKindDefaults(it); settleItem(it); });
   if (/^(Room \d+|Living room|Bedroom|Studio)$/.test(rooms[curRoom].name)) { rooms[curRoom].name = {living: 'Living room', bedroom: 'Bedroom', studio: 'Studio'}[name]; renderRoomTabs(); }
