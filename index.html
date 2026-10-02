@@ -99,6 +99,9 @@
   /* Selected-item inspector, floats over the canvas in both views */
   .sel-panel { position: absolute; top: 10px; right: 10px; width: 244px; background: rgba(255,255,255,.96); border: 1px solid #e0e0d8; border-radius: 10px; padding: 10px 12px; box-shadow: 0 4px 16px rgba(0,0,0,.08); font-size: 12px; color: #444; z-index: 2; }
   .sel-panel[hidden] { display: none; }
+  .zoom-bar { position: absolute; top: 10px; left: 10px; display: flex; gap: 4px; z-index: 1; }
+  .zoom-bar .view-btn { padding: 4px 9px; background: rgba(255,255,255,.92); }
+  .zoom-bar #zoomReset { min-width: 52px; }
   .sel-more-btn { display: none; }
   .sel-head { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
   .sel-head strong { flex: 1; font-weight: 500; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -326,6 +329,7 @@
         <button class="view-btn" id="btn3d">3D view</button>
       </div>
       <button class="view-btn" id="autoRotateBtn" style="display:none">Auto-rotate: Off</button>
+      <button class="view-btn" id="resetViewBtn" style="display:none" title="Back to the starting view of the whole room">Reset view</button>
       <span class="toolbar-hint" id="toolbarHint"></span>
       <button class="view-btn" id="shopListBtn" title="Everything in the room, with prices — download, copy or print it">🛒 Shopping list</button>
       <button class="view-btn" id="shareBtn" title="Copy a link that opens this layout">🔗 Share link</button>
@@ -353,6 +357,11 @@
     <div class="room-tabs" id="roomTabs"></div>
     <div class="canvas-wrap" id="canvasWrap">
       <canvas id="canvas"></canvas>
+      <div class="zoom-bar" id="zoomBar">
+        <button class="view-btn" id="zoomOut" title="Zoom out (or scroll / pinch)">−</button>
+        <button class="view-btn" id="zoomReset" title="Back to 100%">100%</button>
+        <button class="view-btn" id="zoomIn" title="Zoom in (or scroll / pinch)">+</button>
+      </div>
       <div class="elev-bar" id="elevBar" style="display:none">
         <button class="view-btn" id="elevPrev" title="Previous wall">◀</button>
         <strong id="elevTitle"></strong>
@@ -531,7 +540,7 @@ const STYLE_PRESETS = {
 // diag() keeps the last 150 steps/errors in localStorage ('rp-diag'), which
 // Claude can read back from the Edge profile on disk when something works in
 // tests but not in the user's browser (see CLAUDE.md).
-const BUILD = '2026-10-01.1';
+const BUILD = '2026-10-02.3';
 function diag(event, data) {
   try {
     const log = JSON.parse(localStorage.getItem('rp-diag') || '[]');
@@ -576,6 +585,13 @@ let pendingPageUrl = null;
 const canvas = document.getElementById('canvas');
 let ctx = canvas.getContext('2d');   // (swapped for a larger offscreen one while exporting a picture)
 let exporting = false;                // true / 'safe' while drawing the plan for export
+// 2D zoom and pan (see "2D zoom and pan"): screen canvas px = plan px * k + (x, y).
+const view2d = {k: 1, x: 0, y: 0};
+const IDENTITY_VIEW = {k: 1, x: 0, y: 0};
+const viewOf2d = () => elevWall == null && !exporting ? view2d : IDENTITY_VIEW;
+let pan2d = null;                     // {sx, sy, x, y}: dragging empty space
+const touches2d = new Map();          // touch pointers down on the plan (screen canvas px)
+let pinch2d = null;                   // {d, cx, cy, k, x, y}: two fingers down
 const wrap = document.getElementById('canvasWrap');
 
 function redraw() { if (view === '2d') draw2d(); else init3d(); }
@@ -2208,17 +2224,22 @@ function tracePath(pts) {
 }
 
 function draw2d() {
+  if (!exporting) updateZoomBar();
   if (view !== '2d') return;
   syncWalls();
+  if (!exporting) ctx.setTransform(1, 0, 0, 1, 0, 0);   // (exporting sets its own scale)
   if (elevWall != null) { drawElevation(); return; }
-  const w = canvas.width, h = canvas.height;
+  const w = canvas.width, h = canvas.height, v = viewOf2d();
   ctx.clearRect(0, 0, w, h);
+  if (v !== IDENTITY_VIEW) ctx.setTransform(v.k, 0, 0, v.k, v.x, v.y);
 
-  // grid
+  // grid, over the part of the plan that's on screen
+  const gx0 = Math.floor(-v.x / v.k / SCALE) * SCALE, gx1 = (w - v.x) / v.k;
+  const gy0 = Math.floor(-v.y / v.k / SCALE) * SCALE, gy1 = (h - v.y) / v.k;
   ctx.strokeStyle = 'rgba(0,0,0,0.06)';
   ctx.lineWidth = 0.5;
-  for (let x = 0; x < w; x += SCALE) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); }
-  for (let y = 0; y < h; y += SCALE) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+  for (let x = gx0; x < gx1; x += SCALE) { ctx.beginPath(); ctx.moveTo(x,gy0); ctx.lineTo(x,gy1); ctx.stroke(); }
+  for (let y = gy0; y < gy1; y += SCALE) { ctx.beginPath(); ctx.moveTo(gx0,y); ctx.lineTo(gx1,y); ctx.stroke(); }
 
   // floor (styled) + walls (wall colour, dark edge so light colours still show)
   const pts = getRoomPts();
@@ -2414,8 +2435,14 @@ function build3d() {
 
   scene = new THREE.Scene();
   scene.environment = envMapFor(renderer);
-  orbitTarget.set(spanX/2, 0, spanZ/2);
-  if (orbitRadius == null) orbitRadius = Math.max(spanX, spanZ) * 1.3 * Math.pow(Math.max(1, 1 / camera.aspect), 0.8);
+  // How far you can move: the room's farthest point from its centre + 3 m.
+  const cx = spanX / 2, cz = spanZ / 2;
+  move3dBounds = {cx, cz, r: Math.max(...getRoomOutline().map(p => { const w = toWorld(p.x, p.y); return Math.hypot(w.x - cx, w.z - cz); })) + MOVE3D_MARGIN};
+  // (init3d runs again on every image/model load, so only a new view goes back to the centre)
+  if (orbitRadius == null) {
+    orbitTarget.set(cx, 0, cz);
+    orbitRadius = Math.max(spanX, spanZ) * 1.3 * Math.pow(Math.max(1, 1 / camera.aspect), 0.8);
+  }
   updateCameraFromOrbit();
 
   scene.add(new THREE.AmbientLight(0xffffff, 0.55));
@@ -2570,7 +2597,8 @@ function updateWallCutaway() {
 
 function animate() {
   animId = requestAnimationFrame(animate);
-  if (autoRotate && !orbitDragging && !drag3d) {
+  stepMoveKeys();
+  if (autoRotate && !orbitDragging && !moveDragging && !drag3d) {
     orbitTheta += 0.004;
     updateCameraFromOrbit();
   }
@@ -2578,12 +2606,12 @@ function animate() {
   renderer.render(scene, camera);
 }
 
-// ── 3D mouse: drag items on the floor, Shift+drag to rotate, else orbit ──────
-// THREE.OrbitControls isn't available on the bundled r128 build, so orbiting
-// is a small hand-rolled equivalent: spherical coordinates around the room
-// center. Dragging empty space "grabs" the scene, same convention as three's
-// OrbitControls: drag right -> room turns right, drag down -> camera tilts
-// toward top-down.
+// ── 3D mouse: drag items on the floor, Shift+drag to rotate, else look ──────
+// The camera is kept as spherical coordinates around a look point
+// (orbitTarget, orbitRadius ahead of it). Dragging empty space turns the
+// camera where it stands, like a first-person game (lookAround): drag right
+// -> look right, drag up -> look up, all the way round and from straight down
+// to straight up. Auto-rotate still circles the look point.
 let orbitTheta = Math.PI / 4;   // horizontal angle
 let orbitPhi   = 0.85;          // polar angle from vertical (0 = straight down, PI/2 = level)
 let orbitRadius = null;         // set on first init3d() based on room size
@@ -2599,10 +2627,104 @@ function updateCameraFromOrbit() {
   const r = orbitRadius, t = orbitTarget;
   camera.position.set(
     t.x + r * Math.sin(orbitTheta) * Math.sin(orbitPhi),
-    r * Math.cos(orbitPhi),
+    t.y + r * Math.cos(orbitPhi),
     t.z + r * Math.cos(orbitTheta) * Math.sin(orbitPhi)
   );
   camera.lookAt(t);
+}
+
+// ── 3D: moving around ────────────────────────────────────────────────────────
+// Besides looking, you can move (the camera and its look point together):
+// middle-drag / Ctrl+drag on empty space, two fingers on a
+// touch screen, or the keys (W/S forward/back, A/D sideways, arrows too when
+// nothing is selected, E/Q up/down, Shift faster); the wheel / a pinch flies
+// along where you look.
+// Moving keeps the camera (where you are, not the point you look at, which
+// can be metres ahead) within move3dBounds: a circle around the room's
+// centre whose radius is the room's farthest point + MOVE3D_MARGIN, and no
+// higher than that radius. The starting overview of a big room can already
+// be outside it; from there a move just can't take you further out.
+// Orbiting and zooming aren't limited.
+const MOVE3D_MARGIN = 3;
+const MIN_EYE = 0.1;            // (the camera stays at least this far above the floor)
+const LOOK_SPEED = 0.006;       // radians per pixel dragged
+let move3dBounds = null;        // {cx, cz, r} in metres, set by build3d()
+let moveDragging = false;
+const moveKeys = new Set();
+
+// Move the orbit point by `right` m sideways (to the camera's right), `fwd` m
+// forward (level, the way the camera faces) and `up` m up; the camera moves
+// with it. At the boundary you slide along it.
+function moveOrbitTarget(right, fwd, up) {
+  const s = Math.sin(orbitTheta), c = Math.cos(orbitTheta), t = orbitTarget, b = move3dBounds;
+  const before = camera.position.clone();
+  t.x += right * c - fwd * s;
+  t.z += -right * s - fwd * c;
+  t.y += up;
+  updateCameraFromOrbit();
+  if (b) {
+    const p = camera.position;
+    const limH = Math.max(b.r, Math.hypot(before.x - b.cx, before.z - b.cz)), limY = Math.max(b.r, before.y);
+    const dx = p.x - b.cx, dz = p.z - b.cz, d = Math.hypot(dx, dz);
+    if (d > limH) { t.x -= dx * (1 - limH / d); t.z -= dz * (1 - limH / d); }
+    if (p.y > limY) t.y -= p.y - limY;
+    updateCameraFromOrbit();
+  }
+  if (camera.position.y < MIN_EYE) { t.y += MIN_EYE - camera.position.y; updateCameraFromOrbit(); }
+}
+
+// Fly d m along where the camera looks (back if negative), within the same limits.
+function flyForward(d) { moveOrbitTarget(0, d * Math.sin(orbitPhi), -d * Math.cos(orbitPhi)); }
+
+// Turn the camera where it stands by a drag of (dx, dy) px: the look point
+// swings round it instead of it round the look point.
+function lookAround(dx, dy) {
+  const c = camera.position.clone(), r = orbitRadius;
+  orbitTheta -= dx * LOOK_SPEED;
+  orbitPhi = Math.min(Math.PI - 0.01, Math.max(0.01, orbitPhi - dy * LOOK_SPEED));
+  const sp = Math.sin(orbitPhi);
+  orbitTarget.set(c.x - r * Math.sin(orbitTheta) * sp, c.y - r * Math.cos(orbitPhi), c.z - r * Math.cos(orbitTheta) * sp);
+  updateCameraFromOrbit();
+}
+
+// Dragging by (dx, dy) screen px "grabs" the scene: what was under the
+// pointer stays under it (sideways and up/down).
+function dragMoveView(dx, dy) {
+  const h = renderer.domElement.clientHeight || 1;
+  const perPx = 2 * Math.max(orbitRadius, 1.5) * Math.tan(camera.fov * Math.PI / 360) / h;
+  moveOrbitTarget(-dx * perPx, 0, dy * perPx);
+}
+
+const MOVE_KEYS = {w: [0, 1, 0], s: [0, -1, 0], a: [-1, 0, 0], d: [1, 0, 0], e: [0, 0, 1], q: [0, 0, -1],
+  arrowup: [0, 1, 0], arrowdown: [0, -1, 0], arrowleft: [-1, 0, 0], arrowright: [1, 0, 0]};
+document.addEventListener('keydown', e => {
+  if (view !== '3d' || e.ctrlKey || e.metaKey || e.altKey || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+  const k = e.key.toLowerCase();
+  if (!MOVE_KEYS[k] || (k.startsWith('arrow') && placed[selected])) return;   // (arrows nudge a selected item)
+  if (!moveKeys.has(k)) { stepMoveKeys(); moveKeys.add(k); }
+  e.preventDefault();
+});
+document.addEventListener('keyup', e => { const k = e.key.toLowerCase(); if (moveKeys.has(k)) { stepMoveKeys(); moveKeys.delete(k); } });
+document.addEventListener('keydown', e => { if (e.key === 'Shift') { stepMoveKeys(); moveFast = true; } });
+document.addEventListener('keyup', e => { if (e.key === 'Shift') { stepMoveKeys(); moveFast = false; } });
+window.addEventListener('blur', () => { moveKeys.clear(); moveFast = false; });
+
+// Movement goes by the time the keys have been held (stepped every frame,
+// and when a key changes), so it's the same speed however fast frames come.
+let moveFast = false, moveT = 0;
+function stepMoveKeys(now = performance.now()) {
+  const dt = (now - moveT) / 1000;
+  moveT = now;
+  if (!moveKeys.size || dt <= 0) return;
+  let right = 0, fwd = 0, up = 0;
+  moveKeys.forEach(k => { const m = MOVE_KEYS[k]; right += m[0]; fwd += m[1]; up += m[2]; });
+  const speed = 2.5 * dt * (moveFast ? 2.5 : 1);
+  if (right || fwd || up) moveOrbitTarget(right * speed, fwd * speed, up * speed);
+}
+
+function resetView3d() {
+  orbitTheta = Math.PI / 4; orbitPhi = 0.85; orbitRadius = null;
+  if (view === '3d') init3d();
 }
 
 function setRay(clientX, clientY) {
@@ -2629,8 +2751,23 @@ function floorPointAt(clientX, clientY) {
 }
 
 function onDown3d(e) {
+  // Right button anywhere (over furniture too, which fills the view once
+  // you're in the room): look around, as in game editors.
+  if (e.button === 2) {
+    e.preventDefault();
+    orbitDragging = true; orbitLastX = e.clientX; orbitLastY = e.clientY;
+    renderer.domElement.style.cursor = 'grabbing';
+    return;
+  }
+  // Middle button anywhere, or Ctrl + left on empty space: slide the view.
+  const idx = e.button === 0 ? pickItemAt(e.clientX, e.clientY) : -1;
+  if (e.button === 1 || (e.button === 0 && e.ctrlKey && idx < 0)) {
+    e.preventDefault();
+    moveDragging = true; orbitLastX = e.clientX; orbitLastY = e.clientY;
+    renderer.domElement.style.cursor = 'move';
+    return;
+  }
   if (e.button !== 0) return;
-  const idx = pickItemAt(e.clientX, e.clientY);
   if (idx >= 0) {
     select(idx);
     const item = placed[idx];
@@ -2666,26 +2803,30 @@ function onMove3d(clientX, clientY, shiftKey) {
     updateSelPanel();
     return;
   }
+  if (moveDragging) {
+    dragMoveView(clientX - orbitLastX, clientY - orbitLastY);
+    orbitLastX = clientX; orbitLastY = clientY;
+    return;
+  }
   if (orbitDragging) {
     const dx = clientX - orbitLastX, dy = clientY - orbitLastY;
     orbitLastX = clientX; orbitLastY = clientY;
-    orbitTheta -= dx * 0.006;
-    orbitPhi = Math.min(1.5, Math.max(0.12, orbitPhi - dy * 0.006));
-    updateCameraFromOrbit();
+    lookAround(dx, dy);
     return;
   }
   if (view === '3d' && renderer) renderer.domElement.style.cursor = pickItemAt(clientX, clientY) >= 0 ? 'move' : 'grab';
 }
 
 function onUp3d() {
-  orbitDragging = false;
+  orbitDragging = false; moveDragging = false;
   drag3d = null;
   if (renderer) renderer.domElement.style.cursor = 'grab';
 }
 
 // Window-level listeners are registered once, so a drag keeps working when
 // the pointer leaves the canvas.
-// Two fingers on the 3D view: pinch to zoom (no dragging meanwhile).
+// Two fingers on the 3D view: pinch to zoom, move them together to move
+// around (no dragging furniture or orbiting meanwhile).
 const touches3d = new Map();
 let pinch3d = null;
 window.addEventListener('pointermove', e => {
@@ -2694,7 +2835,14 @@ window.addEventListener('pointermove', e => {
     touches3d.set(e.pointerId, {x: e.clientX, y: e.clientY});
     if (touches3d.size === 2) {
       const [a, b] = [...touches3d.values()], d = Math.hypot(a.x - b.x, a.y - b.y);
-      if (pinch3d && d > 10) { orbitRadius = Math.min(60, Math.max(1.5, pinch3d.r * pinch3d.d / d)); updateCameraFromOrbit(); }
+      if (pinch3d && d > 10) {
+        // (as far as zooming to orbitRadius * d0 / d would go, but flying there)
+        const v = pinch3d.r * pinch3d.d / d;
+        flyForward(pinch3d.v - v); pinch3d.v = v;
+        const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+        dragMoveView(mx - pinch3d.mx, my - pinch3d.my);
+        pinch3d.mx = mx; pinch3d.my = my;
+      }
       return;
     }
   }
@@ -2716,25 +2864,25 @@ function attach3dControls(el) {
       touches3d.set(e.pointerId, {x: e.clientX, y: e.clientY});
       if (touches3d.size === 2) {
         const [a, b] = [...touches3d.values()];
-        pinch3d = {d: Math.hypot(a.x - b.x, a.y - b.y), r: orbitRadius};
-        drag3d = null; orbitDragging = false;
+        pinch3d = {d: Math.hypot(a.x - b.x, a.y - b.y), r: orbitRadius, v: orbitRadius, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2};
+        drag3d = null; orbitDragging = false; moveDragging = false;
         return;
       }
     }
     onDown3d(e);
   });
   el.addEventListener('contextmenu', e => e.preventDefault());
+  el.addEventListener('mousedown', e => { if (e.button === 1) e.preventDefault(); });   // (no auto-scroll on a middle-drag)
   el.addEventListener('wheel', e => {
     e.preventDefault();
-    orbitRadius = Math.min(60, Math.max(1.5, orbitRadius * (1 + e.deltaY * 0.001)));
-    updateCameraFromOrbit();
+    flyForward(-e.deltaY * 0.001 * orbitRadius);
   }, {passive: false});
 }
 
 function destroy3d() {
   if (animId) cancelAnimationFrame(animId);
   animId = null;
-  drag3d = null; orbitDragging = false;
+  drag3d = null; orbitDragging = false; moveDragging = false; moveKeys.clear();
   if (renderer) renderer.domElement.style.display = 'none';
   canvas.style.display = 'block';
 }
@@ -2745,10 +2893,51 @@ function destroy3d() {
 // room and is shown scaled down, so a whole room still fits; pointer
 // positions go through canvasPoint() to get back to canvas pixels.
 const MIN_CANVAS = {w: 520, h: 420};
-function canvasPoint(e) {
+function screenPoint(e) {
   const r = canvas.getBoundingClientRect(), k = r.width ? canvas.width / r.width : 1;
-  return {mx: (e.clientX - r.left) * k, my: (e.clientY - r.top) * k};
+  return {sx: (e.clientX - r.left) * k, sy: (e.clientY - r.top) * k};
 }
+function canvasPoint(e) {
+  const {sx, sy} = screenPoint(e), v = viewOf2d();
+  return {mx: (sx - v.x) / v.k, my: (sy - v.y) / v.k};
+}
+
+// ── 2D zoom and pan ──────────────────────────────────────────────────────────
+// The plan is drawn through a transform: canvas px on screen = plan px * k +
+// (x, y). Everything else (placed[], customPts, hit tests) stays in plan px;
+// canvasPoint() undoes the transform. Pinch, scroll or the +/− buttons zoom;
+// dragging empty space (or two fingers) pans. The elevation view and
+// exported pictures aren't zoomed. (State is declared next to `exporting`.)
+const ZOOM2D_MIN = 0.5, ZOOM2D_MAX = 5;
+
+// Keep the middle of the canvas over the (zoomed) plan, so it can't get lost.
+function clampView2d() {
+  const W = canvas.width, H = canvas.height, k = view2d.k;
+  view2d.x = Math.min(W / 2, Math.max(W / 2 - k * W, view2d.x));
+  view2d.y = Math.min(H / 2, Math.max(H / 2 - k * H, view2d.y));
+}
+// Zoom to k, keeping the plan point under screen canvas px (sx, sy) in place.
+function zoom2dAt(k, sx, sy) {
+  k = Math.min(ZOOM2D_MAX, Math.max(ZOOM2D_MIN, k));
+  const px = (sx - view2d.x) / view2d.k, py = (sy - view2d.y) / view2d.k;
+  view2d.k = k; view2d.x = sx - px * k; view2d.y = sy - py * k;
+  clampView2d(); updateZoomBar(); draw2d();
+}
+function resetZoom2d() { view2d.k = 1; view2d.x = view2d.y = 0; updateZoomBar(); draw2d(); }
+function updateZoomBar() {
+  document.getElementById('zoomBar').style.display = view === '2d' && elevWall == null ? 'flex' : 'none';
+  document.getElementById('zoomReset').textContent = Math.round(view2d.k * 100) + '%';
+}
+canvas.addEventListener('wheel', e => {
+  if (view !== '2d' || elevWall != null) return;
+  e.preventDefault();
+  const {sx, sy} = screenPoint(e);
+  // (a touchpad pinch arrives as a wheel event with ctrlKey and small deltas)
+  zoom2dAt(view2d.k * Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)), sx, sy);
+}, {passive: false});
+document.getElementById('zoomIn').addEventListener('click', () => zoom2dAt(view2d.k * 1.25, canvas.width / 2, canvas.height / 2));
+document.getElementById('zoomOut').addEventListener('click', () => zoom2dAt(view2d.k / 1.25, canvas.width / 2, canvas.height / 2));
+document.getElementById('zoomReset').addEventListener('click', resetZoom2d);
 
 function resizeCanvas() {
   // Rooms are centred on the canvas, so shift everything stored in canvas
@@ -2761,6 +2950,7 @@ function resizeCanvas() {
   const dx = canvas.width / 2 - ox, dy = canvas.height / 2 - oy;
   placed.forEach(it => { it.x += dx; it.y += dy; });
   customPts.forEach(p => { p.x += dx; p.y += dy; });
+  clampView2d();
   if (view === '3d') init3d(); else draw2d();
 }
 
@@ -3245,10 +3435,38 @@ function onHandle(mx, my) {
 // is the double-click (rotate 90°, open a wall), and a long press doesn't
 // delete (a right-click does).
 let lastPointerType = 'mouse', lastTap = null;
+let touchUndo = null;   // what the latest first finger added, taken back if it turns into a pinch
+
+// Two fingers on the plan: pinch to zoom and move them to pan, instead of
+// whatever the first finger started (a drag, a corner while drawing...).
+function startPinch2d() {
+  if (touchUndo && shape === 'custom' && drawing) { customPts.length = Math.min(customPts.length, touchUndo.drawLen); drawHover = null; }
+  if (touchUndo && drawingItemShape) itemShapePts.length = Math.min(itemShapePts.length, touchUndo.shapeLen);
+  draggingPlaced = null; rotating2d = false; drawDrag = null; pan2d = null; lastTap = null;
+  if (roomEdit) { roomEdit = null; redraw(); }
+  const [a, b] = [...touches2d.values()];
+  pinch2d = {d: Math.max(10, Math.hypot(a.x - b.x, a.y - b.y)), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2, k: view2d.k, x: view2d.x, y: view2d.y};
+  draw2d();
+}
+function movePinch2d() {
+  const [a, b] = [...touches2d.values()], p = pinch2d;
+  const k = Math.min(ZOOM2D_MAX, Math.max(ZOOM2D_MIN, p.k * Math.hypot(a.x - b.x, a.y - b.y) / p.d));
+  // The plan point that was under the fingers' midpoint stays under it.
+  const px = (p.cx - p.x) / p.k, py = (p.cy - p.y) / p.k;
+  view2d.k = k; view2d.x = (a.x + b.x) / 2 - px * k; view2d.y = (a.y + b.y) / 2 - py * k;
+  clampView2d(); updateZoomBar(); draw2d();
+}
+
 canvas.addEventListener('pointerdown', e => {
   lastPointerType = e.pointerType;
   if (e.button !== 0) return; // right-click is handled by contextmenu
-  const {mx, my} = canvasPoint(e);
+  const {mx, my} = canvasPoint(e), {sx, sy} = screenPoint(e);
+  if (e.pointerType === 'touch' && elevWall == null) {
+    touches2d.set(e.pointerId, {x: sx, y: sy});
+    if (touches2d.size === 2) { startPinch2d(); return; }
+    if (touches2d.size > 2) return;
+    touchUndo = {drawLen: customPts.length, shapeLen: itemShapePts.length};
+  }
   if (e.pointerType === 'touch') {
     const now = performance.now();
     if (lastTap && now - lastTap.t < 350 && Math.hypot(mx - lastTap.x, my - lastTap.y) < 30) { lastTap = null; draggingPlaced = null; doubleClickAt(mx, my); return; }
@@ -3274,11 +3492,25 @@ canvas.addEventListener('pointerdown', e => {
   const i = itemIndexAt(mx, my);
   if (i < 0 && hit && hit.type === 'wall') { select(-1); startRoomEdit(hit, mx, my); return; }
   if (i >= 0) { draggingPlaced = i; dragOff = {x: mx - placed[i].x, y: my - placed[i].y}; }
+  else pan2d = {sx, sy, x: view2d.x, y: view2d.y};   // (empty space: drag to pan)
   select(i);
 });
 
 window.addEventListener('pointermove', e => {
   if (view !== '2d') return;
+  if (touches2d.has(e.pointerId)) {
+    const {sx, sy} = screenPoint(e);
+    touches2d.set(e.pointerId, {x: sx, y: sy});
+    if (pinch2d && touches2d.size >= 2) { movePinch2d(); return; }
+  }
+  if (pinch2d) return;
+  if (pan2d) {
+    const {sx, sy} = screenPoint(e);
+    view2d.x = pan2d.x + sx - pan2d.sx; view2d.y = pan2d.y + sy - pan2d.sy;
+    clampView2d(); draw2d();
+    if (Math.hypot(sx - pan2d.sx, sy - pan2d.sy) > 3) canvas.style.cursor = 'grabbing';
+    return;
+  }
   const {mx, my} = canvasPoint(e);
   if (rotating2d && placed[selected]) {
     const h = handlePos(placed[selected]);
@@ -3315,6 +3547,16 @@ window.addEventListener('pointermove', e => {
 });
 
 const pointerUp2d = e => {
+  touches2d.delete(e.pointerId);
+  if (pinch2d) {
+    if (touches2d.size >= 2) return;
+    pinch2d = null;
+    // One finger still down: it carries on panning.
+    const rest = [...touches2d.values()][0];
+    if (rest) pan2d = {sx: rest.x, sy: rest.y, x: view2d.x, y: view2d.y};
+    return;
+  }
+  if (pan2d) { pan2d = null; canvas.style.cursor = 'default'; }
   if (rotating2d) { rotating2d = false; draw2d(); }
   draggingPlaced = null;
   if (roomEdit) { roomEdit = null; redraw(); checkpoint(); }
@@ -3535,9 +3777,9 @@ function canvasNumberInput(x, y, value, apply, {min = '0.1', title = ''} = {}) {
   const input = document.createElement('input');
   input.type = 'number'; input.step = '0.01'; input.min = min; input.className = 'wall-len-input'; input.title = title;
   input.value = value;
-  const k = canvas.clientWidth / canvas.width || 1;
-  input.style.left = (canvas.offsetLeft + x * k) + 'px';
-  input.style.top = (canvas.offsetTop + y * k) + 'px';
+  const k = canvas.clientWidth / canvas.width || 1, v = viewOf2d();
+  input.style.left = (canvas.offsetLeft + (x * v.k + v.x) * k) + 'px';
+  input.style.top = (canvas.offsetTop + (y * v.k + v.y) * k) + 'px';
   canvas.parentElement.appendChild(input);
   input.focus(); input.select();
   let done = false;
@@ -4119,8 +4361,10 @@ function syncStyleControls() {
 
 const autoRotateBtn = document.getElementById('autoRotateBtn');
 const toolbarHint = document.getElementById('toolbarHint');
-const HINT_2D = 'Drag to move · Drag ↻ handle to rotate (Shift snaps 15°) · Double-click +90° · Right-click deletes';
-const HINT_3D = 'Drag furniture to move · Shift+drag to rotate · Drag empty space to orbit · Scroll to zoom';
+const resetViewBtn = document.getElementById('resetViewBtn');
+resetViewBtn.addEventListener('click', resetView3d);
+const HINT_2D = 'Drag to move · Drag ↻ handle to rotate (Shift snaps 15°) · Double-click +90° · Right-click deletes · Scroll or pinch to zoom, drag empty space to pan';
+const HINT_3D = 'Drag furniture to move · Shift+drag to rotate · Right-drag (or drag empty space) to look around · W/A/S/D to move, Q/E down/up · Scroll to go forward/back · Middle-drag slides';
 toolbarHint.title = toolbarHint.textContent = HINT_2D;
 
 document.getElementById('btn2d').addEventListener('click', () => {
@@ -4129,6 +4373,7 @@ document.getElementById('btn2d').addEventListener('click', () => {
   document.getElementById('btn2d').classList.add('active');
   document.getElementById('btn3d').classList.remove('active');
   autoRotateBtn.style.display = 'none';
+  resetViewBtn.style.display = 'none';
   toolbarHint.title = toolbarHint.textContent = HINT_2D;
   draw2d();
 });
@@ -4139,6 +4384,8 @@ document.getElementById('btn3d').addEventListener('click', () => {
   document.getElementById('btn2d').classList.remove('active');
   document.getElementById('btn3d').classList.add('active');
   autoRotateBtn.style.display = 'inline-block';
+  resetViewBtn.style.display = 'inline-block';
+  updateZoomBar();
   toolbarHint.title = toolbarHint.textContent = HINT_3D;
   diag('view 3d', {items: placed.map(it => ({label: it.label.slice(0, 30), model: it.modelUrl ? (modelCache[it.modelUrl] || {}).status : null, img: it.imgUrl ? (imgCache[it.imgUrl] || {}).status : null}))});
   init3d();
