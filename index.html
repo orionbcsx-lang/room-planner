@@ -25,6 +25,14 @@
 
   .panel { background: #fff; border: 1px solid #e0e0d8; border-radius: 12px; padding: 14px; }
   .panel h3 { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+  /* (side panels fold up to their headings; click one to open it) */
+  .panel h3.panel-head { display: flex; align-items: center; justify-content: space-between; cursor: pointer; user-select: none; margin: -4px -6px 6px; padding: 4px 6px; border-radius: 6px; }
+  .panel h3.panel-head:hover { background: #f4f4f0; color: #555; }
+  .panel h3.panel-head:focus-visible { outline: 2px solid #4a7fe8; outline-offset: 1px; }
+  .panel-chev { font-size: 13px; line-height: 1; color: #999; transition: transform .15s; }
+  .panel.collapsed .panel-chev { transform: rotate(-90deg); }
+  .panel.collapsed .panel-body { display: none; }
+  .panel.collapsed h3.panel-head { margin-bottom: -4px; }
 
   .shape-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
   .shape-btn { font-size: 11px; padding: 7px 4px; cursor: pointer; border-radius: 6px; border: 1px solid #ddd; background: #fafaf8; color: #333; text-align: center; transition: all .15s; }
@@ -478,6 +486,7 @@
           </select>
           <button class="view-btn" id="elevDel">Delete</button>
         </span>
+        <button class="view-btn" id="elevRemovePart" hidden title="Remove this separate area from the room">Remove this area</button>
         <button class="view-btn primary-btn" id="elevDone">Back to plan</button>
       </div>
       <div class="group-bar" id="groupBar" hidden>
@@ -583,7 +592,7 @@
           <h2 id="welcomeTitle">Plan your room before you buy</h2>
           <p>See whether furniture really fits, what it all costs, and how it looks in 3D.</p>
           <div class="steps">
-            <div class="step"><span class="step-n">1</span><div><b>Draw your room.</b> Pick a shape in the Room shape panel and type its size, or drag the walls. Double-click a wall to add doors and windows.</div></div>
+            <div class="step"><span class="step-n">1</span><div><b>Draw your room.</b> Open Room shape on the right and pick a shape and type its size, or drag the walls. Double-click a wall to add doors and windows.</div></div>
             <div class="step"><span class="step-n">2</span><div><b>Add furniture.</b> Paste a product link from a furniture shop to bring in its real size, photo and price (needs the Room Planner browser extension), or pick from the list.</div></div>
             <div class="step"><span class="step-n">3</span><div><b>Check it fits.</b> Red means something's in the way or through a wall. The total adds up as you go; share a link or print a shopping list when you're done.</div></div>
           </div>
@@ -711,7 +720,7 @@ const STYLE_PRESETS = {
 // diag() keeps the last 150 steps/errors in localStorage ('rp-diag'), which
 // Claude can read back from the Edge profile on disk when something works in
 // tests but not in the user's browser (see CLAUDE.md).
-const BUILD = '2026-10-05.3';
+const BUILD = '2026-10-05.4';
 function diag(event, data) {
   try {
     const log = JSON.parse(localStorage.getItem('rp-diag') || '[]');
@@ -742,7 +751,10 @@ let draggingFurn = null;
 let draggingPlaced = null;
 let extras = [];           // more parts of this room's plan: [{pts: [{x, y}]}] (plan px); a part inside the room is a pillar, one outside it a separate area
 let extraDraft = null;     // the corners of a part being drawn ("Draw another part"), or null
-let extraDrag = null;      // {e, k, orig}: a part's corner being dragged
+let extraDrag = null;      // (no longer used: parts are edited with the room's own tools)
+let focusPart = -1;        // whose outline the room's editing state (shape, customPts, walls, wallLabels) holds: -1 the room, k extras[k]
+let mainStash = null;      // the room's own editing state while a part's is swapped in
+let selCornerPart = -1;    // the outline selCorner belongs to
 let measures = [];         // tape measurements on the plan (this room): [{x1, y1, x2, y2}] in plan px
 let measureMode = false, measureDrag = null, measureSel = -1;   // the "Measure" tool; the one being drawn
 let notes = [];            // text notes on the plan (this room): [{x, y, text}], plan px (the note's middle)
@@ -1503,7 +1515,8 @@ function buildDecorGroup(item, colorHex) {
 }
 
 // Outline segments of the room with their outward normals (canvas px).
-function wallSegments() {
+function wallSegments() { return inRoom(wallSegmentsHere); }
+function wallSegmentsHere() {
   const segs = [];
   // (n points from the floor into the wall: out of the room or an area, into a pillar)
   const add = (pts, into) => pts.forEach((a, i) => {
@@ -1514,7 +1527,7 @@ function wallSegments() {
     segs.push({a, b, n, len});
   });
   add(getRoomOutline(), false);
-  extras.forEach(e => add(e.pts, extraKind(e) === 'pillar'));
+  extras.forEach((e, k) => add(withPart(k, getRoomOutline), extraKind(e) === 'pillar'));
   return segs;
 }
 
@@ -2383,10 +2396,38 @@ function getRoomPts() {
 // one outside it (or across its edge) is a separate area of the same room,
 // with its own floor and walls. Drag a part's corners to reshape it;
 // right-click it to remove it.
+// Each part has its own corners and walls ({pts, walls}: lengths, curves,
+// heights, windows and doors). To edit or draw one, its outline is swapped
+// into the room's editing state, so every room tool works on it unchanged;
+// anything about the room itself (saving, fit, area, 3D) swaps the room back.
+function swapTo(k) {
+  if (k !== -1 && !extras[k]) k = -1;           // (a part that's been removed meanwhile)
+  if (k === focusPart) return;
+  if (focusPart === -1) mainStash = {shape, roomW, roomH, customPts, walls, drawing, wallLabels};
+  else { const e = extras[focusPart]; if (e) { e.pts = customPts; e.walls = walls; e._labels = wallLabels; } }
+  if (k === -1) { ({shape, roomW, roomH, customPts, walls, drawing, wallLabels} = mainStash); mainStash = null; }
+  else { const e = extras[k]; shape = 'custom'; drawing = false; customPts = e.pts; walls = e.walls || (e.walls = []); wallLabels = e._labels || []; }
+  focusPart = k;
+}
+function withPart(k, fn) { const prev = focusPart; swapTo(k); try { return fn(); } finally { swapTo(prev); } }
+const inRoom = fn => focusPart === -1 ? fn() : withPart(-1, fn);
+// A room handle or wall under the pointer, in the room or one of its parts ({...hit, part: k}).
+function outlineHitAt(mx, my) {
+  const h0 = inRoom(() => roomHitAt(mx, my));
+  if (h0 && h0.type !== 'wall') return h0;
+  for (let k = extras.length - 1; k >= 0; k--) {
+    const h = withPart(k, () => roomHitAt(mx, my));
+    if (!h || (h0 && h.type === 'wall')) continue;
+    // (a pillar's labels, curve and + handles give way to furniture)
+    if (extraKind(extras[k]) === 'pillar' && h.type !== 'vertex' && h.type !== 'wall' && itemIndexAt(mx, my) >= 0) continue;
+    return {...h, part: k};
+  }
+  return h0;
+}
 const isDrawing = () => (shape === 'custom' && drawing) || extraDraft != null;
 const drawPts = () => extraDraft || customPts;
 function extraKind(e) {
-  const room = getRoomOutline();
+  const room = inRoom(getRoomOutline);
   const onOrIn = p => pointInPoly(room, p.x, p.y) || room.some((a, i) => distToSegment(p.x, p.y, a, room[(i + 1) % room.length]) <= 1.5);
   // (every corner, and the middle of every side, inside the room or on its wall)
   const P = e.pts, mids = P.map((p, i) => ({x: (p.x + P[(i + 1) % P.length].x) / 2, y: (p.y + P[(i + 1) % P.length].y) / 2}));
@@ -2394,11 +2435,15 @@ function extraKind(e) {
 }
 // Does part e cross the room's wall (some of it inside the room, some outside)?
 function extraCrossesRoom(e) {
-  const room = getRoomOutline();
+  const room = inRoom(getRoomOutline);
   return extraKind(e) === 'area' && e.pts.some(p => pointInPoly(room, p.x, p.y) && !room.some((a, i) => distToSegment(p.x, p.y, a, room[(i + 1) % room.length]) <= 1.5));
 }
-function removeExtra(i) { extras.splice(i, 1); redraw(); checkpoint(); }
-const extraPolys = kind => extras.filter(e => extraKind(e) === kind).map(e => e.pts);
+function removeExtra(i) {
+  if (focusPart !== -1) { if (elevWall != null) closeElevation(); swapTo(-1); }
+  if (selCornerPart !== -1) { selCorner = null; selCornerPart = -1; }
+  extras.splice(i, 1); redraw(); checkpoint();
+}
+const extraPolys = kind => extras.map((e, k) => extraKind(e) === kind ? withPart(k, getRoomOutline) : null).filter(Boolean);
 const polyAreaPx = pts => Math.abs(pts.reduce((a, p, i) => { const q = pts[(i + 1) % pts.length]; return a + p.x * q.y - q.x * p.y; }, 0)) / 2;
 // The part (and corner) under the pointer: a corner within 9 px, else inside a pillar or on an area's wall.
 function extraHitAt(mx, my) {
@@ -2407,7 +2452,7 @@ function extraHitAt(mx, my) {
     if (k >= 0) return {e, k};
   }
   for (let e = extras.length - 1; e >= 0; e--) {
-    const P = extras[e].pts;
+    const P = withPart(e, getRoomOutline);
     if (extraKind(extras[e]) === 'pillar' ? pointInPoly(P, mx, my) : P.some((a, i) => distToSegment(mx, my, a, P[(i + 1) % P.length]) <= 6)) return {e, k: -1};
   }
   return null;
@@ -2424,25 +2469,38 @@ function drawExtras() {
   const bb = getRoomBBox();
   const pattern = ctx.createPattern(surfaceCanvas(roomStyle.floorStyle, roomStyle.floorColor), 'repeat');
   pattern.setTransform(new DOMMatrix().translate(bb.x, bb.y).scale(SCALE / TEX));
-  extras.forEach(e => {
+  extras.forEach((e, k) => {
     const pillar = extraKind(e) === 'pillar';
-    tracePath(e.pts);
-    ctx.fillStyle = pillar ? roomStyle.wallColor : pattern; ctx.fill();
-    ctx.lineJoin = 'miter';
-    if (pillar) { ctx.strokeStyle = 'rgba(0,0,0,0.55)'; ctx.lineWidth = 2; ctx.stroke(); }
-    else { ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 9; ctx.stroke(); ctx.strokeStyle = roomStyle.wallColor; ctx.lineWidth = 7; ctx.stroke(); }
+    withPart(k, () => {
+      syncWalls();
+      tracePath(getRoomOutline());
+      ctx.fillStyle = pillar ? roomStyle.wallColor : pattern; ctx.fill();
+      ctx.lineJoin = 'miter';
+      if (pillar) { ctx.strokeStyle = 'rgba(0,0,0,0.55)'; ctx.lineWidth = 2; ctx.stroke(); return; }
+      ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 9; ctx.stroke(); ctx.strokeStyle = roomStyle.wallColor; ctx.lineWidth = 7; ctx.stroke();
+      drawPlanOpenings(getRoomPts());
+    });
   });
 }
+// Each part's wall lengths and handles: the room's own overlay, in the part's state.
 function drawExtraHandles() {
-  if (exporting || isDrawing()) return;
-  extras.forEach(e => e.pts.forEach(p => {
-    ctx.fillStyle = '#fff'; ctx.strokeStyle = '#4a7fe8'; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.rect(p.x - 4, p.y - 4, 8, 8); ctx.fill(); ctx.stroke();
-  }));
+  if (isDrawing()) return;
+  extras.forEach((e, k) => {
+    const active = (roomHover && roomHover.part === k) || (roomEdit && roomEdit.part === k) || selCornerPart === k;
+    if (extraKind(e) === 'pillar' && !active) {
+      // (a small pillar's labels and handles would crowd out the furniture round it: just its corners)
+      if (exporting) return;
+      withPart(k, () => { wallLabels = []; });
+      e.pts.forEach(p => { ctx.fillStyle = '#fff'; ctx.strokeStyle = '#4a7fe8'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.rect(p.x - 3.5, p.y - 3.5, 7, 7); ctx.fill(); ctx.stroke(); });
+      return;
+    }
+    withPart(k, drawRoomOverlay);
+  });
 }
 
-function getRoomBBox() {
-  const pts = [...getRoomOutline(), ...extras.flatMap(e => e.pts)];
+function getRoomBBox() { return inRoom(roomBBox); }
+function roomBBox() {
+  const pts = [...getRoomOutline(), ...extras.flatMap((e, k) => withPart(k, getRoomOutline))];
   const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
   return {x: Math.min(...xs), y: Math.min(...ys), x2: Math.max(...xs), y2: Math.max(...ys)};
 }
@@ -2603,6 +2661,7 @@ function tracePath(pts) {
 }
 
 function draw2d() {
+  if (focusPart !== -1 && elevWall == null) return withPart(-1, draw2d);   // (the plan is drawn from the room's state)
   if (!exporting) { updateZoomBar(); updateRoomArea(); }
   if (view !== '2d') return;
   syncWalls();
@@ -2827,7 +2886,8 @@ function init3d() {
   try { build3d(); } catch (e) { diag('3D build failed', String(e.stack || e).slice(0, 500)); throw e; }
 }
 
-function build3d() {
+function build3d() { return inRoom(build3dHere); }
+function build3dHere() {
   canvas.style.display = 'none';
   ensureRenderer();
   disposeScene(scene);
@@ -2876,10 +2936,11 @@ function build3d() {
   // neighbours meet. Window glass and frames and door leaves are separate
   // meshes, built the same way, so they fade with their wall.
   const t = 0.1;
+  walls3d = [];
+  const buildWalls = roomPts => {
   syncWalls();
   const wallCanvas = surfaceCanvas(roomStyle.wallStyle === 'paint' ? 'plain' : roomStyle.wallStyle, roomStyle.wallColor);
   const polyXZ = roomPts.map(p => ({x: p.x, y: p.z}));
-  walls3d = [];
   roomPts.forEach((a, i) => {
     const b = roomPts[(i + 1) % roomPts.length];
     const dx = b.x - a.x, dz = b.z - a.z, chord = Math.hypot(dx, dz);
@@ -2972,9 +3033,12 @@ function build3d() {
     const mid = arc.at(0.5), mn = arc.normal(0.5);
     walls3d.push({mesh: wallMesh, nx: mn.x, nz: mn.y, mx: mid.x, mz: mid.y, parts});
   });
-  // Pillars (floor to ceiling) and separate areas (their own floor and walls).
-  extras.forEach(e => {
-    const H = roomStyle.wallHeight, W = e.pts.map(p => toWorld(p.x, p.y));
+  };
+  buildWalls(roomPts);
+  // Pillars (floor to ceiling) and separate areas (their own floor, and walls
+  // built like the room's: heights, curves, windows and doors).
+  extras.forEach((e, k) => withPart(k, () => {
+    const H = roomStyle.wallHeight, W = getRoomOutline().map(p => toWorld(p.x, p.y));
     const shp = new THREE.Shape();
     W.forEach((p, i) => i === 0 ? shp.moveTo(p.x, -p.z) : shp.lineTo(p.x, -p.z));
     const look = surfaceCanvas(roomStyle.wallStyle === 'paint' ? 'plain' : roomStyle.wallStyle, roomStyle.wallColor);
@@ -2988,19 +3052,8 @@ function build3d() {
     const fg = new THREE.ShapeGeometry(shp); fg.rotateX(-Math.PI / 2);
     const ft = new THREE.CanvasTexture(surfaceCanvas(roomStyle.floorStyle, roomStyle.floorColor)); ft.wrapS = ft.wrapT = THREE.RepeatWrapping;
     scene.add(new THREE.Mesh(fg, new THREE.MeshBasicMaterial({map: ft, side: THREE.DoubleSide})));
-    const poly = W.map(p => ({x: p.x, y: p.z}));
-    W.forEach((a, i) => {
-      const b = W[(i + 1) % W.length], dx = b.x - a.x, dz = b.z - a.z, L = Math.hypot(dx, dz);
-      if (L < 1e-6) return;
-      let nx = dz / L, nz = -dx / L;
-      if (pointInPoly(poly, (a.x + b.x) / 2 + nx * 0.05, (a.z + b.z) / 2 + nz * 0.05)) { nx = -nx; nz = -nz; }
-      const box = new THREE.Mesh(new THREE.BoxGeometry(L + t, H, t), wallMat());
-      box.position.set((a.x + b.x) / 2 + nx * t / 2, H / 2, (a.z + b.z) / 2 + nz * t / 2);
-      box.rotation.y = -Math.atan2(dz, dx);
-      scene.add(box);
-      walls3d.push({mesh: box, nx, nz, mx: (a.x + b.x) / 2, mz: (a.z + b.z) / 2, parts: []});
-    });
-  });
+    buildWalls(getRoomPts().map(p => toWorld(p.x, p.y)));
+  }));
   updateWallCutaway();
 
   itemGroups = placed.map((item, i) => { const g = buildItemObject(item, i); scene.add(g); return g; });
@@ -3449,7 +3502,8 @@ sizesBtn.addEventListener('click', () => setShowSizes(!showSizes));
 sizesBtn.classList.toggle('active', showSizes); sizesBtn.setAttribute('aria-pressed', String(showSizes));
 function planSizeText(item) { return units === 'ft' ? `${cm(item.w)} × ${cm(item.h)}` : `${Math.round(item.w * 100)} × ${Math.round(item.h * 100)} cm`; }
 
-function resizeCanvas() {
+function resizeCanvas() { return inRoom(resizeCanvasHere); }
+function resizeCanvasHere() {
   // Rooms are centred on the canvas, so shift everything stored in canvas
   // pixels by the change in centre to keep furniture where it was in the room.
   const ox = canvas.width / 2, oy = canvas.height / 2;
@@ -3859,7 +3913,8 @@ function doorLeaves(o) {
 }
 const doorSide = o => o.swing === 'out' ? 1 : -1;      // along the wall's outward normal: out, or into the room
 // The open ends of the door leaves on the plan (px), for the export's crop.
-function doorTips() {
+function doorTips() { return inRoom(() => [...doorTipsHere(), ...extras.flatMap((e, k) => withPart(k, doorTipsHere))]); }
+function doorTipsHere() {
   const pts = getRoomPts(), out = [];
   walls.forEach((w, i) => {
     if (i >= pts.length) return;
@@ -3872,6 +3927,9 @@ function doorTips() {
   return out;
 }
 function doorSwings() {
+  return inRoom(() => [...doorSwingsHere(), ...extras.flatMap((e, k) => extraKind(e) === 'area' ? withPart(k, doorSwingsHere).map(d => ({...d, key: 'p' + k + ':' + d.key})) : [])]);
+}
+function doorSwingsHere() {
   const pts = getRoomPts(), out = [];
   walls.forEach((w, i) => {
     if (i >= pts.length) return;
@@ -3894,7 +3952,8 @@ function doorSwings() {
   return out;
 }
 
-function fitCheck() {
+function fitCheck() { return inRoom(fitCheckHere); }
+function fitCheckHere() {
   const problems = [], tight = [], bad = new Set(), doors = new Map();
   if (shape === 'custom' && drawing) return {problems, tight, bad, doors: []};
   const polys = placed.map(it => itemPoly(it, 1.5)), room = getRoomOutline();
@@ -4496,6 +4555,42 @@ document.addEventListener('keydown', e => {
   if (traceMode && e.key === 'Escape' && !e.target.classList.contains('wall-len-input')) { setTraceMode(null); e.stopImmediatePropagation(); }
 }, true);
 
+// ── Side panels: folded up to their headings ────────────────────────────────────
+// Each panel on the right shows just its heading until it's clicked (or the
+// ▾ is), and remembers whether it's open (localStorage 'rp-panels':
+// {heading: true|false}, or {all: true} to open them all).
+{
+  let open = {};
+  try { open = JSON.parse(localStorage.getItem('rp-panels') || '{}') || {}; } catch {}
+  document.querySelectorAll('.sidebar .panel').forEach(panel => {
+    const h = panel.querySelector(':scope > h3');
+    if (!h) return;
+    const key = h.textContent.trim();
+    const body = document.createElement('div');
+    body.className = 'panel-body';
+    while (h.nextSibling) body.appendChild(h.nextSibling);
+    panel.appendChild(body);
+    h.classList.add('panel-head'); h.setAttribute('role', 'button'); h.tabIndex = 0;
+    const chev = document.createElement('span');
+    chev.className = 'panel-chev'; chev.textContent = '▾'; chev.setAttribute('aria-hidden', 'true');
+    h.appendChild(chev);
+    const set = on => { panel.classList.toggle('collapsed', !on); h.setAttribute('aria-expanded', String(on)); h.title = on ? 'Fold up' : 'Open'; };
+    set(open[key] ?? !!open.all);
+    const toggle = () => {
+      const on = panel.classList.contains('collapsed');
+      set(on); open[key] = on;
+      try { localStorage.setItem('rp-panels', JSON.stringify(open)); } catch {}
+    };
+    h.addEventListener('click', toggle);
+    h.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); } });
+  });
+}
+// (open a folded panel from code: the panel holding element id)
+function openPanelOf(id) {
+  const p = document.getElementById(id) && document.getElementById(id).closest('.sidebar .panel');
+  if (p && p.classList.contains('collapsed')) p.querySelector('.panel-head').click();
+}
+
 // ── Furniture sidebar ─────────────────────────────────────────────────────────
 
 // Grouped by the room they usually go in; "Any room" for lamps, rugs, art….
@@ -4634,6 +4729,11 @@ function startPinch2d() {
   if (touchUndo && drawingItemShape) itemShapePts.length = Math.min(itemShapePts.length, touchUndo.shapeLen);
   if (touchUndo && selected !== touchUndo.sel) select(touchUndo.sel);
   draggingPlaced = null; rotating2d = false; drawDrag = null; pan2d = null; lastTap = null;
+  if (roomEdit && roomEdit.before && (roomEdit.part ?? -1) !== -1) {
+    const k = roomEdit.part, b = roomEdit.before;
+    withPart(k, () => { customPts.length = 0; b.pts.forEach(p => customPts.push(p)); walls = b.walls; });
+    roomEdit.before = null;
+  }
   if (roomEdit && roomEdit.before) {
     const b = roomEdit.before;
     if (b.shape !== 'custom') setShape(b.shape); else customPts = b.pts;
@@ -4696,25 +4796,27 @@ canvas.addEventListener('pointerdown', e => {
     if (e.shiftKey && (gi >= 0 || !roomHitAt(mx, my))) { boxSel = {x0: mx, y0: my, x1: mx, y1: my, piece: gi}; draw2d(); return; }
     if (group.length && group.includes(gi)) { groupDrag = {mx, my, start: group.map(j => ({x: placed[j].x, y: placed[j].y})), moved: false}; return; }
   }
-  { const xh = extraHitAt(mx, my), rh = roomHitAt(mx, my);       // (a corner of a pillar or separate area: drag it — unless a room handle is there)
-    if (xh && xh.k >= 0 && (!rh || rh.type === 'wall')) { e.preventDefault(); select(-1); const p = extras[xh.e].pts[xh.k]; extraDrag = {e: xh.e, k: xh.k, orig: {x: p.x, y: p.y}}; return; } }
-  // The room outline: a wall's length label, a corner, then furniture, then a wall.
-  const hit = roomHitAt(mx, my);
+  // The room outline (or a part's): a wall's length label, a corner, then furniture, then a wall.
+  const hit = outlineHitAt(mx, my), part = hit && hit.part != null ? hit.part : -1;
   // (preventDefault: the press would otherwise move focus off the new box, closing it)
   selCorner = null;
-  if (hit && hit.type === 'label') { e.preventDefault(); select(-1); editWallLength(hit.i); return; }
-  if (hit && hit.type === 'diameter') { e.preventDefault(); select(-1); editCircleDiameter(); return; }
-  if (hit && hit.type === 'radius' && hit.handle) { e.preventDefault(); select(-1); startRoomEdit(hit, mx, my); return; }
   const i = itemIndexAt(mx, my);
-  if (i < 0 && hit && hit.type === 'add') {
-    e.preventDefault(); select(-1);
-    const before = {shape, pts: customPts.map(p => ({...p})), walls: JSON.parse(JSON.stringify(walls))};
-    startRoomEdit({type: 'vertex', i: insertCorner(hit.i, hit.t)}, mx, my);
-    roomEdit.before = before;              // (taken back if this finger turns into a pinch)
-    redraw(); return;
-  }
-  if (hit && (hit.type === 'vertex' || hit.type === 'curve')) { e.preventDefault(); select(-1); startRoomEdit(hit, mx, my); return; }
-  if (i < 0 && hit && (hit.type === 'wall' || hit.type === 'radius')) { select(-1); startRoomEdit(hit, mx, my); return; }
+  const pressed = withPart(part, () => {
+    if (hit && hit.type === 'label') { e.preventDefault(); select(-1); editWallLength(hit.i); return true; }
+    if (hit && hit.type === 'diameter') { e.preventDefault(); select(-1); editCircleDiameter(); return true; }
+    if (hit && hit.type === 'radius' && hit.handle) { e.preventDefault(); select(-1); startRoomEdit(hit, mx, my); return true; }
+    if (i < 0 && hit && hit.type === 'add') {
+      e.preventDefault(); select(-1);
+      const before = {shape, pts: customPts.map(p => ({...p})), walls: JSON.parse(JSON.stringify(walls))};
+      startRoomEdit({type: 'vertex', i: insertCorner(hit.i, hit.t)}, mx, my);
+      roomEdit.before = before;              // (taken back if this finger turns into a pinch)
+      return true;
+    }
+    if (hit && (hit.type === 'vertex' || hit.type === 'curve')) { e.preventDefault(); select(-1); startRoomEdit(hit, mx, my); return true; }
+    if (i < 0 && hit && (hit.type === 'wall' || hit.type === 'radius')) { select(-1); startRoomEdit(hit, mx, my); return true; }
+    return false;
+  });
+  if (pressed) { if (roomEdit) roomEdit.part = part; redraw(); return; }
   if (i >= 0 && !placed[i].locked) { draggingPlaced = i; dragOff = {x: mx - placed[i].x, y: my - placed[i].y}; dragStart = {x: mx, y: my}; }
   else pan2d = {sx, sy, x: view2d.x, y: view2d.y};   // (empty space, or a locked piece: drag to pan)
   select(i);
@@ -4762,7 +4864,7 @@ window.addEventListener('pointermove', e => {
     return;
   }
   if (elevWall != null) { if (e.target === canvas || elevDrag) elevMouseMove(mx, my); return; }
-  if (roomEdit) { moveRoomEdit(mx, my, e.altKey); return; }
+  if (roomEdit) { withPart(roomEdit.part ?? -1, () => moveRoomEdit(mx, my, e.altKey)); return; }
   if (extraDrag) {
     const p = extras[extraDrag.e].pts[extraDrag.k];
     p.x = e.altKey ? mx : extraDrag.orig.x + Math.round((mx - extraDrag.orig.x) / snapPx) * snapPx;
@@ -4775,11 +4877,11 @@ window.addEventListener('pointermove', e => {
   }
   if (e.target === canvas) {
     // (A wall under a piece of furniture doesn't count; corners and length labels do.)
-    const rh = roomHitAt(mx, my), onItem = itemIndexAt(mx, my) >= 0;
+    const rh = outlineHitAt(mx, my), onItem = itemIndexAt(mx, my) >= 0;
     const hit = rh && (rh.type !== 'wall' && rh.type !== 'add' && !(rh.type === 'radius' && !rh.handle) || !onItem) ? rh : null;
     const changed = JSON.stringify(hit) !== JSON.stringify(roomHover);
     roomHover = hit;
-    const pts = hit && hit.type === 'wall' ? getRoomPts() : null;
+    const pts = hit && hit.type === 'wall' ? withPart(hit.part ?? -1, getRoomPts) : null;
     const along = pts && Math.abs(pts[(hit.i + 1) % pts.length].x - pts[hit.i].x) > Math.abs(pts[(hit.i + 1) % pts.length].y - pts[hit.i].y);
     canvas.style.cursor = onHandle(mx, my) ? 'grab' : hit && hit.type === 'label' ? 'text' : hit && hit.type === 'vertex' ? 'move' : hit && hit.type === 'curve' ? 'grab' : hit && hit.type === 'add' ? 'copy' : hit && hit.type === 'diameter' ? 'text' : hit && hit.type === 'radius' ? 'ew-resize'
       : itemIndexAt(mx, my) >= 0 ? 'move' : hit ? (along ? 'ns-resize' : 'ew-resize') : 'default';
@@ -4822,7 +4924,7 @@ const pointerUp2d = e => {
   if (snapGuides.length) { snapGuides = []; draw2d(); }
   if (roomEdit) {
     // (a click on a corner, without dragging it, selects it for Delete)
-    if (roomEdit.type === 'vertex' && !roomEdit.moved) selCorner = roomEdit.i;
+    if (roomEdit.type === 'vertex' && !roomEdit.moved) { selCorner = roomEdit.i; selCornerPart = roomEdit.part ?? -1; }
     roomEdit = null; redraw(); checkpoint();
   }
   if (elevDrag) { elevDrag = null; draw2d(); checkpoint(); }
@@ -4842,14 +4944,19 @@ function doubleClickAt(mx, my) {
   if (isDrawing()) { finishDrawing(); return; }
   if (lastPointerType !== 'mouse' && elevWall == null) {
     const xh = extraHitAt(mx, my);
-    if (xh && itemIndexAt(mx, my) < 0) { if (confirm(`Remove this ${extraKind(extras[xh.e]) === 'pillar' ? 'pillar' : 'separate area'}?`)) removeExtra(xh.e); return; }
+    if (xh && xh.k < 0 && extraKind(extras[xh.e]) === 'pillar' && itemIndexAt(mx, my) < 0) { if (confirm('Remove this pillar?')) removeExtra(xh.e); return; }
   }
   if (elevWall != null) return;
   const ni = noteAt(mx, my);
   if (ni >= 0) { editNote(ni); return; }
-  const wh = roomHitAt(mx, my);
+  const wh = outlineHitAt(mx, my), whPart = wh && wh.part != null ? wh.part : -1;
   // Double-tap a corner with a finger or pen (often no Delete key there): remove it.
-  if (wh && wh.type === 'vertex' && lastPointerType !== 'mouse') { select(-1); deleteCorner(wh.i); return; }
+  if (wh && wh.type === 'vertex' && lastPointerType !== 'mouse') { select(-1); withPart(whPart, () => deleteCorner(wh.i)); redraw(); return; }
+  // A separate area's wall: its elevation (a pillar has none).
+  if (wh && whPart !== -1 && (wh.type === 'wall' || wh.type === 'curve') && itemIndexAt(mx, my) < 0) {
+    if (extraKind(extras[whPart]) === 'area') { swapTo(whPart); openElevation(wh.i); }
+    return;
+  }
   // Double-click a wall (not furniture): its elevation, for height, windows and doors.
   if (wh && (wh.type === 'wall' || wh.type === 'curve' || wh.type === 'radius') && itemIndexAt(mx, my) < 0) { openElevation(wh.i); return; }
   const i = itemIndexAt(mx, my);
@@ -4933,7 +5040,7 @@ function finishDrawing() {
   if (extraDraft) {
     const pts = extraDraft; extraDraft = null;
     if (pts.length >= 3) {
-      extras.push({pts});
+      extras.push({pts, walls: []});
       const e = extras[extras.length - 1], touch = lastPointerType !== 'mouse';
       toast(extraKind(e) === 'pillar' ? `Added a pillar. Drag its corners to adjust it; ${touch ? 'double-tap' : 'right-click'} it to remove it.`
         : extraCrossesRoom(e) ? 'This part crosses the room\'s wall, so it\'s a separate area with its own walls. For an alcove or a bay, drag the room\'s own wall or add a corner with + instead.'
@@ -5137,7 +5244,8 @@ function canvasNumberInput(x, y, value, apply, {min = '0.1', title = ''} = {}) {
 function editWallLength(i) {
   const lab = wallLabels.find(l => l.i === i);
   if (!lab) return;
-  canvasNumberInput(lab.x - 6, lab.y - 3, wallLen(i), v => { if (v > 0) setWallLength(i, v); else draw2d(); });
+  const k = focusPart;
+  canvasNumberInput(lab.x - 6, lab.y - 3, wallLen(i), v => { if (v > 0 && (k === -1 || extras[k])) withPart(k, () => setWallLength(i, v)); draw2d(); });
 }
 
 // ── Adding and deleting corners ──
@@ -5194,6 +5302,10 @@ function deleteCorner(v) {
 
 // Wall lengths, corner handles and, while drawing, the wall being drawn.
 function drawRoomOverlay() {
+  // (the hover, the drag and the selected corner belong to one outline: the room or a part)
+  const hov = roomHover && (roomHover.part ?? -1) === focusPart ? roomHover : null;
+  const edit = roomEdit && (roomEdit.part ?? -1) === focusPart ? roomEdit : null;
+  const selC = selCornerPart === focusPart ? selCorner : null;
   wallLabels = [];
   ctx.save();
   ctx.font = '600 11px system-ui';
@@ -5232,12 +5344,12 @@ function drawRoomOverlay() {
       ctx.beginPath(); ctx.arc(drawHover.x, drawHover.y, 5, 0, Math.PI * 2); ctx.fillStyle = '#4a7fe8'; ctx.fill();
     }
   };
-  if (extraDraft) draft(extraDraft);
+  if (extraDraft && focusPart === -1) draft(extraDraft);
   if (shape === 'custom' && drawing) {
     draft(customPts);
   } else if (shape === 'circle') {
     const c = circleGeom();
-    const hot = roomHover && (roomHover.type === 'radius' || roomHover.type === 'diameter') || roomEdit && roomEdit.type === 'radius';
+    const hot = hov && (hov.type === 'radius' || hov.type === 'diameter') || edit && edit.type === 'radius';
     if (hot && !exporting) {
       ctx.strokeStyle = 'rgba(74,127,232,0.55)'; ctx.lineWidth = 9;
       ctx.beginPath(); ctx.arc(c.cx, c.cy, c.r, 0, Math.PI * 2); ctx.stroke();
@@ -5251,8 +5363,8 @@ function drawRoomOverlay() {
     const pts = getRoomPts();
     pts.forEach((a, i) => {
       const arc = wallArc(i, pts), mid = arc.at(0.5), nrm = arc.normal(0.5);
-      const bending = roomEdit && roomEdit.type === 'curve' && roomEdit.i === i;
-      const hot = roomHover && roomHover.i === i && roomHover.type !== 'vertex' || roomEdit && roomEdit.i === i && roomEdit.type !== 'vertex';
+      const bending = edit && edit.type === 'curve' && edit.i === i;
+      const hot = hov && hov.i === i && hov.type !== 'vertex' || edit && edit.i === i && edit.type !== 'vertex';
       if (hot) {
         ctx.strokeStyle = 'rgba(74,127,232,0.55)'; ctx.lineWidth = 9;
         ctx.beginPath();
@@ -5266,7 +5378,7 @@ function drawRoomOverlay() {
       label(text, mid.x + nrm.x * off, mid.y + nrm.y * off, i, hot && !bending);
       if (exporting) return;
       // the ◆ that bends the wall; while bending, how far it bows and the radius
-      const curveHot = bending || roomHover && roomHover.type === 'curve' && roomHover.i === i;
+      const curveHot = bending || hov && hov.type === 'curve' && hov.i === i;
       ctx.save();
       ctx.translate(mid.x, mid.y); ctx.rotate(Math.PI / 4);
       ctx.fillStyle = curveHot ? '#e8834a' : (arc.straight ? '#fff' : '#fde7d8'); ctx.strokeStyle = '#e8834a'; ctx.lineWidth = 1.5;
@@ -5281,21 +5393,21 @@ function drawRoomOverlay() {
       // the "+" that adds a corner
       const ad = addCornerAt(wallArc(i, pts));
       if (!ad) return;
-      const hot = roomHover && roomHover.type === 'add' && roomHover.i === i;
+      const hot = hov && hov.type === 'add' && hov.i === i;
       ctx.fillStyle = hot ? '#4a7fe8' : '#fff'; ctx.strokeStyle = '#4a7fe8'; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.arc(ad.x, ad.y, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
       ctx.strokeStyle = hot ? '#fff' : '#4a7fe8';
       ctx.beginPath(); ctx.moveTo(ad.x - 3, ad.y); ctx.lineTo(ad.x + 3, ad.y); ctx.moveTo(ad.x, ad.y - 3); ctx.lineTo(ad.x, ad.y + 3); ctx.stroke();
     });
     if (!exporting) pts.forEach((p, i) => {
-      const hot = roomHover && roomHover.type === 'vertex' && roomHover.i === i || roomEdit && roomEdit.type === 'vertex' && roomEdit.i === i;
-      const sel = selCorner === i, r = sel ? 6 : 4;
+      const hot = hov && hov.type === 'vertex' && hov.i === i || edit && edit.type === 'vertex' && edit.i === i;
+      const sel = selC === i, r = sel ? 6 : 4;
       ctx.fillStyle = sel ? '#e8834a' : hot ? '#4a7fe8' : '#fff'; ctx.strokeStyle = sel ? '#e8834a' : '#4a7fe8'; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.rect(p.x - r, p.y - r, 2 * r, 2 * r); ctx.fill(); ctx.stroke();
     });
-    if (!exporting && selCorner != null && pts[selCorner]) {
+    if (!exporting && selC != null && pts[selC]) {
       // (inside the room, off the corner's two walls)
-      const p = pts[selCorner], n1 = wallNormal(pts, selCorner), n2 = wallNormal(pts, (selCorner + pts.length - 1) % pts.length);
+      const p = pts[selC], n1 = wallNormal(pts, selC), n2 = wallNormal(pts, (selC + pts.length - 1) % pts.length);
       label(pts.length > 3 ? (lastPointerType !== 'mouse' ? 'Double-tap removes this corner' : 'Delete removes this corner') : 'A room needs 3 corners', p.x - (n1.x + n2.x) * 40, p.y - (n1.y + n2.y) * 40, null, true);
     }
   }
@@ -5380,7 +5492,8 @@ function wallLen(i) { return wallArc(i).len / SCALE; }
 
 // Floor area (m²) and the length of wall around it (m). Curved walls count
 // along their arcs (getRoomOutline, ~12 cm steps); a circle is exact.
-function roomArea() {
+function roomArea() { return inRoom(roomAreaHere); }
+function roomAreaHere() {
   // (plus its separate areas, less its pillars)
   const more = (extraPolys('area').reduce((a, P) => a + polyAreaPx(P), 0) - extraPolys('pillar').reduce((a, P) => a + polyAreaPx(P), 0)) / (SCALE * SCALE);
   if (shape === 'circle') { const r = Math.min(roomW, roomH) / 2; return Math.PI * r * r + more; }
@@ -5389,7 +5502,8 @@ function roomArea() {
   o.forEach((p, i) => { const q = o[(i + 1) % o.length]; a += p.x * q.y - q.x * p.y; });
   return Math.abs(a) / 2 / (SCALE * SCALE) + more;
 }
-function roomPerimeter() {
+function roomPerimeter() { return inRoom(roomPerimeterHere); }
+function roomPerimeterHere() {
   if (shape === 'circle') return Math.PI * Math.min(roomW, roomH);
   return getRoomPts().reduce((s, _, i) => s + wallLen(i), 0);
 }
@@ -5453,11 +5567,14 @@ function openElevation(i) {
   select(-1);
   if (view !== '2d') document.getElementById('btn2d').click();
   document.getElementById('elevBar').style.display = 'flex';
+  updatePartBar();
   toolbarHint.title = toolbarHint.textContent = 'Drag the top of the wall to set its height (each end separately for a sloping wall) · Add windows and doors, drag to move, drag their edges to resize · Delete removes the selected one';
   draw2d();
 }
 function closeElevation() {
   elevWall = null; elevSel = null; elevDrag = null;
+  if (focusPart !== -1) swapTo(-1);
+  updatePartBar();
   document.getElementById('elevBar').style.display = 'none';
   toolbarHint.title = toolbarHint.textContent = HINT_2D;
   draw2d();
@@ -5728,6 +5845,20 @@ document.getElementById('elevDoorStyle').addEventListener('change', e => setDoor
 document.getElementById('elevDoorHinge').addEventListener('change', e => setDoorOption('hinge', e.target.value));
 document.getElementById('elevDoorSwing').addEventListener('change', e => setDoorOption('swing', e.target.value));
 
+// The elevation bar of a separate area: say so, and offer to remove it.
+// (a press on the side panels or the toolbar while a part's elevation is open: back to the room first)
+function leavePart() { if (focusPart !== -1) { if (elevWall != null) closeElevation(); else swapTo(-1); } }
+document.querySelectorAll('.sidebar, .toolbar, .room-tabs').forEach(el => el.addEventListener('pointerdown', leavePart, true));
+function updatePartBar() {
+  const b = document.getElementById('elevRemovePart');
+  if (b) b.hidden = !(elevWall != null && focusPart !== -1);
+}
+document.getElementById('elevRemovePart').addEventListener('click', () => {
+  const k = focusPart;
+  if (k === -1 || !confirm('Remove this separate area?')) return;
+  closeElevation(); removeExtra(k);
+});
+
 function updateRoomHint() {
   // (no walls to edit yet while a room is being drawn)
   document.getElementById('editWallsBtn').style.display = isDrawing() ? 'none' : '';
@@ -5794,7 +5925,9 @@ function checkpoint() {
 }
 function restoreSnapshot(pos) {
   histPos = pos;
+  const reopen = elevWall != null && focusPart !== -1 ? {k: focusPart, w: elevWall} : null;
   applyHome(JSON.parse(undoStack[pos]));
+  if (reopen && extras[reopen.k] && extraKind(extras[reopen.k]) === 'area') { swapTo(reopen.k); openElevation(reopen.w); }
   undoStack[pos] = homeToJson();         // (same home, as this build writes it)
   updateRoomHint();
 }
@@ -5830,7 +5963,7 @@ document.addEventListener('keydown', e => {
     return;
   }
   if (selCorner != null && selected < 0 && view === '2d' && elevWall == null && !(shape === 'custom' && drawing)) {
-    if (e.key === 'Delete' || e.key === 'Backspace') { deleteCorner(selCorner); e.preventDefault(); e.stopImmediatePropagation(); return; }
+    if (e.key === 'Delete' || e.key === 'Backspace') { const c = selCorner; withPart(selCornerPart, () => deleteCorner(c)); selCorner = null; redraw(); e.preventDefault(); e.stopImmediatePropagation(); return; }
     if (e.key === 'Escape') { selCorner = null; draw2d(); }
   }
   if (!isDrawing() || e.ctrlKey || e.metaKey) return;
@@ -5849,6 +5982,7 @@ document.addEventListener('keydown', e => {
 // Sync the room-shape buttons and inputs to `s`. `pts` is a finished
 // free-drawn outline (from a saved layout); without it, Free draw starts drawing.
 function setShape(s, pts) {
+  leavePart();
   shape = s;
   document.querySelectorAll('.shape-btn').forEach(b => b.classList.toggle('active', b.dataset.shape === s));
   document.getElementById('sizeInputs').style.display = (s === 'circle' || s === 'custom') ? 'none' : 'flex';
@@ -5864,9 +5998,10 @@ document.querySelectorAll('.shape-btn').forEach(btn => {
   btn.addEventListener('click', () => { if (measureMode) setMeasureMode(false); if (noteMode) setNoteMode(false); setShape(btn.dataset.shape); redraw(); });
 });
 
-document.getElementById('roomW').addEventListener('input', e => { roomW = +e.target.value || 6; redraw(); });
-document.getElementById('roomH').addEventListener('input', e => { roomH = +e.target.value || 5; redraw(); });
+document.getElementById('roomW').addEventListener('input', e => { leavePart(); roomW = +e.target.value || 6; redraw(); });
+document.getElementById('roomH').addEventListener('input', e => { leavePart(); roomH = +e.target.value || 5; redraw(); });
 document.getElementById('clearBtn').addEventListener('click', () => {
+  leavePart();
   // The layout is autosaved, so reloading won't bring it back.
   if ((placed.length || measures.length || notes.length || extras.length) && !confirm('Remove all furniture, measurements, notes, pillars and extra areas from the room? This can\'t be undone.')) return;
   placed = []; customPts = []; measures = []; notes = []; extras = []; updateMeasureClear(); select(-1); redraw();
@@ -6591,7 +6726,8 @@ const LAYOUT_KEY = 'rp-layout';
 let lastSavedLayout = null;
 let rooms = [{name: 'Room 1', data: null}], curRoom = 0;
 
-function layoutToJson() {
+function layoutToJson() { return inRoom(layoutToJsonHere); }
+function layoutToJsonHere() {
   const cx = canvas.width / 2, cy = canvas.height / 2;
   const toM = (x, y) => ({x: +((x - cx) / SCALE).toFixed(4), y: +((y - cy) / SCALE).toFixed(4)});
   const items = placed.map(it => {
@@ -6603,7 +6739,7 @@ function layoutToJson() {
     app: 'room-planner', version: 1,
     shape, roomW, roomH, roomStyle,
     customPts: shape === 'custom' && !drawing ? customPts.map(p => toM(p.x, p.y)) : null,
-    extras: extras.map(e => ({pts: e.pts.map(p => toM(p.x, p.y))})),
+    extras: extras.map(e => ({pts: e.pts.map(p => toM(p.x, p.y)), walls: (e.walls || []).map(w => ({hStart: w.hStart, hEnd: w.hEnd, bulge: w.bulge || 0, openings: w.openings.map(o => ({...o}))}))})),
     walls: walls.map(w => ({hStart: w.hStart, hEnd: w.hEnd, bulge: w.bulge || 0, openings: w.openings.map(o => ({...o}))})),
     items,
     measures: measures.map(m => { const a = toM(m.x1, m.y1), b = toM(m.x2, m.y2); return {x1: a.x, y1: a.y, x2: b.x, y2: b.y}; }),
@@ -6641,6 +6777,8 @@ function applyHome(data) {
 }
 
 function applyLayout(data) {
+  if (focusPart !== -1) { if (elevWall != null) closeElevation(); swapTo(-1); }
+  selCornerPart = -1;
   if (!data || data.app !== 'room-planner' || !Array.isArray(data.items)) throw new Error('not a Room Planner layout');
   const cx = canvas.width / 2, cy = canvas.height / 2;
   const toPx = p => ({x: cx + p.x * SCALE, y: cy + p.y * SCALE});
@@ -6655,7 +6793,7 @@ function applyLayout(data) {
   syncStyleControls();
   placed = data.items.map(it => ({...it, ...toPx(it)}));
   extras = Array.isArray(data.extras) ? data.extras.filter(e => e && Array.isArray(e.pts) && e.pts.length >= 3 && e.pts.every(p => Number.isFinite(p.x) && Number.isFinite(p.y)))
-    .map(e => ({pts: e.pts.map(toPx)})) : [];
+    .map(e => ({pts: e.pts.map(toPx), walls: Array.isArray(e.walls) ? e.walls.map(w => ({hStart: w.hStart ?? null, hEnd: w.hEnd ?? null, bulge: +w.bulge || 0, openings: (w.openings || []).map(o => ({...o}))})) : []})) : [];
   extraDraft = null; extraDrag = null;
   measures = Array.isArray(data.measures) ? data.measures.filter(m => [m.x1, m.y1, m.x2, m.y2].every(Number.isFinite)).map(m => {
     const a = toPx({x: m.x1, y: m.y1}), b = toPx({x: m.x2, y: m.y2}); return {x1: a.x, y1: a.y, x2: b.x, y2: b.y}; }) : [];
@@ -7323,6 +7461,7 @@ function addRoom() {
   while (rooms.some(r => r.name === `Room ${n}`)) n++;
   rooms.push({name: `Room ${n}`, data: emptyRoom()});
   switchRoom(rooms.length - 1);
+  openPanelOf('roomW');
   toast('New room added. Set its size in the Room shape panel, then add furniture.');
 }
 function deleteRoom(i) {
@@ -7380,7 +7519,8 @@ const today = () => new Date().toLocaleDateString('en-CA');   // YYYY-MM-DD, loc
 // handles or selection, cropped to the room and furniture, with a title and
 // a 1 m scale bar. Product photos that can't be read back (no CORS) would
 // lock the picture, so if that happens it's drawn again without them.
-function planImage() {
+function planImage() { return inRoom(planImageHere); }
+function planImageHere() {
   const saved = {view, selected, elevWall, ctx};
   const R = 2, off = document.createElement('canvas');
   off.width = canvas.width * R; off.height = canvas.height * R;
