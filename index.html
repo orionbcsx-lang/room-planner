@@ -355,6 +355,7 @@
       </div>
       <div class="hint-text" id="roomArea" style="margin-top: 6px; color: #666"></div>
       <button class="view-btn" id="editWallsBtn" style="width: 100%; margin-top: 8px">Wall heights, windows &amp; doors…</button>
+      <button class="view-btn" id="extraBtn" style="width: 100%; margin-top: 6px" title="Draw another outline in this room: inside it, a pillar; outside it, a separate area">Draw another part…</button>
       <button class="view-btn" id="traceAddBtn" style="width: 100%; margin-top: 6px" title="A photo or screenshot of a real floor plan, to draw the room over">Add plan image…</button>
       <input type="file" id="traceFile" accept="image/*" hidden>
       <div id="traceTools" hidden>
@@ -608,7 +609,7 @@
     <div class="shop-head"><h2>Keyboard and mouse</h2><button class="icon-btn" id="keysClose" title="Close (Esc)">×</button></div>
     <div class="shop-scroll keys-body" tabindex="-1">
       <h3>Furniture on the plan</h3><table class="keys-table"><tr><td>Drag</td><td>Move it</td></tr><tr><td>Drag the orange ↻</td><td>Turn it (hold <kbd>Shift</kbd> for 15° steps)</td></tr><tr><td><kbd>R</kbd> / <kbd>Shift</kbd>+<kbd>R</kbd></td><td>Turn it 15° one way / the other</td></tr><tr><td>Double-click</td><td>Turn it 90°</td></tr><tr><td>Arrow keys</td><td>Nudge it 5 cm (<kbd>Shift</kbd>: 25 cm)</td></tr><tr><td><kbd>Delete</kbd> / <kbd>Backspace</kbd> or right-click</td><td>Remove it</td></tr><tr><td><kbd>Esc</kbd></td><td>Deselect</td></tr></table>
-      <h3>The plan</h3><table class="keys-table"><tr><td>Scroll / pinch</td><td>Zoom in and out</td></tr><tr><td>Drag empty floor</td><td>Move the plan around</td></tr><tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo</td></tr><tr><td><kbd>Ctrl</kbd>+<kbd>Y</kbd> or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd></td><td>Redo</td></tr><tr><td>Click a wall length</td><td>Type the wall's length</td></tr><tr><td>Drag a corner or a wall</td><td>Reshape the room (a dragged corner lines up with its neighbours; hold <kbd>Alt</kbd> not to)</td></tr><tr><td>Drag the orange ◆</td><td>Curve the wall</td></tr><tr><td>Press the blue +</td><td>Add a corner there</td></tr><tr><td>Click a corner, then <kbd>Delete</kbd></td><td>Remove the corner</td></tr><tr><td>Double-click a wall</td><td>Its heights, windows and doors</td></tr><tr><td><kbd>Shift</kbd>+click, <kbd>Shift</kbd>+drag</td><td>Select several pieces (then drag, <kbd>R</kbd>, arrows, <kbd>Delete</kbd>)</td></tr><tr><td>Hold <kbd>Alt</kbd> while dragging a piece</td><td>Don't line it up with walls and other pieces</td></tr><tr><td>📏 Measure, then drag</td><td>A tape measure (click a tape, then <kbd>Delete</kbd>; right-click removes it)</td></tr><tr><td>📝 Note, then click</td><td>A note on the plan (drag it, double-click to edit)</td></tr></table>
+      <h3>The plan</h3><table class="keys-table"><tr><td>Scroll / pinch</td><td>Zoom in and out</td></tr><tr><td>Drag empty floor</td><td>Move the plan around</td></tr><tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo</td></tr><tr><td><kbd>Ctrl</kbd>+<kbd>Y</kbd> or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd></td><td>Redo</td></tr><tr><td>Click a wall length</td><td>Type the wall's length</td></tr><tr><td>Drag a corner or a wall</td><td>Reshape the room (a dragged corner lines up with its neighbours; hold <kbd>Alt</kbd> not to)</td></tr><tr><td>Drag the orange ◆</td><td>Curve the wall</td></tr><tr><td>Press the blue +</td><td>Add a corner there</td></tr><tr><td>Click a corner, then <kbd>Delete</kbd></td><td>Remove the corner</td></tr><tr><td>Double-click a wall</td><td>Its heights, windows and doors</td></tr><tr><td>Draw another part…</td><td>Another outline: inside the room a pillar, outside it a separate area (right-click it to remove it)</td></tr><tr><td><kbd>Shift</kbd>+click, <kbd>Shift</kbd>+drag</td><td>Select several pieces (then drag, <kbd>R</kbd>, arrows, <kbd>Delete</kbd>)</td></tr><tr><td>Hold <kbd>Alt</kbd> while dragging a piece</td><td>Don't line it up with walls and other pieces</td></tr><tr><td>📏 Measure, then drag</td><td>A tape measure (click a tape, then <kbd>Delete</kbd>; right-click removes it)</td></tr><tr><td>📝 Note, then click</td><td>A note on the plan (drag it, double-click to edit)</td></tr></table>
       <h3>Drawing a room (Free draw)</h3><table class="keys-table"><tr><td>Click</td><td>Place a corner</td></tr><tr><td>Type a number, <kbd>Enter</kbd></td><td>Next wall that long, toward the pointer</td></tr><tr><td>Click the first corner, <kbd>Enter</kbd>, double-click or right-click</td><td>Finish the room</td></tr><tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Take back the last corner</td></tr><tr><td>Hold <kbd>Alt</kbd></td><td>Any angle (not just 45° steps)</td></tr><tr><td><kbd>Esc</kbd></td><td>Finish / give up</td></tr></table>
       <h3>A wall's elevation</h3><table class="keys-table"><tr><td>Drag a window or door</td><td>Move it; drag its edges to resize</td></tr><tr><td>Drag the wall's top</td><td>Change its height</td></tr><tr><td><kbd>Delete</kbd></td><td>Remove the selected window or door</td></tr><tr><td><kbd>Esc</kbd></td><td>Deselect, then back to the plan</td></tr></table>
       <h3>3D view</h3><table class="keys-table"><tr><td>Drag a piece</td><td>Move it along the floor (<kbd>Shift</kbd>+drag: turn it)</td></tr><tr><td>Right-drag, or drag empty space</td><td>Look around</td></tr><tr><td>Scroll</td><td>Walk forward / back</td></tr><tr><td><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>, arrows</td><td>Walk (arrows when nothing is selected)</td></tr><tr><td><kbd>E</kbd> / <kbd>Q</kbd></td><td>Up / down</td></tr><tr><td>Hold <kbd>Shift</kbd></td><td>Faster</td></tr><tr><td><kbd>R</kbd>, <kbd>Delete</kbd>, <kbd>Esc</kbd></td><td>Work on the selected piece here too</td></tr><tr><td>Middle-drag, or <kbd>Ctrl</kbd>+drag on empty space</td><td>Slide sideways and up / down</td></tr></table>
@@ -710,7 +711,7 @@ const STYLE_PRESETS = {
 // diag() keeps the last 150 steps/errors in localStorage ('rp-diag'), which
 // Claude can read back from the Edge profile on disk when something works in
 // tests but not in the user's browser (see CLAUDE.md).
-const BUILD = '2026-10-05.2';
+const BUILD = '2026-10-05.3';
 function diag(event, data) {
   try {
     const log = JSON.parse(localStorage.getItem('rp-diag') || '[]');
@@ -739,6 +740,9 @@ let placed = [];
 let selected = -1;
 let draggingFurn = null;
 let draggingPlaced = null;
+let extras = [];           // more parts of this room's plan: [{pts: [{x, y}]}] (plan px); a part inside the room is a pillar, one outside it a separate area
+let extraDraft = null;     // the corners of a part being drawn ("Draw another part"), or null
+let extraDrag = null;      // {e, k, orig}: a part's corner being dragged
 let measures = [];         // tape measurements on the plan (this room): [{x1, y1, x2, y2}] in plan px
 let measureMode = false, measureDrag = null, measureSel = -1;   // the "Measure" tool; the one being drawn
 let notes = [];            // text notes on the plan (this room): [{x, y, text}], plan px (the note's middle)
@@ -1500,14 +1504,17 @@ function buildDecorGroup(item, colorHex) {
 
 // Outline segments of the room with their outward normals (canvas px).
 function wallSegments() {
-  const pts = getRoomOutline(), segs = [];
-  pts.forEach((a, i) => {
+  const segs = [];
+  // (n points from the floor into the wall: out of the room or an area, into a pillar)
+  const add = (pts, into) => pts.forEach((a, i) => {
     const b = pts[(i + 1) % pts.length], len = Math.hypot(b.x - a.x, b.y - a.y);
     if (len < 1e-6) return;
     let n = {x: (b.y - a.y) / len, y: -(b.x - a.x) / len};
-    if (pointInPoly(pts, (a.x + b.x) / 2 + n.x * 2, (a.y + b.y) / 2 + n.y * 2)) n = {x: -n.x, y: -n.y};
+    if (pointInPoly(pts, (a.x + b.x) / 2 + n.x * 2, (a.y + b.y) / 2 + n.y * 2) !== into) n = {x: -n.x, y: -n.y};
     segs.push({a, b, n, len});
   });
+  add(getRoomOutline(), false);
+  extras.forEach(e => add(e.pts, extraKind(e) === 'pillar'));
   return segs;
 }
 
@@ -2369,8 +2376,73 @@ function getRoomPts() {
           {x: cx+rw/2, y: cy+rh/2}, {x: cx-rw/2, y: cy+rh/2}];
 }
 
+// ── More parts of the plan: pillars and separate areas ─────────────────────────
+// After the room is drawn, "Draw another part" draws another closed outline
+// with the same tools. One drawn inside the room is a pillar (solid, floor to
+// ceiling; furniture can't overlap it; its area comes off the floor area);
+// one outside it (or across its edge) is a separate area of the same room,
+// with its own floor and walls. Drag a part's corners to reshape it;
+// right-click it to remove it.
+const isDrawing = () => (shape === 'custom' && drawing) || extraDraft != null;
+const drawPts = () => extraDraft || customPts;
+function extraKind(e) {
+  const room = getRoomOutline();
+  const onOrIn = p => pointInPoly(room, p.x, p.y) || room.some((a, i) => distToSegment(p.x, p.y, a, room[(i + 1) % room.length]) <= 1.5);
+  // (every corner, and the middle of every side, inside the room or on its wall)
+  const P = e.pts, mids = P.map((p, i) => ({x: (p.x + P[(i + 1) % P.length].x) / 2, y: (p.y + P[(i + 1) % P.length].y) / 2}));
+  return [...P, ...mids].every(onOrIn) ? 'pillar' : 'area';
+}
+// Does part e cross the room's wall (some of it inside the room, some outside)?
+function extraCrossesRoom(e) {
+  const room = getRoomOutline();
+  return extraKind(e) === 'area' && e.pts.some(p => pointInPoly(room, p.x, p.y) && !room.some((a, i) => distToSegment(p.x, p.y, a, room[(i + 1) % room.length]) <= 1.5));
+}
+function removeExtra(i) { extras.splice(i, 1); redraw(); checkpoint(); }
+const extraPolys = kind => extras.filter(e => extraKind(e) === kind).map(e => e.pts);
+const polyAreaPx = pts => Math.abs(pts.reduce((a, p, i) => { const q = pts[(i + 1) % pts.length]; return a + p.x * q.y - q.x * p.y; }, 0)) / 2;
+// The part (and corner) under the pointer: a corner within 9 px, else inside a pillar or on an area's wall.
+function extraHitAt(mx, my) {
+  for (let e = extras.length - 1; e >= 0; e--) {
+    const k = extras[e].pts.findIndex(p => Math.hypot(mx - p.x, my - p.y) <= 9);
+    if (k >= 0) return {e, k};
+  }
+  for (let e = extras.length - 1; e >= 0; e--) {
+    const P = extras[e].pts;
+    if (extraKind(extras[e]) === 'pillar' ? pointInPoly(P, mx, my) : P.some((a, i) => distToSegment(mx, my, a, P[(i + 1) % P.length]) <= 6)) return {e, k: -1};
+  }
+  return null;
+}
+function startExtraDraft() {
+  if (isDrawing()) return;
+  if (elevWall != null) closeElevation();
+  select(-1); selCorner = null;
+  extraDraft = []; drawHover = null; lenBuffer = '';
+  updateRoomHint(); draw2d();
+}
+function drawExtras() {
+  if (!extras.length) return;
+  const bb = getRoomBBox();
+  const pattern = ctx.createPattern(surfaceCanvas(roomStyle.floorStyle, roomStyle.floorColor), 'repeat');
+  pattern.setTransform(new DOMMatrix().translate(bb.x, bb.y).scale(SCALE / TEX));
+  extras.forEach(e => {
+    const pillar = extraKind(e) === 'pillar';
+    tracePath(e.pts);
+    ctx.fillStyle = pillar ? roomStyle.wallColor : pattern; ctx.fill();
+    ctx.lineJoin = 'miter';
+    if (pillar) { ctx.strokeStyle = 'rgba(0,0,0,0.55)'; ctx.lineWidth = 2; ctx.stroke(); }
+    else { ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 9; ctx.stroke(); ctx.strokeStyle = roomStyle.wallColor; ctx.lineWidth = 7; ctx.stroke(); }
+  });
+}
+function drawExtraHandles() {
+  if (exporting || isDrawing()) return;
+  extras.forEach(e => e.pts.forEach(p => {
+    ctx.fillStyle = '#fff'; ctx.strokeStyle = '#4a7fe8'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.rect(p.x - 4, p.y - 4, 8, 8); ctx.fill(); ctx.stroke();
+  }));
+}
+
 function getRoomBBox() {
-  const pts = getRoomOutline();
+  const pts = [...getRoomOutline(), ...extras.flatMap(e => e.pts)];
   const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
   return {x: Math.min(...xs), y: Math.min(...ys), x2: Math.max(...xs), y2: Math.max(...ys)};
 }
@@ -2561,6 +2633,7 @@ function draw2d() {
     ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 9; ctx.stroke();
     ctx.strokeStyle = roomStyle.wallColor; ctx.lineWidth = 7; ctx.stroke();
     drawPlanOpenings(pts);
+    drawExtras();
   }
 
   if (!exporting && trace) {
@@ -2572,6 +2645,7 @@ function draw2d() {
 
   // wall lengths, corner handles, the wall being drawn
   drawRoomOverlay();
+  drawExtraHandles();
 
   // in-progress item footprint drawing
   if (drawingItemShape && itemShapePts.length > 0) {
@@ -2768,7 +2842,7 @@ function build3d() {
   scene.environment = envMapFor(renderer);
   // How far you can move: the room's farthest point from its centre + 3 m.
   const cx = spanX / 2, cz = spanZ / 2;
-  move3dBounds = {cx, cz, r: Math.max(...getRoomOutline().map(p => { const w = toWorld(p.x, p.y); return Math.hypot(w.x - cx, w.z - cz); })) + MOVE3D_MARGIN};
+  move3dBounds = {cx, cz, r: Math.max(...[...getRoomOutline(), ...extras.flatMap(e => e.pts)].map(p => { const w = toWorld(p.x, p.y); return Math.hypot(w.x - cx, w.z - cz); })) + MOVE3D_MARGIN};
   // (init3d runs again on every image/model load, so only a new view goes back to the overview)
   if (orbitRadius == null) frameWholeRoom();
   updateCameraFromOrbit();
@@ -2897,6 +2971,35 @@ function build3d() {
     partMesh(glass, 0xbfdcee, 0.35); partMesh(frame, 0xf2f2f0, 1); partMesh(leaf, 0xb08a5e, 1);
     const mid = arc.at(0.5), mn = arc.normal(0.5);
     walls3d.push({mesh: wallMesh, nx: mn.x, nz: mn.y, mx: mid.x, mz: mid.y, parts});
+  });
+  // Pillars (floor to ceiling) and separate areas (their own floor and walls).
+  extras.forEach(e => {
+    const H = roomStyle.wallHeight, W = e.pts.map(p => toWorld(p.x, p.y));
+    const shp = new THREE.Shape();
+    W.forEach((p, i) => i === 0 ? shp.moveTo(p.x, -p.z) : shp.lineTo(p.x, -p.z));
+    const look = surfaceCanvas(roomStyle.wallStyle === 'paint' ? 'plain' : roomStyle.wallStyle, roomStyle.wallColor);
+    const wallMat = () => { const t = new THREE.CanvasTexture(look); t.wrapS = t.wrapT = THREE.RepeatWrapping; return new THREE.MeshLambertMaterial({map: t, transparent: true, side: THREE.DoubleSide}); };
+    if (extraKind(e) === 'pillar') {
+      const g = new THREE.ExtrudeGeometry(shp, {depth: H, bevelEnabled: false});
+      g.rotateX(-Math.PI / 2);           // (shape (x, -z), extruded up: world y)
+      scene.add(new THREE.Mesh(g, wallMat()));
+      return;
+    }
+    const fg = new THREE.ShapeGeometry(shp); fg.rotateX(-Math.PI / 2);
+    const ft = new THREE.CanvasTexture(surfaceCanvas(roomStyle.floorStyle, roomStyle.floorColor)); ft.wrapS = ft.wrapT = THREE.RepeatWrapping;
+    scene.add(new THREE.Mesh(fg, new THREE.MeshBasicMaterial({map: ft, side: THREE.DoubleSide})));
+    const poly = W.map(p => ({x: p.x, y: p.z}));
+    W.forEach((a, i) => {
+      const b = W[(i + 1) % W.length], dx = b.x - a.x, dz = b.z - a.z, L = Math.hypot(dx, dz);
+      if (L < 1e-6) return;
+      let nx = dz / L, nz = -dx / L;
+      if (pointInPoly(poly, (a.x + b.x) / 2 + nx * 0.05, (a.z + b.z) / 2 + nz * 0.05)) { nx = -nx; nz = -nz; }
+      const box = new THREE.Mesh(new THREE.BoxGeometry(L + t, H, t), wallMat());
+      box.position.set((a.x + b.x) / 2 + nx * t / 2, H / 2, (a.z + b.z) / 2 + nz * t / 2);
+      box.rotation.y = -Math.atan2(dz, dx);
+      scene.add(box);
+      walls3d.push({mesh: box, nx, nz, mx: (a.x + b.x) / 2, mz: (a.z + b.z) / 2, parts: []});
+    });
   });
   updateWallCutaway();
 
@@ -3357,6 +3460,8 @@ function resizeCanvas() {
   const dx = canvas.width / 2 - ox, dy = canvas.height / 2 - oy;
   placed.forEach(it => { it.x += dx; it.y += dy; });
   customPts.forEach(p => { p.x += dx; p.y += dy; });
+  extras.forEach(e => e.pts.forEach(p => { p.x += dx; p.y += dy; }));
+  if (extraDraft) extraDraft.forEach(p => { p.x += dx; p.y += dy; });
   measures.forEach(m => { m.x1 += dx; m.y1 += dy; m.x2 += dx; m.y2 += dy; });
   notes.forEach(n => { n.x += dx; n.y += dy; });
   clampView2d();
@@ -3409,6 +3514,7 @@ function measureSnap(mx, my, free) {
 function measureSegs() {
   const segs = [], out = getRoomOutline();
   out.forEach((p, i) => segs.push([p, out[(i + 1) % out.length]]));
+  extras.forEach(e => e.pts.forEach((p, i) => segs.push([p, e.pts[(i + 1) % e.pts.length]])));
   placed.forEach(it => { const ps = itemPoly(it); ps.forEach((p, i) => segs.push([p, ps[(i + 1) % ps.length]])); });
   return segs;
 }
@@ -3581,6 +3687,11 @@ function snapDraggedItem(i, free, moved) {
       if (Math.abs(p.y - q.y) < 0.5 && overlaps(Math.min(p.x, q.x), Math.max(p.x, q.x), b.x0, b.x1)) lines.y.push([p.y, Math.min(p.x, q.x), Math.max(p.x, q.x), false]);
     });
   }
+  extras.forEach(e => e.pts.forEach((p, w) => {         // (pillars' and separate areas' straight edges too)
+    const q = e.pts[(w + 1) % e.pts.length];
+    if (Math.abs(p.x - q.x) < 0.5 && overlaps(Math.min(p.y, q.y), Math.max(p.y, q.y), b.y0, b.y1)) lines.x.push([p.x, Math.min(p.y, q.y), Math.max(p.y, q.y), false]);
+    if (Math.abs(p.y - q.y) < 0.5 && overlaps(Math.min(p.x, q.x), Math.max(p.x, q.x), b.x0, b.x1)) lines.y.push([p.y, Math.min(p.x, q.x), Math.max(p.x, q.x), false]);
+  }));
   const best = axis => {
     if (Math.abs(moved[axis]) < 3 / k) return null;     // (not moved along this axis)
     let hit = null;
@@ -3787,10 +3898,14 @@ function fitCheck() {
   const problems = [], tight = [], bad = new Set(), doors = new Map();
   if (shape === 'custom' && drawing) return {problems, tight, bad, doors: []};
   const polys = placed.map(it => itemPoly(it, 1.5)), room = getRoomOutline();
+  const floors = [room, ...extraPolys('area')], pillars = extraPolys('pillar');
   placed.forEach((it, i) => {
     const P = polys[i];
-    if (P.some(p => !pointInPoly(room, p.x, p.y)) || polysCross(P, room)) {
+    // (inside the room or inside one of its separate areas)
+    if (!floors.some(R => P.every(p => pointInPoly(R, p.x, p.y)) && !polysCross(P, R))) {
       problems.push({i, text: `${it.label} goes through a wall`}); bad.add(i);
+    } else if (solidItem(it) && pillars.some(Q => polysOverlap(P, Q))) {
+      problems.push({i, text: `${it.label} goes through a pillar`}); bad.add(i);
     }
   });
   for (let i = 0; i < placed.length; i++) for (let j = i + 1; j < placed.length; j++) {
@@ -4514,7 +4629,8 @@ function startPinch2d() {
   if (groupDrag) { group.forEach((j, k) => { placed[j].x = groupDrag.start[k].x; placed[j].y = groupDrag.start[k].y; }); groupDrag = null; }
   boxSel = null;
   snapGuides = [];
-  if (touchUndo && shape === 'custom' && drawing) { customPts.length = Math.min(customPts.length, touchUndo.drawLen); drawHover = null; }
+  if (touchUndo && isDrawing()) { const dp = drawPts(); dp.length = Math.min(dp.length, touchUndo.drawLen); drawHover = null; }
+  if (extraDrag) { const p = extras[extraDrag.e].pts[extraDrag.k]; p.x = extraDrag.orig.x; p.y = extraDrag.orig.y; extraDrag = null; }
   if (touchUndo && drawingItemShape) itemShapePts.length = Math.min(itemShapePts.length, touchUndo.shapeLen);
   if (touchUndo && selected !== touchUndo.sel) select(touchUndo.sel);
   draggingPlaced = null; rotating2d = false; drawDrag = null; pan2d = null; lastTap = null;
@@ -4545,7 +4661,7 @@ canvas.addEventListener('pointerdown', e => {
     touches2d.set(e.pointerId, {x: sx, y: sy});
     if (touches2d.size === 2) { startPinch2d(); return; }
     if (touches2d.size > 2) return;
-    touchUndo = {drawLen: customPts.length, shapeLen: itemShapePts.length, sel: selected};
+    touchUndo = {drawLen: drawPts().length, shapeLen: itemShapePts.length, sel: selected};
   }
   if (e.pointerType === 'touch') {
     const now = performance.now();
@@ -4558,18 +4674,18 @@ canvas.addEventListener('pointerdown', e => {
     measureDrag = {x1: p.x, y1: p.y, x2: p.x, y2: p.y, px: mx, py: my};   // (px, py: where it was pressed, for a click)
     draw2d(); return;
   }
-  if (elevWall == null && !drawingItemShape && !(shape === 'custom' && drawing)) {
+  if (elevWall == null && !drawingItemShape && !isDrawing()) {
     if (noteMode) { e.preventDefault(); select(-1); notes.push({x: mx, y: my, text: ''}); setNoteMode(false); editNote(notes.length - 1); return; }
     const ni = onHandle(mx, my) ? -1 : noteAt(mx, my);
     if (ni >= 0) { e.preventDefault(); select(-1); noteDrag = {i: ni, dx: mx - notes[ni].x, dy: my - notes[ni].y, ox: notes[ni].x, oy: notes[ni].y, moved: false}; return; }
   }
   if (elevWall != null) { elevMouseDown(mx, my); return; }
   if (drawingItemShape) { itemShapePts.push({x: mx, y: my}); draw2d(); return; }
-  if (shape === 'custom' && drawing) {
+  if (isDrawing()) {
     // First corner, or pressing on the last corner: drag out the next wall
     // (released = its end). Anywhere else: a click sets the next corner.
-    const last = customPts[customPts.length - 1];
-    if (!customPts.length) { addDrawPoint(snapDrawPoint(mx, my, e.altKey)); drawDrag = {x: mx, y: my}; }
+    const dp = drawPts(), last = dp[dp.length - 1];
+    if (!dp.length) { addDrawPoint(snapDrawPoint(mx, my, e.altKey)); drawDrag = {x: mx, y: my}; }
     else if (Math.hypot(mx - last.x, my - last.y) <= 10) drawDrag = {x: mx, y: my};
     else addDrawPoint(snapDrawPoint(mx, my, e.altKey));
     return;
@@ -4580,6 +4696,8 @@ canvas.addEventListener('pointerdown', e => {
     if (e.shiftKey && (gi >= 0 || !roomHitAt(mx, my))) { boxSel = {x0: mx, y0: my, x1: mx, y1: my, piece: gi}; draw2d(); return; }
     if (group.length && group.includes(gi)) { groupDrag = {mx, my, start: group.map(j => ({x: placed[j].x, y: placed[j].y})), moved: false}; return; }
   }
+  { const xh = extraHitAt(mx, my), rh = roomHitAt(mx, my);       // (a corner of a pillar or separate area: drag it — unless a room handle is there)
+    if (xh && xh.k >= 0 && (!rh || rh.type === 'wall')) { e.preventDefault(); select(-1); const p = extras[xh.e].pts[xh.k]; extraDrag = {e: xh.e, k: xh.k, orig: {x: p.x, y: p.y}}; return; } }
   // The room outline: a wall's length label, a corner, then furniture, then a wall.
   const hit = roomHitAt(mx, my);
   // (preventDefault: the press would otherwise move focus off the new box, closing it)
@@ -4645,7 +4763,13 @@ window.addEventListener('pointermove', e => {
   }
   if (elevWall != null) { if (e.target === canvas || elevDrag) elevMouseMove(mx, my); return; }
   if (roomEdit) { moveRoomEdit(mx, my, e.altKey); return; }
-  if (shape === 'custom' && drawing) {
+  if (extraDrag) {
+    const p = extras[extraDrag.e].pts[extraDrag.k];
+    p.x = e.altKey ? mx : extraDrag.orig.x + Math.round((mx - extraDrag.orig.x) / snapPx) * snapPx;
+    p.y = e.altKey ? my : extraDrag.orig.y + Math.round((my - extraDrag.orig.y) / snapPx) * snapPx;
+    draw2d(); return;
+  }
+  if (isDrawing()) {
     if (e.target === canvas || drawDrag) { drawHover = snapDrawPoint(mx, my, e.altKey); canvas.style.cursor = 'crosshair'; draw2d(); }
     return;
   }
@@ -4702,7 +4826,8 @@ const pointerUp2d = e => {
     roomEdit = null; redraw(); checkpoint();
   }
   if (elevDrag) { elevDrag = null; draw2d(); checkpoint(); }
-  if (drawDrag && shape === 'custom' && drawing) {
+  if (extraDrag) { extraDrag = null; redraw(); checkpoint(); }
+  if (drawDrag && isDrawing()) {
     // A drag of more than a few pixels drew a wall: its end is here.
     const {mx, my} = canvasPoint(e);
     if (Math.hypot(mx - drawDrag.x, my - drawDrag.y) > 6) addDrawPoint(snapDrawPoint(mx, my, e.altKey));
@@ -4714,7 +4839,11 @@ window.addEventListener('pointercancel', pointerUp2d);
 
 function doubleClickAt(mx, my) {
   if (measureMode) return;
-  if (shape === 'custom' && drawing) { finishDrawing(); return; }
+  if (isDrawing()) { finishDrawing(); return; }
+  if (lastPointerType !== 'mouse' && elevWall == null) {
+    const xh = extraHitAt(mx, my);
+    if (xh && itemIndexAt(mx, my) < 0) { if (confirm(`Remove this ${extraKind(extras[xh.e]) === 'pillar' ? 'pillar' : 'separate area'}?`)) removeExtra(xh.e); return; }
+  }
   if (elevWall != null) return;
   const ni = noteAt(mx, my);
   if (ni >= 0) { editNote(ni); return; }
@@ -4733,10 +4862,12 @@ canvas.addEventListener('contextmenu', e => {
   if (elevWall != null || lastPointerType === 'touch') return;
   if (drawingItemShape) { finishItemFootprint(); return; }
   { const {mx, my} = canvasPoint(e), mi = measureAt(mx, my);       // (right-click a tape: remove it)
-    if (mi >= 0 && !(shape === 'custom' && drawing)) { deleteMeasure(mi); return; }
+    if (mi >= 0 && !isDrawing()) { deleteMeasure(mi); return; }
     if (measureMode) return; }
-  if (shape === 'custom' && drawing) { finishDrawing(); return; }
+  if (isDrawing()) { finishDrawing(); return; }
   const {mx, my} = canvasPoint(e);
+  { const xh = extraHitAt(mx, my);        // (right-click a pillar, or an area's wall or corner: remove it)
+    if (xh && itemIndexAt(mx, my) < 0) { removeExtra(xh.e); toast('Removed (Ctrl+Z brings it back).'); return; } }
   const ni = noteAt(mx, my);
   if (ni >= 0) { notes.splice(ni, 1); draw2d(); checkpoint(); return; }
   const di = itemIndexAt(mx, my);
@@ -4771,7 +4902,7 @@ function toCustom() {
 const snapPx = SNAP_M * SCALE;
 
 function snapDrawPoint(mx, my, free) {
-  const pts = customPts;
+  const pts = drawPts();
   if (!pts.length) return {x: Math.round(mx / snapPx) * snapPx, y: Math.round(my / snapPx) * snapPx};
   const last = pts[pts.length - 1], first = pts[0];
   if (pts.length >= 3 && Math.hypot(mx - first.x, my - first.y) < 12) return {x: first.x, y: first.y, close: true};
@@ -4790,15 +4921,27 @@ function snapDrawPoint(mx, my, free) {
 function addDrawPoint(p) {
   lenBuffer = '';
   if (p.close) { finishDrawing(); return; }
-  const last = customPts[customPts.length - 1];
+  const pts = drawPts(), last = pts[pts.length - 1];
   if (last && Math.hypot(p.x - last.x, p.y - last.y) < 1) return;   // (the clicks of a double-click)
-  customPts.push({x: p.x, y: p.y});
+  pts.push({x: p.x, y: p.y});
   draw2d();
 }
 
 // Close the outline (3+ corners), or give up on it.
 function finishDrawing() {
   lenBuffer = ''; drawHover = null;
+  if (extraDraft) {
+    const pts = extraDraft; extraDraft = null;
+    if (pts.length >= 3) {
+      extras.push({pts});
+      const e = extras[extras.length - 1], touch = lastPointerType !== 'mouse';
+      toast(extraKind(e) === 'pillar' ? `Added a pillar. Drag its corners to adjust it; ${touch ? 'double-tap' : 'right-click'} it to remove it.`
+        : extraCrossesRoom(e) ? 'This part crosses the room\'s wall, so it\'s a separate area with its own walls. For an alcove or a bay, drag the room\'s own wall or add a corner with + instead.'
+        : `Added a separate area of this room. Drag its corners to adjust it; ${touch ? 'double-tap' : 'right-click'} its wall to remove it.`);
+    }
+    updateRoomHint(); redraw(); checkpoint();
+    return;
+  }
   if (customPts.length >= 3) { drawing = false; updateRoomHint(); }
   else customPts = [];
   redraw();
@@ -4808,7 +4951,7 @@ function finishDrawing() {
 // A typed length: the next wall goes that far towards the pointer.
 function applyTypedLength() {
   const m = parseLen(lenBuffer);         // (metres; feet and inches in feet mode)
-  const last = customPts[customPts.length - 1];
+  const pts = drawPts(), last = pts[pts.length - 1];
   lenBuffer = '';
   if (!(m > 0) || !last) { draw2d(); return; }
   let ux = 1, uy = 0;
@@ -5066,8 +5209,7 @@ function drawRoomOverlay() {
     if (i != null) wallLabels.push({i, x: x - w / 2, y: y - h / 2, w, h});
   };
   const lenOf = (a, b) => Math.hypot(b.x - a.x, b.y - a.y) / SCALE;
-  if (shape === 'custom' && drawing) {
-    const pts = customPts;
+  const draft = pts => {
     if (pts.length) {
       ctx.lineCap = 'round';
       ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
@@ -5089,6 +5231,10 @@ function drawRoomOverlay() {
     } else if (drawHover) {
       ctx.beginPath(); ctx.arc(drawHover.x, drawHover.y, 5, 0, Math.PI * 2); ctx.fillStyle = '#4a7fe8'; ctx.fill();
     }
+  };
+  if (extraDraft) draft(extraDraft);
+  if (shape === 'custom' && drawing) {
+    draft(customPts);
   } else if (shape === 'circle') {
     const c = circleGeom();
     const hot = roomHover && (roomHover.type === 'radius' || roomHover.type === 'diameter') || roomEdit && roomEdit.type === 'radius';
@@ -5235,11 +5381,13 @@ function wallLen(i) { return wallArc(i).len / SCALE; }
 // Floor area (m²) and the length of wall around it (m). Curved walls count
 // along their arcs (getRoomOutline, ~12 cm steps); a circle is exact.
 function roomArea() {
-  if (shape === 'circle') { const r = Math.min(roomW, roomH) / 2; return Math.PI * r * r; }
+  // (plus its separate areas, less its pillars)
+  const more = (extraPolys('area').reduce((a, P) => a + polyAreaPx(P), 0) - extraPolys('pillar').reduce((a, P) => a + polyAreaPx(P), 0)) / (SCALE * SCALE);
+  if (shape === 'circle') { const r = Math.min(roomW, roomH) / 2; return Math.PI * r * r + more; }
   const o = getRoomOutline();
   let a = 0;
   o.forEach((p, i) => { const q = o[(i + 1) % o.length]; a += p.x * q.y - q.x * p.y; });
-  return Math.abs(a) / 2 / (SCALE * SCALE);
+  return Math.abs(a) / 2 / (SCALE * SCALE) + more;
 }
 function roomPerimeter() {
   if (shape === 'circle') return Math.PI * Math.min(roomW, roomH);
@@ -5582,10 +5730,15 @@ document.getElementById('elevDoorSwing').addEventListener('change', e => setDoor
 
 function updateRoomHint() {
   // (no walls to edit yet while a room is being drawn)
-  document.getElementById('editWallsBtn').style.display = shape === 'custom' && drawing ? 'none' : '';
+  document.getElementById('editWallsBtn').style.display = isDrawing() ? 'none' : '';
+  const xb = document.getElementById('extraBtn');
+  xb.style.display = shape === 'custom' && drawing ? 'none' : '';
+  xb.textContent = extraDraft ? 'Cancel this part' : 'Draw another part…';
   const hint = document.getElementById('drawHint');
   hint.style.display = 'block';
-  hint.textContent = shape === 'custom' && drawing
+  hint.textContent = extraDraft
+    ? 'Drawing another part: click (or drag) each corner, then click the first corner, double-click or press Enter. Drawn inside the room it\'s a pillar; outside it, a separate area of this room. Esc cancels.'
+    : shape === 'custom' && drawing
     ? 'Click (or drag) to place each corner — the wall\'s length shows as you go. Type a number and press Enter for an exact length. Click the first corner, double-click or press Enter to finish. Ctrl+Z removes the last corner; hold Alt for any angle.'
     : shape === 'circle' ? 'Drag the edge of the room (or its round handle) to change its size; click the diameter to type it. Double-click the edge for its height, windows and doors. Ctrl+Z undoes, Ctrl+Y redoes.'
     : 'Drag a corner or a wall to reshape the room; click a wall\'s length to type it. The + on a wall adds a corner; click a corner and press Delete to remove it. Double-click a wall for its height, windows and doors. Ctrl+Z undoes, Ctrl+Y redoes.';
@@ -5593,6 +5746,10 @@ function updateRoomHint() {
 
 // Elevation toolbar
 document.getElementById('editWallsBtn').addEventListener('click', () => openElevation(elevWall ?? 0));
+document.getElementById('extraBtn').addEventListener('click', () => {
+  if (extraDraft) { extraDraft = null; drawHover = null; lenBuffer = ''; updateRoomHint(); draw2d(); }
+  else { if (view !== '2d') document.getElementById('btn2d').click(); startExtraDraft(); }
+});
 document.getElementById('wallHeight').addEventListener('focus', () => { if (elevWall == null) openElevation(0); });
 document.getElementById('elevPrev').addEventListener('click', () => openElevation(elevWall - 1));
 document.getElementById('elevNext').addEventListener('click', () => openElevation(elevWall + 1));
@@ -5642,9 +5799,9 @@ function restoreSnapshot(pos) {
   updateRoomHint();
 }
 function undo() {
-  if (shape === 'custom' && drawing) {
+  if (isDrawing()) {
     if (lenBuffer) lenBuffer = '';
-    else customPts.pop();
+    else drawPts().pop();
     draw2d();
     return;
   }
@@ -5676,13 +5833,13 @@ document.addEventListener('keydown', e => {
     if (e.key === 'Delete' || e.key === 'Backspace') { deleteCorner(selCorner); e.preventDefault(); e.stopImmediatePropagation(); return; }
     if (e.key === 'Escape') { selCorner = null; draw2d(); }
   }
-  if (!(shape === 'custom' && drawing) || e.ctrlKey || e.metaKey) return;
+  if (!isDrawing() || e.ctrlKey || e.metaKey) return;
   let handled = true;
   if (/^[0-9]$/.test(e.key) || (e.key === '.' || e.key === ',') && !/[.,]/.test(lenBuffer.split("'").pop())
-      || units === 'ft' && (e.key === "'" && !/['"]/.test(lenBuffer) || e.key === '"' && !/"/.test(lenBuffer)) && lenBuffer) { if (customPts.length) lenBuffer += e.key; }
+      || units === 'ft' && (e.key === "'" && !/['"]/.test(lenBuffer) || e.key === '"' && !/"/.test(lenBuffer)) && lenBuffer) { if (drawPts().length) lenBuffer += e.key; }
   else if (e.key === 'Backspace') lenBuffer = lenBuffer.slice(0, -1);
   else if (e.key === 'Enter') { if (lenBuffer) applyTypedLength(); else finishDrawing(); }
-  else if (e.key === 'Escape') { if (lenBuffer) lenBuffer = ''; else finishDrawing(); }
+  else if (e.key === 'Escape') { if (lenBuffer) lenBuffer = ''; else if (extraDraft) { extraDraft = null; drawHover = null; updateRoomHint(); } else finishDrawing(); }
   else handled = false;
   if (handled) { e.preventDefault(); e.stopImmediatePropagation(); draw2d(); }
 }, true);
@@ -5697,6 +5854,7 @@ function setShape(s, pts) {
   document.getElementById('sizeInputs').style.display = (s === 'circle' || s === 'custom') ? 'none' : 'flex';
   drawing = s === 'custom' && !pts;
   customPts = s === 'custom' && pts ? pts : [];
+  extraDraft = null;
   drawHover = null; lenBuffer = ''; roomEdit = null; roomHover = null; selCorner = null;
   document.querySelectorAll('.wall-len-input').forEach(el => el.remove());
   updateRoomHint();
@@ -5710,8 +5868,8 @@ document.getElementById('roomW').addEventListener('input', e => { roomW = +e.tar
 document.getElementById('roomH').addEventListener('input', e => { roomH = +e.target.value || 5; redraw(); });
 document.getElementById('clearBtn').addEventListener('click', () => {
   // The layout is autosaved, so reloading won't bring it back.
-  if ((placed.length || measures.length || notes.length) && !confirm('Remove all furniture, measurements and notes from the room? This can\'t be undone.')) return;
-  placed = []; customPts = []; measures = []; notes = []; updateMeasureClear(); select(-1); redraw();
+  if ((placed.length || measures.length || notes.length || extras.length) && !confirm('Remove all furniture, measurements, notes, pillars and extra areas from the room? This can\'t be undone.')) return;
+  placed = []; customPts = []; measures = []; notes = []; extras = []; updateMeasureClear(); select(-1); redraw();
 });
 
 const presetsEl = document.getElementById('presets');
@@ -5761,6 +5919,7 @@ document.getElementById('btn2d').addEventListener('click', () => {
 document.getElementById('btn3d').addEventListener('click', () => {
   if (elevWall != null) closeElevation();
   view = '3d'; selCorner = null;
+  if (extraDraft) { extraDraft = null; updateRoomHint(); }
   if (measureMode) setMeasureMode(false);
   if (noteMode) setNoteMode(false);
   document.querySelectorAll('.note-input').forEach(el => el.blur());
@@ -6444,6 +6603,7 @@ function layoutToJson() {
     app: 'room-planner', version: 1,
     shape, roomW, roomH, roomStyle,
     customPts: shape === 'custom' && !drawing ? customPts.map(p => toM(p.x, p.y)) : null,
+    extras: extras.map(e => ({pts: e.pts.map(p => toM(p.x, p.y))})),
     walls: walls.map(w => ({hStart: w.hStart, hEnd: w.hEnd, bulge: w.bulge || 0, openings: w.openings.map(o => ({...o}))})),
     items,
     measures: measures.map(m => { const a = toM(m.x1, m.y1), b = toM(m.x2, m.y2); return {x1: a.x, y1: a.y, x2: b.x, y2: b.y}; }),
@@ -6494,6 +6654,9 @@ function applyLayout(data) {
   if (elevWall != null) { elevSel = null; if (elevWall >= getRoomPts().length) closeElevation(); }
   syncStyleControls();
   placed = data.items.map(it => ({...it, ...toPx(it)}));
+  extras = Array.isArray(data.extras) ? data.extras.filter(e => e && Array.isArray(e.pts) && e.pts.length >= 3 && e.pts.every(p => Number.isFinite(p.x) && Number.isFinite(p.y)))
+    .map(e => ({pts: e.pts.map(toPx)})) : [];
+  extraDraft = null; extraDrag = null;
   measures = Array.isArray(data.measures) ? data.measures.filter(m => [m.x1, m.y1, m.x2, m.y2].every(Number.isFinite)).map(m => {
     const a = toPx({x: m.x1, y: m.y1}), b = toPx({x: m.x2, y: m.y2}); return {x1: a.x, y1: a.y, x2: b.x, y2: b.y}; }) : [];
   measureSel = -1; updateMeasureClear();
@@ -7227,7 +7390,7 @@ function planImage() {
     ctx.setTransform(R, 0, 0, R, 0, 0);
     draw2d();
     // bounds: the room, the furniture and the wall-length labels around it
-    const pts = [...getRoomOutline(), ...placed.flatMap(it => itemPoly(it)), ...doorTips(), ...measures.flatMap(m => [{x: m.x1, y: m.y1}, {x: m.x2, y: m.y2}]), ...noteBoxes.flatMap(b => [{x: b.x, y: b.y}, {x: b.x + b.w, y: b.y + b.h}])];
+    const pts = [...getRoomOutline(), ...extras.flatMap(e => e.pts), ...placed.flatMap(it => itemPoly(it)), ...doorTips(), ...measures.flatMap(m => [{x: m.x1, y: m.y1}, {x: m.x2, y: m.y2}]), ...noteBoxes.flatMap(b => [{x: b.x, y: b.y}, {x: b.x + b.w, y: b.y + b.h}])];
     const x0 = Math.max(0, Math.min(...pts.map(p => p.x)) - 50), y0 = Math.max(0, Math.min(...pts.map(p => p.y)) - 40);
     const x1 = Math.min(canvas.width, Math.max(...pts.map(p => p.x)) + 50), y1 = Math.min(canvas.height, Math.max(...pts.map(p => p.y)) + 40);
     const head = 44, foot = 36, out = document.createElement('canvas');
@@ -7361,7 +7524,7 @@ function exampleLayout(name) {
 }
 
 function loadExample(name) {
-  if (placed.length && !confirm('Replace what\'s in this room with the example? (Ctrl+Z brings it back.)')) return;
+  if ((placed.length || extras.length) && !confirm('Replace what\'s in this room with the example? (Ctrl+Z brings it back.)')) return;
   checkpoint();
   orbitRadius = null;      // (a different room: frame it afresh in 3D)
   applyLayout(exampleLayout(name));
