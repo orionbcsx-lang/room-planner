@@ -93,6 +93,41 @@
   .clear-btn { font-size: 12px; padding: 5px 10px; cursor: pointer; border-radius: 6px; border: 1px solid #f0a0a0; background: transparent; color: #c04040; transition: all .15s; }
   .clear-btn:hover { background: #fff0f0; }
 
+  /* (the room tabs, and Versions at the end of their row: versions are of the whole home) */
+  .tabs-row { display: flex; align-items: flex-end; gap: 6px; position: relative; }
+  .tabs-row .room-tabs { flex: 1; min-width: 0; }
+  .tabs-row #versionsBtn { flex: none; padding: 4px 10px; font-size: 12px; margin-bottom: 2px; }
+  .tabs-row .versions-pop { top: 34px; }
+  .style-grid .trim-row, .trim-row { display: flex !important; flex-direction: row !important; align-items: center; gap: 6px; }
+  .trim-row input { width: auto !important; margin: 0; }
+  .pal-btn { width: 100%; margin: 6px 0 4px; }
+  .pal-list { display: grid; gap: 4px; margin-bottom: 6px; }
+  .pal-list[hidden] { display: none; }
+  .pal-opt { display: flex; align-items: center; gap: 6px; border: 1px solid #e0e0d8; border-radius: 7px; padding: 4px 6px; background: #fff; cursor: pointer; font-size: 12px; color: #444; text-align: left; }
+  .pal-opt:hover { border-color: #4a7fe8; }
+  .pal-sw { display: inline-flex; }
+  .pal-sw i { width: 16px; height: 16px; border-radius: 3px; border: 1px solid rgba(0,0,0,.15); margin-right: 2px; }
+  /* (walk mode, mouse captured: a small cross in the middle of the view) */
+  .crosshair { position: absolute; left: 50%; top: 50%; width: 18px; height: 18px; margin: -9px 0 0 -9px; z-index: 5; pointer-events: none; }
+  .crosshair[hidden] { display: none; }
+  .crosshair::before, .crosshair::after { content: ''; position: absolute; background: rgba(255,255,255,.9); box-shadow: 0 0 0 1px rgba(0,0,0,.45); }
+  .crosshair::before { left: 8px; top: 0; width: 2px; height: 18px; }
+  .crosshair::after { top: 8px; left: 0; height: 2px; width: 18px; }
+  /* (walking on a touch screen: a joystick for the left thumb, a jump button for the right) */
+  /* (under the phone's selection sheet, z 5; no text selection, callout or menu on a long hold) */
+  .walk-stick, .walk-jump { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  .walk-stick { position: absolute; left: 18px; bottom: 96px; width: 116px; height: 116px; border-radius: 50%; z-index: 4; touch-action: none;
+    background: rgba(255,255,255,.28); border: 2px solid rgba(255,255,255,.75); box-shadow: 0 2px 10px rgba(0,0,0,.25); }
+  .walk-stick[hidden], .walk-jump[hidden] { display: none; }
+  .walk-knob { position: absolute; left: 50%; top: 50%; width: 50px; height: 50px; margin: -25px 0 0 -25px; border-radius: 50%;
+    background: rgba(255,255,255,.9); box-shadow: 0 1px 6px rgba(0,0,0,.3); pointer-events: none; }
+  .walk-jump { position: absolute; right: 18px; bottom: 80px; width: 72px; height: 72px; border-radius: 50%; z-index: 4; touch-action: none;
+    border: 2px solid rgba(255,255,255,.8); background: rgba(40,40,40,.45); color: #fff; font: 600 14px system-ui; }
+  .walk-opts { display: inline-flex; gap: 4px; }
+  .walk-opts[hidden] { display: none; }
+  .walk-sens { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #666; }
+  .walk-sens[hidden] { display: none; }
+  .walk-sens input { width: 90px; }
   .room-tabs { display: flex; gap: 4px; align-items: center; overflow-x: auto; margin-bottom: -4px; scrollbar-width: thin; }
   .room-tab { flex: none; display: flex; align-items: center; gap: 4px; font-size: 12px; padding: 5px 10px; border-radius: 8px 8px 0 0; border: 1px solid #e0e0d8; border-bottom: none; background: #ecece6; color: #555; cursor: pointer; white-space: nowrap; }
   .room-tab.active { background: #fff; color: #1a1a1a; font-weight: 600; }
@@ -117,6 +152,10 @@
   .group-bar .view-btn { padding: 4px 8px; }
   .group-bar .danger { color: #c04040; }
   .group-bar[hidden] { display: none; }
+  .wall-bar { position: absolute; z-index: 4; transform: translate(-50%, -50%); display: flex; gap: 4px; background: rgba(255,255,255,.96); border: 1px solid #e0e0d8; border-radius: 9px; padding: 4px; box-shadow: 0 3px 12px rgba(0,0,0,.12); white-space: nowrap; }
+  .wall-bar[hidden], .wall-bar [hidden] { display: none; }
+  .wall-bar .view-btn { padding: 4px 9px; font-size: 12px; }
+  .wall-bar #wallDel { color: #c04040; }
   .sel-panel { position: absolute; top: 10px; right: 10px; width: 244px; background: rgba(255,255,255,.96); border: 1px solid #e0e0d8; border-radius: 10px; padding: 10px 12px; box-shadow: 0 4px 16px rgba(0,0,0,.08); font-size: 12px; color: #444; z-index: 2; }
   .sel-panel[hidden] { display: none; }
   .zoom-bar { position: absolute; top: 10px; left: 10px; display: flex; gap: 4px; z-index: 1; }
@@ -138,6 +177,10 @@
   .sel-dims label { font-size: 10px; color: #777; display: flex; flex-direction: column; gap: 2px; }
   .sel-dims input { width: 100%; padding: 3px 5px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px; }
   .sel-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .sel-mine { display: block; width: 100%; margin-top: 4px; border: 1px dashed #c9c6bb; background: none; border-radius: 6px; padding: 4px; font-size: 12px; color: #6a6658; cursor: pointer; }
+  .sel-mine:hover { background: #f6f4ee; color: #333; }
+  .furn-item .furn-x { margin-left: auto; border: none; background: none; color: #999; cursor: pointer; padding: 0 4px; font-size: 13px; line-height: 1; }
+  .furn-item .furn-x:hover { color: #c04040; }
   .sel-actions button.on { background: #fff4e0; border-color: #e8a64a; }
   .sel-actions .danger { color: #c04040; border-color: #f0b0b0; }
   .sel-panel a { font-size: 11px; color: #2a5cc8; display: block; margin-bottom: 8px; }
@@ -251,6 +294,19 @@
   .trace-opacity { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 11px; color: #666; }
   .trace-opacity input { flex: 1; }
   .export-pop { width: 300px; padding: 6px; }
+  .versions-pop { width: 330px; padding: 8px; }
+  .versions-pop .v-head { font-weight: 600; color: #333; padding: 2px 4px 6px; }
+  .versions-pop .v-empty { padding: 4px 4px 8px; color: #777; }
+  .versions-pop .v-row { display: flex; align-items: center; gap: 4px; border-radius: 6px; }
+  .versions-pop .v-row.current { background: #eef4ff; }
+  .versions-pop .v-row .menu-item { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .versions-pop .v-row .menu-item small { color: #888; margin-left: 6px; font-size: 11px; }
+  .versions-pop .v-act { border: none; background: none; cursor: pointer; padding: 4px 6px; border-radius: 5px; color: #666; font-size: 13px; }
+  .versions-pop .v-act:hover { background: #f0f0ea; color: #222; }
+  .versions-pop .v-new { display: flex; gap: 6px; margin-top: 8px; border-top: 1px solid #eee; padding-top: 8px; }
+  .versions-pop .v-new input { margin: 0; flex: 1; min-width: 0; }
+  .versions-pop .v-new button { white-space: nowrap; }
+  @media (pointer: coarse) { .versions-pop .v-new input { font-size: 16px; } }
   .menu-item { display: block; width: 100%; text-align: left; border: none; background: none; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; color: #222; }
   .menu-item:hover { background: #f2f4f8; }
   .menu-item span { display: block; font-size: 11px; color: #888; margin-top: 1px; }
@@ -381,6 +437,8 @@
     <div class="panel">
       <h3>Room style</h3>
       <div class="presets" id="presets"></div>
+      <button class="view-btn pal-btn" id="paletteBtn" title="Wall and floor colours that go with the furniture in this room">🎨 Suggest colours</button>
+      <div class="pal-list" id="paletteList" hidden></div>
       <div class="style-grid">
         <label>Wall colour <input type="color" id="wallColor"></label>
         <label>Wall finish
@@ -401,6 +459,17 @@
           </select>
         </label>
         <label>Wall height (m) <input type="number" id="wallHeight" min="2" max="5" step="0.1"></label>
+        <label style="display:flex;flex-direction:row;align-items:center;gap:6px"><input type="checkbox" id="beams" style="width:auto;margin:0"> Ceiling beams</label>
+        <label>Skirting boards
+          <select id="skirting">
+            <option value="0">None</option>
+            <option value="0.07">7 cm</option>
+            <option value="0.1">10 cm</option>
+            <option value="0.15">15 cm</option>
+          </select>
+        </label>
+        <label class="trim-row"><input type="checkbox" id="cornice"> Cornice</label>
+        <label>Trim colour <input type="color" id="trimColor"></label>
       </div>
     </div>
 
@@ -420,6 +489,10 @@
         <button class="view-btn" id="btn3d">3D view</button>
       </div>
       <button class="view-btn" id="autoRotateBtn" style="display:none">Auto-rotate: Off</button>
+      <button class="view-btn" id="lightBtn" style="display:none" title="Daylight or evening light (lamps on)">☀ Day</button>
+      <label class="walk-sens" id="walkSensBox" hidden title="How fast the view turns with the mouse while it's captured">Look speed <input type="range" id="walkSens" min="0.3" max="3" step="0.1" value="1"></label>
+      <span class="walk-opts" id="walkOpts" hidden><button class="view-btn" id="walkBobBtn" title="A small up-and-down as you walk">Head bob</button><button class="view-btn" id="walkStepsBtn" title="Footstep sounds (none when walking slowly or crouching)">Footsteps</button></span>
+      <button class="view-btn" id="walkBtn" style="display:none" title="Walk through the room at eye height (W A S D, Shift to walk slowly; Esc stops)">🚶 Walk</button>
       <button class="view-btn" id="resetViewBtn" style="display:none" title="Back to the starting view of the whole room">Reset view</button>
       <span class="toolbar-hint" id="toolbarHint"></span>
       <button class="view-btn" id="shopListBtn" title="Everything in the room, with prices — download, copy or print it">🛒 Shopping list</button>
@@ -427,6 +500,8 @@
       <button class="view-btn" id="exportBtn" title="Save a picture of the plan or 3D view, or print it with the shopping list">⬇ Export</button>
       <div class="share-pop export-pop" id="exportPop" hidden>
         <button class="menu-item" id="exportPlan"><b>Plan picture (PNG)</b><span>Top-down, with wall lengths and a scale</span></button>
+        <button class="menu-item" id="exportPlanDims"><b>Plan with dimensions (PNG)</b><span>A builder's plan: overall sizes, and where each window and door is</span></button>
+        <button class="menu-item" id="exportHome"><b>Whole home (PNG)</b><span>Every room's plan on one sheet, with names and areas</span></button>
         <button class="menu-item" id="export3d"><b>3D picture (PNG)</b><span>What the 3D view shows now</span></button>
         <button class="menu-item" id="exportPrint"><b>Print or save as PDF</b><span>Plan, 3D view and the shopping list on a page</span></button>
       </div>
@@ -445,13 +520,21 @@
       <button class="view-btn" id="helpBtn" title="How it works, and example rooms">? Help</button>
       <button class="clear-btn" id="clearBtn">Clear all</button>
     </div>
-    <div class="room-tabs" id="roomTabs"></div>
+    <div class="tabs-row">
+      <div class="room-tabs" id="roomTabs"></div>
+      <button class="view-btn" id="versionsBtn" title="Save named versions of this layout and switch between them to compare">🗂 Versions</button>
+      <div class="share-pop export-pop versions-pop" id="versionsPop" hidden></div>
+    </div>
     <div class="canvas-wrap" id="canvasWrap">
+      <div class="crosshair" id="crosshair" hidden></div>
+      <div class="walk-stick" id="walkStick" hidden aria-label="Walk"><div class="walk-knob" id="walkKnob"></div></div>
+      <button class="walk-jump" id="walkJumpBtn" hidden>Jump</button>
       <canvas id="canvas"></canvas>
       <div class="zoom-bar" id="zoomBar">
         <button class="view-btn" id="zoomOut" title="Zoom out (or scroll / pinch)">−</button>
         <button class="view-btn" id="zoomReset" title="Back to 100%">100%</button>
         <button class="view-btn" id="zoomIn" title="Zoom in (or scroll / pinch)">+</button>
+        <button class="view-btn" id="elecBtn" title="Show the electrical plan: power points, switches and lights" aria-pressed="true">⚡</button>
         <button class="view-btn" id="sizesBtn" title="Show each piece's width × depth on the plan" aria-pressed="false">Sizes</button>
         <button class="view-btn" id="measureBtn" title="Measure: drag between two points on the plan (they snap to walls and furniture edges)">📏 Measure</button>
         <button class="view-btn" id="measureDel" title="Remove the selected measurement (Delete)" hidden>Delete tape</button>
@@ -486,6 +569,17 @@
           </select>
           <button class="view-btn" id="elevDel">Delete</button>
         </span>
+        <span class="elev-floor" id="elevFloorBox" hidden title="This area's floor (a kitchen's tiles next to a timber living room)">Floor
+          <select id="elevFloorStyle">
+            <option value="">Same as room</option>
+            <option value="wood">Wood planks</option>
+            <option value="tile">Tiles</option>
+            <option value="carpet">Carpet</option>
+            <option value="concrete">Concrete</option>
+            <option value="plain">Plain</option>
+          </select>
+          <input type="color" id="elevFloorColor" title="This area's floor colour">
+        </span>
         <button class="view-btn" id="elevRemovePart" hidden title="Remove this separate area from the room">Remove this area</button>
         <button class="view-btn primary-btn" id="elevDone">Back to plan</button>
       </div>
@@ -496,6 +590,11 @@
         <button class="view-btn" id="groupDup">Duplicate</button>
         <button class="view-btn danger" id="groupDel">Delete</button>
         <button class="view-btn" id="groupClose" title="Done (Esc)">✕</button>
+      </div>
+      <div class="wall-bar" id="wallBar" hidden>
+        <button class="view-btn" id="wallDel" title="Remove this wall (the floor stays; Delete key)">Delete wall</button>
+        <button class="view-btn" id="wallBack" title="Put this wall back">Put wall back</button>
+        <button class="view-btn" id="wallElev" title="This wall's height, windows and doors">Heights &amp; windows…</button>
       </div>
       <div class="sel-panel" id="selPanel" hidden>
         <div class="sel-head"><strong id="selName"></strong><button class="icon-btn sel-more-btn" id="selMore" title="Size, shape, colour, price">⋯</button><button class="icon-btn" id="selClose" title="Deselect (Esc)">×</button></div>
@@ -557,6 +656,13 @@
             <option value="tv">TV on the wall</option>
             <option value="art">Wall art / mirror</option>
             <option value="wallshelf">Wall shelf</option>
+            <option value="stairs:straight">Stairs, straight</option>
+            <option value="stairs:L">Stairs, L-shaped</option>
+            <option value="stairs:U">Stairs, U-shaped</option>
+            <option value="elec:power">Power point</option>
+            <option value="elec:switch">Light switch</option>
+            <option value="elec:ceiling">Ceiling light</option>
+            <option value="elec:downlight">Downlight</option>
           </select>
         </div>
         <div class="sel-row" id="selColorRow"><span>Colour</span><input type="color" id="selColor"></div>
@@ -571,6 +677,7 @@
           <button id="selDuplicate">Duplicate</button>
           <button id="selDelete" class="danger">Delete</button>
         </div>
+        <button class="sel-mine" id="selMine" title="Keep this piece (size, colour, shape, link, price) in My furniture, to add again in any room">☆ Save to My furniture</button>
         <div class="sel-hint" id="selHint">R / Shift+R rotate 15° · arrows nudge · Del removes</div>
       </div>
       <div class="budget-bar" id="budgetBar" hidden>
@@ -618,11 +725,11 @@
     <div class="shop-head"><h2>Keyboard and mouse</h2><button class="icon-btn" id="keysClose" title="Close (Esc)">×</button></div>
     <div class="shop-scroll keys-body" tabindex="-1">
       <h3>Furniture on the plan</h3><table class="keys-table"><tr><td>Drag</td><td>Move it</td></tr><tr><td>Drag the orange ↻</td><td>Turn it (hold <kbd>Shift</kbd> for 15° steps)</td></tr><tr><td><kbd>R</kbd> / <kbd>Shift</kbd>+<kbd>R</kbd></td><td>Turn it 15° one way / the other</td></tr><tr><td>Double-click</td><td>Turn it 90°</td></tr><tr><td>Arrow keys</td><td>Nudge it 5 cm (<kbd>Shift</kbd>: 25 cm)</td></tr><tr><td><kbd>Delete</kbd> / <kbd>Backspace</kbd> or right-click</td><td>Remove it</td></tr><tr><td><kbd>Esc</kbd></td><td>Deselect</td></tr></table>
-      <h3>The plan</h3><table class="keys-table"><tr><td>Scroll / pinch</td><td>Zoom in and out</td></tr><tr><td>Drag empty floor</td><td>Move the plan around</td></tr><tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo</td></tr><tr><td><kbd>Ctrl</kbd>+<kbd>Y</kbd> or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd></td><td>Redo</td></tr><tr><td>Click a wall length</td><td>Type the wall's length</td></tr><tr><td>Drag a corner or a wall</td><td>Reshape the room (a dragged corner lines up with its neighbours; hold <kbd>Alt</kbd> not to)</td></tr><tr><td>Drag the orange ◆</td><td>Curve the wall</td></tr><tr><td>Press the blue +</td><td>Add a corner there</td></tr><tr><td>Click a corner, then <kbd>Delete</kbd></td><td>Remove the corner</td></tr><tr><td>Double-click a wall</td><td>Its heights, windows and doors</td></tr><tr><td>Draw another part…</td><td>Another outline: inside the room a pillar, outside it a separate area (right-click it to remove it)</td></tr><tr><td><kbd>Shift</kbd>+click, <kbd>Shift</kbd>+drag</td><td>Select several pieces (then drag, <kbd>R</kbd>, arrows, <kbd>Delete</kbd>)</td></tr><tr><td>Hold <kbd>Alt</kbd> while dragging a piece</td><td>Don't line it up with walls and other pieces</td></tr><tr><td>📏 Measure, then drag</td><td>A tape measure (click a tape, then <kbd>Delete</kbd>; right-click removes it)</td></tr><tr><td>📝 Note, then click</td><td>A note on the plan (drag it, double-click to edit)</td></tr></table>
+      <h3>The plan</h3><table class="keys-table"><tr><td>Scroll / pinch</td><td>Zoom in and out</td></tr><tr><td>Drag empty floor</td><td>Move the plan around</td></tr><tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo</td></tr><tr><td><kbd>Ctrl</kbd>+<kbd>Y</kbd> or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd></td><td>Redo</td></tr><tr><td>Click a wall length</td><td>Type the wall's length</td></tr><tr><td>Drag a corner or a wall</td><td>Reshape the room (a dragged corner lines up with its neighbours; hold <kbd>Alt</kbd> not to)</td></tr><tr><td>Drag the orange ◆</td><td>Curve the wall</td></tr><tr><td>Press the blue +</td><td>Add a corner there</td></tr><tr><td>Click a corner, then <kbd>Delete</kbd></td><td>Remove the corner</td></tr><tr><td>Click a wall, then <kbd>Delete</kbd></td><td>Remove the wall (the floor stays open there; select it again to put it back)</td></tr><tr><td>Double-click a wall</td><td>Its heights, windows and doors</td></tr><tr><td>Draw another part…</td><td>Another outline: inside the room a pillar, outside it a separate area (right-click it to remove it)</td></tr><tr><td><kbd>Shift</kbd>+click, <kbd>Shift</kbd>+drag</td><td>Select several pieces (then drag, <kbd>R</kbd>, arrows, <kbd>Delete</kbd>)</td></tr><tr><td>Hold <kbd>Alt</kbd> while dragging a piece</td><td>Don't line it up with walls and other pieces</td></tr><tr><td>📏 Measure, then drag</td><td>A tape measure (click a tape, then <kbd>Delete</kbd>; right-click removes it)</td></tr><tr><td>📝 Note, then click</td><td>A note on the plan (drag it, double-click to edit)</td></tr></table>
       <h3>Drawing a room (Free draw)</h3><table class="keys-table"><tr><td>Click</td><td>Place a corner</td></tr><tr><td>Type a number, <kbd>Enter</kbd></td><td>Next wall that long, toward the pointer</td></tr><tr><td>Click the first corner, <kbd>Enter</kbd>, double-click or right-click</td><td>Finish the room</td></tr><tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Take back the last corner</td></tr><tr><td>Hold <kbd>Alt</kbd></td><td>Any angle (not just 45° steps)</td></tr><tr><td><kbd>Esc</kbd></td><td>Finish / give up</td></tr></table>
       <h3>A wall's elevation</h3><table class="keys-table"><tr><td>Drag a window or door</td><td>Move it; drag its edges to resize</td></tr><tr><td>Drag the wall's top</td><td>Change its height</td></tr><tr><td><kbd>Delete</kbd></td><td>Remove the selected window or door</td></tr><tr><td><kbd>Esc</kbd></td><td>Deselect, then back to the plan</td></tr></table>
-      <h3>3D view</h3><table class="keys-table"><tr><td>Drag a piece</td><td>Move it along the floor (<kbd>Shift</kbd>+drag: turn it)</td></tr><tr><td>Right-drag, or drag empty space</td><td>Look around</td></tr><tr><td>Scroll</td><td>Walk forward / back</td></tr><tr><td><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>, arrows</td><td>Walk (arrows when nothing is selected)</td></tr><tr><td><kbd>E</kbd> / <kbd>Q</kbd></td><td>Up / down</td></tr><tr><td>Hold <kbd>Shift</kbd></td><td>Faster</td></tr><tr><td><kbd>R</kbd>, <kbd>Delete</kbd>, <kbd>Esc</kbd></td><td>Work on the selected piece here too</td></tr><tr><td>Middle-drag, or <kbd>Ctrl</kbd>+drag on empty space</td><td>Slide sideways and up / down</td></tr></table>
-      <h3>On a phone or tablet</h3><table class="keys-table"><tr><td>Two fingers</td><td>Pinch to zoom; in 3D, move together to walk</td></tr><tr><td>Double-tap</td><td>Like a double-click</td></tr><tr><td>In 3D: hold a piece still</td><td>Pick it up and move it</td></tr><tr><td>In 3D: swipe</td><td>Look around</td></tr></table>
+      <h3>3D view</h3><table class="keys-table"><tr><td>Drag a piece</td><td>Move it along the floor (<kbd>Shift</kbd>+drag: turn it)</td></tr><tr><td>Right-drag, or drag empty space</td><td>Look around</td></tr><tr><td>Scroll</td><td>Walk forward / back</td></tr><tr><td><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>, arrows</td><td>Walk (arrows when nothing is selected)</td></tr><tr><td><kbd>E</kbd> / <kbd>Q</kbd></td><td>Up / down</td></tr><tr><td>Hold <kbd>Shift</kbd></td><td>Faster</td></tr><tr><td><kbd>R</kbd>, <kbd>Delete</kbd>, <kbd>Esc</kbd></td><td>Work on the selected piece here too</td></tr><tr><td>🚶 Walk</td><td>Walk at eye height: <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>, hold <kbd>Shift</kbd> to walk slowly, <kbd>Space</kbd> jumps, hold <kbd>C</kbd> (or <kbd>Ctrl</kbd>) to crouch; click the view to look with the mouse (<kbd>Esc</kbd> lets go); <kbd>Esc</kbd> stops</td></tr><tr><td>Middle-drag, or <kbd>Shift</kbd>+drag / <kbd>Ctrl</kbd>+drag on empty space</td><td>Slide sideways and up / down</td></tr></table>
+      <h3>On a phone or tablet</h3><table class="keys-table"><tr><td>Two fingers</td><td>Pinch to zoom; in 3D, move together to walk</td></tr><tr><td>🚶 Walk in 3D</td><td>The circle bottom left walks (push further to go faster), swipe anywhere else to look, Jump jumps</td></tr><tr><td>Double-tap</td><td>Like a double-click</td></tr><tr><td>In 3D: hold a piece still</td><td>Pick it up and move it</td></tr><tr><td>In 3D: swipe</td><td>Look around</td></tr></table>
     </div>
   </div>
 </dialog>
@@ -690,6 +797,13 @@ const FURNITURE = [
   {id:'outdoorchair', label:'Outdoor chair', emoji:'🪑', w:0.55, h:0.6, color:'#9C7A54', zHeight:0.85, shape:{kind:'chair', style:'dining', base:'legs'}, room:'outdoor'},
   {id:'lounger',  label:'Sun lounger',  emoji:'🏖', w:0.65, h:1.95, color:'#C9B79C', zHeight:0.8, shape:{kind:'chair', style:'sunlounger', base:'legs'}, room:'outdoor'},
   {id:'radiator', label:'Radiator',     emoji:'♨', w:1.0, h:0.1, color:'#EEEEEE', zHeight:0.6, room:'any'},
+  {id:'stairs',   label:'Stairs',       emoji:'🪜', w:1.0, h:3.4, color:'#B89A74', zHeight:2.6, shape:{kind:'stairs', turn:'straight'}, keywords:'staircase steps stair flight', room:'any'},
+  {id:'stairsL',  label:'Stairs, L-shaped', emoji:'🪜', w:2.0, h:2.6, color:'#B89A74', zHeight:2.6, shape:{kind:'stairs', turn:'L'}, keywords:'staircase steps stair landing quarter turn', room:'any'},
+  {id:'stairsU',  label:'Stairs, U-shaped', emoji:'🪜', w:2.2, h:2.8, color:'#B89A74', zHeight:2.6, shape:{kind:'stairs', turn:'U'}, keywords:'staircase steps stair landing half turn switchback', room:'any'},
+  {id:'power',     label:'Power point',  emoji:'🔌', w:0.15, h:0.04, color:'#F4F4F2', zHeight:0.08, shape:{kind:'elec', type:'power'}, keywords:'outlet socket gpo plug electrical', room:'any'},
+  {id:'lightswitch', label:'Light switch', emoji:'💡', w:0.08, h:0.04, color:'#F4F4F2', zHeight:0.08, shape:{kind:'elec', type:'switch'}, keywords:'switch electrical', room:'any'},
+  {id:'ceilinglight', label:'Ceiling light', emoji:'💡', w:0.4, h:0.4, color:'#F4F1E8', zHeight:0.12, shape:{kind:'elec', type:'ceiling'}, keywords:'pendant light fitting electrical oyster', room:'any'},
+  {id:'downlight',  label:'Downlight',    emoji:'🔆', w:0.1, h:0.1, color:'#F4F4F2', zHeight:0.02, shape:{kind:'elec', type:'downlight'}, keywords:'spotlight recessed light electrical', room:'any'},
   {id:'column',   label:'Column',       emoji:'🏛', w:0.4, h:0.4, color:'#F2F0EC', zHeight:2.4, room:'any'},
   {id:'wallshelf', label:'Wall shelf', emoji:'📚', w:1.0, h:0.25, color:'#B08A5E', zHeight:0.2, shape:{kind:'wallshelf'}, room:'any'},
 ];
@@ -720,7 +834,7 @@ const STYLE_PRESETS = {
 // diag() keeps the last 150 steps/errors in localStorage ('rp-diag'), which
 // Claude can read back from the Edge profile on disk when something works in
 // tests but not in the user's browser (see CLAUDE.md).
-const BUILD = '2026-10-05.4';
+const BUILD = '2026-10-06.2';
 function diag(event, data) {
   try {
     const log = JSON.parse(localStorage.getItem('rp-diag') || '[]');
@@ -744,7 +858,9 @@ const SCALE = 60;
 let view = '2d';
 let shape = 'rect';
 let roomW = 6, roomH = 5;
-let roomStyle = {...STYLE_PRESETS.scandi, preset: 'scandi', wallHeight: 2.4};
+// (skirting: board height in m, 0 = none; cornice: a moulding along the wall tops; trimColor: both)
+const TRIM_DEFAULTS = {skirting: 0, cornice: false, trimColor: '#f4f2ec'};
+let roomStyle = {...STYLE_PRESETS.scandi, preset: 'scandi', wallHeight: 2.4, ...TRIM_DEFAULTS};
 let placed = [];
 let selected = -1;
 let draggingFurn = null;
@@ -755,6 +871,7 @@ let extraDrag = null;      // (no longer used: parts are edited with the room's 
 let focusPart = -1;        // whose outline the room's editing state (shape, customPts, walls, wallLabels) holds: -1 the room, k extras[k]
 let mainStash = null;      // the room's own editing state while a part's is swapped in
 let selCornerPart = -1;    // the outline selCorner belongs to
+let selWall = null;        // a selected wall: {part (-1 the room, k a part), i}; its toolbar offers Delete / Put back / Heights & windows
 let measures = [];         // tape measurements on the plan (this room): [{x1, y1, x2, y2}] in plan px
 let measureMode = false, measureDrag = null, measureSel = -1;   // the "Measure" tool; the one being drawn
 let notes = [];            // text notes on the plan (this room): [{x, y, text}], plan px (the note's middle)
@@ -1399,7 +1516,7 @@ function buildFurnitureGroup(item, colorHex) {
 // Shapes: {kind: 'rug'}, {kind: 'lamp', style: 'floor'|'table'},
 // {kind: 'curtain'}, {kind: 'tv'}, {kind: 'art'}, {kind: 'wallshelf'}.
 const DECOR_KIND = {rug: 'rug', curtain: 'wall', tv: 'wall', art: 'wall', wallshelf: 'wall'};
-function kindForShape(sh) { return !sh ? null : sh.kind === 'lamp' ? (sh.style === 'table' ? 'decor' : null) : DECOR_KIND[sh.kind] || null; }
+function kindForShape(sh) { return !sh ? null : sh.kind === 'lamp' ? (sh.style === 'table' ? 'decor' : null) : sh.kind === 'elec' ? (/^(power|switch)$/.test(sh.type) ? 'wall' : null) : DECOR_KIND[sh.kind] || null; }
 
 function inferDecorShape(p) {
   const name = p.name || '';
@@ -1418,6 +1535,8 @@ function defaultElev(sh, h) {
   if (sh.kind === 'art') return Math.max(0.3, +(1.5 - h / 2).toFixed(2));     // centred at eye level
   if (sh.kind === 'tv') return Math.max(0.3, +(1.15 - h / 2).toFixed(2));     // centred at seated eye level
   if (sh.kind === 'wallshelf') return 1.4;
+  if (sh.kind === 'elec' && sh.type === 'power') return 0.3;      // (the usual heights, to the bottom of the plate)
+  if (sh.kind === 'elec' && sh.type === 'switch') return 1.05;
   return 0;
 }
 
@@ -1516,18 +1635,31 @@ function buildDecorGroup(item, colorHex) {
 
 // Outline segments of the room with their outward normals (canvas px).
 function wallSegments() { return inRoom(wallSegmentsHere); }
+// The standing walls of the outline in the editing state, as short straight
+// pieces (a curved wall in 24): [{a, b}]. A removed wall (walls[i].open) has none.
+function solidWallPieces() {
+  const pts = getRoomPts(), out = [];
+  if (shape === 'custom' && drawing) return out;
+  syncWalls();
+  pts.forEach((_, i) => {
+    if (walls[i] && walls[i].open) return;
+    const arc = wallArc(i, pts), n = arc.straight ? 1 : 24;
+    for (let k = 0; k < n; k++) out.push({a: arc.at(k / n), b: arc.at((k + 1) / n)});
+  });
+  return out;
+}
 function wallSegmentsHere() {
   const segs = [];
   // (n points from the floor into the wall: out of the room or an area, into a pillar)
-  const add = (pts, into) => pts.forEach((a, i) => {
-    const b = pts[(i + 1) % pts.length], len = Math.hypot(b.x - a.x, b.y - a.y);
+  const add = (outline, pieces, into) => pieces.forEach(({a, b}) => {
+    const len = Math.hypot(b.x - a.x, b.y - a.y);
     if (len < 1e-6) return;
     let n = {x: (b.y - a.y) / len, y: -(b.x - a.x) / len};
-    if (pointInPoly(pts, (a.x + b.x) / 2 + n.x * 2, (a.y + b.y) / 2 + n.y * 2) !== into) n = {x: -n.x, y: -n.y};
+    if (pointInPoly(outline, (a.x + b.x) / 2 + n.x * 2, (a.y + b.y) / 2 + n.y * 2) !== into) n = {x: -n.x, y: -n.y};
     segs.push({a, b, n, len});
   });
-  add(getRoomOutline(), false);
-  extras.forEach((e, k) => add(withPart(k, getRoomOutline), extraKind(e) === 'pillar'));
+  add(getRoomOutline(), solidWallPieces(), false);
+  extras.forEach((e, k) => withPart(k, () => add(getRoomOutline(), solidWallPieces(), extraKind(e) === 'pillar')));
   return segs;
 }
 
@@ -1556,7 +1688,7 @@ function settleItem(item) {
   else if (item.kind === 'decor') {
     const cx = item.x + item.w * SCALE / 2, cy = item.y + item.h * SCALE / 2;
     let top = 0;
-    placed.forEach(o => { if (o !== item && !o.kind && itemHit(o, cx, cy)) top = Math.max(top, (o.elev || 0) + (o.zHeight || 0.7)); });
+    placed.forEach(o => { if (o !== item && !o.kind && !isElec(o) && itemHit(o, cx, cy)) top = Math.max(top, (o.elev || 0) + (o.zHeight || 0.7)); });
     item.elev = +top.toFixed(3);
   }
 }
@@ -2173,8 +2305,79 @@ function buildBedGroup(item, colorHex) {
 }
 
 // The generated shape for an item (null if it's a plain box).
+// Stairs: solid steps (each a block from the floor to its tread), about
+// 18 cm risers up to the piece's height, going up towards the back (-z, the
+// top of the plan). Straight: one flight. L: up the right-hand side, a square
+// landing at the back right, then left along the back. U: up the right half,
+// a landing across the back, then back down… up the left half towards the
+// front. shape.turn: 'straight' | 'L' | 'U'.
+// The outline of L stairs in metres from the middle, unmirrored: the flight up
+// the right-hand side, the landing and the flight along the back. null for others.
+function stairsOutline(item) {
+  if (!item.shape || item.shape.kind !== 'stairs' || item.shape.turn !== 'L') return null;
+  const W = item.w, D = item.h, fw = Math.min(1.0, W * 0.5, D * 0.5);
+  return [{x: W / 2, y: D / 2}, {x: W / 2 - fw, y: D / 2}, {x: W / 2 - fw, y: -D / 2 + fw}, {x: -W / 2, y: -D / 2 + fw}, {x: -W / 2, y: -D / 2}, {x: W / 2, y: -D / 2}];
+}
+function stairsLayout(item) {
+  const W = item.w, D = item.h, H = item.zHeight || 2.6, turn = (item.shape && item.shape.turn) || 'straight';
+  const n = Math.max(3, Math.round(H / 0.18)), rise = H / n, blocks = [];   // blocks: {x0, x1, z0, z1, top}
+  if (turn === 'L') {
+    const fw = Math.min(1.0, W * 0.5, D * 0.5), L1 = D - fw, L2 = W - fw;
+    const n1 = Math.max(1, Math.round((n - 1) * L1 / (L1 + L2))), n2 = Math.max(1, n - 1 - n1);
+    for (let k = 0; k < n1; k++) blocks.push({x0: W / 2 - fw, x1: W / 2, z0: D / 2 - (k + 1) * L1 / n1, z1: D / 2 - k * L1 / n1, top: (k + 1) * rise});
+    blocks.push({x0: W / 2 - fw, x1: W / 2, z0: -D / 2, z1: -D / 2 + fw, top: (n1 + 1) * rise, landing: true});
+    for (let k = 0; k < n2; k++) blocks.push({x0: W / 2 - fw - (k + 1) * L2 / n2, x1: W / 2 - fw - k * L2 / n2, z0: -D / 2, z1: -D / 2 + fw, top: (n1 + 2 + k) * rise});
+  } else if (turn === 'U') {
+    const fw = W / 2, land = Math.min(1.0, D * 0.4), L = D - land;
+    const n1 = Math.max(1, Math.floor((n - 1) / 2)), n2 = Math.max(1, n - 1 - n1);
+    for (let k = 0; k < n1; k++) blocks.push({x0: 0, x1: fw, z0: D / 2 - (k + 1) * L / n1, z1: D / 2 - k * L / n1, top: (k + 1) * rise});
+    blocks.push({x0: -fw, x1: fw, z0: -D / 2, z1: -D / 2 + land, top: (n1 + 1) * rise, landing: true});
+    for (let k = 0; k < n2; k++) blocks.push({x0: -fw, x1: 0, z0: -D / 2 + land + k * L / n2, z1: -D / 2 + land + (k + 1) * L / n2, top: (n1 + 2 + k) * rise});
+  } else {
+    for (let k = 0; k < n; k++) blocks.push({x0: -W / 2, x1: W / 2, z0: D / 2 - (k + 1) * D / n, z1: D / 2 - k * D / n, top: (k + 1) * rise});
+  }
+  return {n, rise, blocks};
+}
+function buildStairsGroup(item, colorHex) {
+  const g = new THREE.Group(), {blocks} = stairsLayout(item);
+  const tread = new THREE.MeshLambertMaterial({color: new THREE.Color(colorHex)});
+  const side = new THREE.MeshLambertMaterial({color: new THREE.Color(colorHex).multiplyScalar(0.72)});
+  blocks.forEach(b => {
+    const h = Math.min(b.top, item.zHeight || 2.6);
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(b.x1 - b.x0, h, b.z1 - b.z0), [side, side, tread, side, side, side]);
+    mesh.position.set((b.x0 + b.x1) / 2, h / 2, (b.z0 + b.z1) / 2);
+    g.add(mesh);
+  });
+  return g;
+}
+// Power points, switches, ceiling lights and downlights: small plates on the
+// wall (back to -z, like the TV), a domed fitting and a recessed disc under
+// the ceiling.
+function buildElecGroup(item) {
+  const g = new THREE.Group(), W = item.w, D = item.h, H = item.zHeight || 0.08, t = item.shape.type;
+  const white = new THREE.MeshLambertMaterial({color: 0xf6f6f3}), dark = new THREE.MeshLambertMaterial({color: 0x333333});
+  const box = (x0, x1, y0, y1, z0, z1, m) => { const b = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, y1 - y0, z1 - z0), m); b.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); g.add(b); };
+  const back = -D / 2;
+  if (t === 'power') {
+    box(-W / 2, W / 2, 0, H, back, back + 0.012, white);
+    [-W / 4, W / 4].forEach(x => { box(x - 0.008, x - 0.004, H * 0.35, H * 0.65, back + 0.012, back + 0.014, dark); box(x + 0.004, x + 0.008, H * 0.35, H * 0.65, back + 0.012, back + 0.014, dark); });
+  } else if (t === 'switch') {
+    box(-W / 2, W / 2, 0, H, back, back + 0.012, white);
+    box(-W * 0.15, W * 0.15, H * 0.3, H * 0.7, back + 0.012, back + 0.02, white);
+  } else {
+    const r = Math.min(W, D) / 2;
+    const glow = new THREE.MeshLambertMaterial({color: 0xfffdf4, emissive: 0x5a5444});
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(r * (t === 'ceiling' ? 0.8 : 1), r, H, 24), t === 'ceiling' ? glow : white);
+    m.position.y = H / 2; g.add(m);
+    if (t === 'downlight') { const c = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.6, r * 0.6, 0.004, 20), glow); c.position.y = -0.001; g.add(c); }
+  }
+  g.userData.elec = true;
+  return g;
+}
 function buildShapeGroup(item) {
   if (!item.shape) return null;
+  if (item.shape.kind === 'stairs') return buildStairsGroup(item, item.color);
+  if (item.shape.kind === 'elec') return buildElecGroup(item);
   if (item.shape.kind === 'modular' && item.modules) return buildModularGroup(item, item.color);
   if (item.shape.kind === 'sofa') return buildSofaGroup(item, item.color);
   if (item.shape.kind === 'chair') return buildChairGroup(item, item.color);
@@ -2198,6 +2401,35 @@ function sofaTopImage(item) {
     } catch (e) { diag('shape top-down failed', String(e).slice(0, 200)); }
   }
   return sofaTopCache[key].img;
+}
+
+// The plan's way-up arrow for stairs: a line through the middle of each
+// flight, from the bottom step to the top, an arrowhead, and "UP" at the
+// start (plan px, centred on the piece, before its rotation).
+function drawStairsArrow(item, iw, ih, upright) {
+  const W = item.w, D = item.h, turn = (item.shape && item.shape.turn) || 'straight', k = iw / W;
+  const P = (x, z) => [x * k, z * (ih / D)];
+  const front = (ih / 2 - 30) / (ih / D);   // (the start: 30 px in from the front, clear of the name label)
+  let pts;
+  if (turn === 'L') { const fw = Math.min(1.0, W * 0.5, D * 0.5); pts = [P(W / 2 - fw / 2, front), P(W / 2 - fw / 2, -D / 2 + fw / 2), P(-W / 2 + 0.15, -D / 2 + fw / 2)]; }
+  else if (turn === 'U') { const land = Math.min(1.0, D * 0.4); pts = [P(W / 4, front), P(W / 4, -D / 2 + land / 2), P(-W / 4, -D / 2 + land / 2), P(-W / 4, front)]; }
+  else pts = [P(0, front), P(0, -D / 2 + 0.15)];
+  ctx.save();
+  // (each tread's edge: from above the steps are all one colour)
+  ctx.strokeStyle = 'rgba(60,45,30,0.45)'; ctx.lineWidth = 1;
+  stairsLayout(item).blocks.forEach(b => { const [x0, z0] = P(b.x0, b.z0), [x1, z1] = P(b.x1, b.z1); ctx.strokeRect(x0, z0, x1 - x0, z1 - z0); });
+  ctx.strokeStyle = 'rgba(40,30,20,0.85)'; ctx.fillStyle = 'rgba(40,30,20,0.85)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
+  const [ax, ay] = pts[pts.length - 1], [bx, by] = pts[pts.length - 2], a = Math.atan2(ay - by, ax - bx);
+  ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax - 8 * Math.cos(a - 0.45), ay - 8 * Math.sin(a - 0.45)); ctx.lineTo(ax - 8 * Math.cos(a + 0.45), ay - 8 * Math.sin(a + 0.45)); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.arc(pts[0][0], pts[0][1], 2.5, 0, Math.PI * 2); ctx.fill();
+  // (beside the start dot, reading normally: not mirrored by Flip, not upside down)
+  ctx.translate(pts[0][0], pts[0][1]);
+  if (item.flip) ctx.scale(-1, 1);
+  if (upright) ctx.rotate(Math.PI);
+  ctx.font = '600 9px system-ui'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  ctx.fillText('UP', 5, 0);
+  ctx.restore();
 }
 
 // The product's colour in its photo: the most common colour in the middle of
@@ -2441,6 +2673,7 @@ function extraCrossesRoom(e) {
 function removeExtra(i) {
   if (focusPart !== -1) { if (elevWall != null) closeElevation(); swapTo(-1); }
   if (selCornerPart !== -1) { selCorner = null; selCornerPart = -1; }
+  selWall = null;
   extras.splice(i, 1); redraw(); checkpoint();
 }
 const extraPolys = kind => extras.map((e, k) => extraKind(e) === kind ? withPart(k, getRoomOutline) : null).filter(Boolean);
@@ -2467,17 +2700,17 @@ function startExtraDraft() {
 function drawExtras() {
   if (!extras.length) return;
   const bb = getRoomBBox();
-  const pattern = ctx.createPattern(surfaceCanvas(roomStyle.floorStyle, roomStyle.floorColor), 'repeat');
-  pattern.setTransform(new DOMMatrix().translate(bb.x, bb.y).scale(SCALE / TEX));
   extras.forEach((e, k) => {
-    const pillar = extraKind(e) === 'pillar';
+    const pillar = extraKind(e) === 'pillar', f = partFloor(e);
+    const pattern = ctx.createPattern(surfaceCanvas(f.style, f.color), 'repeat');
+    pattern.setTransform(new DOMMatrix().translate(bb.x, bb.y).scale(SCALE / TEX));
     withPart(k, () => {
       syncWalls();
       tracePath(getRoomOutline());
       ctx.fillStyle = pillar ? roomStyle.wallColor : pattern; ctx.fill();
       ctx.lineJoin = 'miter';
       if (pillar) { ctx.strokeStyle = 'rgba(0,0,0,0.55)'; ctx.lineWidth = 2; ctx.stroke(); return; }
-      ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 9; ctx.stroke(); ctx.strokeStyle = roomStyle.wallColor; ctx.lineWidth = 7; ctx.stroke();
+      strokeWalls();
       drawPlanOpenings(getRoomPts());
     });
   });
@@ -2541,7 +2774,36 @@ function drawLabelChip(txt, y) {
   ctx.fillText(txt, 0, y);
 }
 
+// The plan symbols: a power point is a circle with two lines across (a
+// double outlet), a switch an S, a ceiling light a circle with a cross, a
+// downlight a small circle with a dot. Drawn at the piece's middle, a fixed
+// size, without a name tag; the ⚡ switch hides them (and in 3D).
+const isElec = it => !!(it && it.shape && it.shape.kind === 'elec');
+let showElec = true;
+try { showElec = localStorage.getItem('rp-show-elec') !== '0'; } catch {}
+function drawElecSymbol(item) {
+  const t = item.shape.type, cx = item.x + item.w * SCALE / 2, cy = item.y + item.h * SCALE / 2;
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(item.rot || 0);
+  ctx.strokeStyle = '#1f3b63'; ctx.fillStyle = '#fff'; ctx.lineWidth = 1.5;
+  if (t === 'power') {
+    ctx.beginPath(); ctx.arc(0, 0, 6, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-3, -9); ctx.lineTo(-3, 9); ctx.moveTo(3, -9); ctx.lineTo(3, 9); ctx.stroke();
+  } else if (t === 'switch') {
+    ctx.beginPath(); ctx.arc(0, 0, 7, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.rotate(-(item.rot || 0));
+    ctx.fillStyle = '#1f3b63'; ctx.font = '700 10px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('S', 0, 0.5);
+  } else if (t === 'ceiling') {
+    const r = Math.max(8, Math.min(item.w, item.h) * SCALE / 2);
+    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    const k = r * Math.SQRT1_2; ctx.beginPath(); ctx.moveTo(-k, -k); ctx.lineTo(k, k); ctx.moveTo(k, -k); ctx.lineTo(-k, k); ctx.stroke();
+  } else {
+    ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#1f3b63'; ctx.beginPath(); ctx.arc(0, 0, 1.8, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.restore();
+}
 function drawPlacedItem(item) {
+  if (isElec(item)) { if (showElec) drawElecSymbol(item); return; }
   const iw = item.w * SCALE, ih = item.h * SCALE;
   ctx.save();
   ctx.translate(item.x + iw/2, item.y + ih/2);
@@ -2562,11 +2824,13 @@ function drawPlacedItem(item) {
   const topImg = (model && model.topImg) || sofaTop;
   if (topImg) {
     // Top-down render of the real 3D model (or generated sofa), stretched to the item's size
+    const so = stairsOutline(item), soPath = () => { ctx.beginPath(); so.forEach((p, k) => ctx[k ? 'lineTo' : 'moveTo'](p.x * iw / item.w, p.y * ih / item.h)); ctx.closePath(); };
     ctx.fillStyle = 'rgba(255,255,255,0.35)';
-    ctx.fillRect(-iw/2, -ih/2, iw, ih);
+    if (so) { soPath(); ctx.fill(); } else ctx.fillRect(-iw/2, -ih/2, iw, ih);
     ctx.drawImage(topImg, -iw/2, -ih/2, iw, ih);
     ctx.strokeStyle = 'rgba(0,0,0,0.18)'; ctx.lineWidth = 1;
-    ctx.strokeRect(-iw/2, -ih/2, iw, ih);
+    if (so) { soPath(); ctx.stroke(); } else ctx.strokeRect(-iw/2, -ih/2, iw, ih);
+    if (item.shape && item.shape.kind === 'stairs') drawStairsArrow(item, iw, ih, upright);
     if (item.flip) ctx.scale(-1, 1);
     if (upright) ctx.rotate(Math.PI);
     drawLabelChip(label, ih/2 - 8);
@@ -2689,8 +2953,7 @@ function draw2d() {
     ctx.fillStyle = pattern;
     ctx.fill();
     ctx.lineJoin = 'miter';
-    ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 9; ctx.stroke();
-    ctx.strokeStyle = roomStyle.wallColor; ctx.lineWidth = 7; ctx.stroke();
+    strokeWalls();
     drawPlanOpenings(pts);
     drawExtras();
   }
@@ -2705,6 +2968,7 @@ function draw2d() {
   // wall lengths, corner handles, the wall being drawn
   drawRoomOverlay();
   drawExtraHandles();
+  placeWallBar();
 
   // in-progress item footprint drawing
   if (drawingItemShape && itemShapePts.length > 0) {
@@ -2769,6 +3033,136 @@ function draw2d() {
 let itemGroups = [];    // itemGroups[i] is the 3D object for placed[i]
 let walls3d = [];       // {mesh, nx, nz, mx, mz} for the camera-side cutaway
 let bbox3d = null;      // room bbox (canvas px) the 3D world is anchored to
+
+// ── Day and evening light; the ceiling ──────────────────────────────────────
+// 'day' is the bright, even light the scene was tuned for; 'evening' is a dim,
+// cool ambient with a warm point light in each lamp (floor and table lamps),
+// and lit floors. A viewing preference (localStorage 'rp-light'), not part of
+// the layout; the exported 3D picture shows whichever is on.
+let lightMode = 'day';
+try { if (localStorage.getItem('rp-light') === 'evening') lightMode = 'evening'; } catch {}
+const floorMat = tex => lightMode === 'evening'
+  ? new THREE.MeshLambertMaterial({map: tex, side: THREE.DoubleSide})
+  : new THREE.MeshBasicMaterial({map: tex, side: THREE.DoubleSide});
+// A lamp's light: warm, near the top of the shade, a child of its group so it
+// moves with the lamp.
+// (a lamp: a generated one, or one with its own model whose name says lamp)
+const MAX_LAMP_LIGHTS = 8;       // (each point light costs every lit material; phones run out)
+function lampStyle(item) {
+  if (!item) return null;
+  if (item.shape) return item.shape.kind === 'lamp' ? item.shape.style : null;
+  const sh = inferDecorShape({name: item.label || ''});
+  return sh && sh.kind === 'lamp' ? sh.style : null;
+}
+const isLampItem = item => !!lampStyle(item);
+function addLampLight(g, item) {
+  const style = lampStyle(item);
+  if (!style) return;
+  scene.updateMatrixWorld();
+  const box = new THREE.Box3().setFromObject(g);
+  if (box.isEmpty()) return;
+  const top = box.max.y, h = top - box.min.y;
+  const p = new THREE.Vector3((box.min.x + box.max.x) / 2, top - Math.min(0.12, h * 0.15), (box.min.z + box.max.z) / 2);
+  const light = new THREE.PointLight(0xffb866, style === 'table' ? 1.1 : 1.5, style === 'table' ? 4 : 6, 2);
+  light.userData.lamp = true;
+  g.add(light);
+  // (the shade, the lamp's one double-sided glowing part, glows warm when it's on)
+  // (generated lamps only: a model's materials are shared with its cache and every other copy)
+  if (item.shape) g.traverse(o => { if (o.isMesh && o.material && o.material.emissive && o.material.side === THREE.DoubleSide) o.material.emissive.setHex(0xc98a45); });
+  light.position.copy(g.worldToLocal(p));
+}
+// A flat ceiling over a floor outline (plan pixels), at the lowest wall top,
+// facing down: from above you see its back, which isn't drawn, so the
+// overview still looks into the room while from inside there's a ceiling.
+// The ceiling's height at world (x, z): flat at the lowest wall top when the
+// corners are all one height; when they differ (walls raised at one end in
+// the elevation view: an attic, a skillion roof), the plane that best fits
+// the corners' heights, kept between the lowest and highest of them.
+function ceilingPlane() {
+  syncWalls();
+  const pts = getRoomPts(), H = roomStyle.wallHeight;
+  const cs = pts.map((p, i) => { const w = toWorld(p.x, p.y), prev = walls[(i - 1 + pts.length) % pts.length], here = walls[i];
+    return {x: w.x, z: w.z, y: Math.min(prev ? prev.hEnd ?? H : H, here ? here.hStart ?? H : H)}; });
+  const ys = cs.map(c => c.y), lo = ys.length ? Math.min(...ys) : H, hi = ys.length ? Math.max(...ys) : H;
+  if (hi - lo < 0.01 || cs.length < 3) return {at: () => lo, lo, hi: lo, sloped: false};
+  // (least squares y = a x + b z + c over the corners)
+  let n = cs.length, sx = 0, sz = 0, sy = 0, sxx = 0, szz = 0, sxz = 0, sxy = 0, szy = 0;
+  cs.forEach(c => { sx += c.x; sz += c.z; sy += c.y; sxx += c.x * c.x; szz += c.z * c.z; sxz += c.x * c.z; sxy += c.x * c.y; szy += c.z * c.y; });
+  const M = [[sxx, sxz, sx], [sxz, szz, sz], [sx, sz, n]], V = [sxy, szy, sy];
+  const det = m => m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1]) - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0]) + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+  const D = det(M);
+  if (Math.abs(D) < 1e-9) return {at: () => lo, lo, hi: lo, sloped: false};
+  const col = k => M.map((row, i) => row.map((v, j) => j === k ? V[i] : v));
+  const a = det(col(0)) / D, b = det(col(1)) / D, c = det(col(2)) / D;
+  // (corners off the plane by more than a centimetre: a slit would open between some walls and the
+  // ceiling, so flat at the lowest instead; the higher walls stand above it)
+  if (cs.some(p => Math.abs(a * p.x + b * p.z + c - p.y) > 0.01)) return {at: () => lo, lo, hi: lo, sloped: false};
+  return {at: (x, z) => Math.max(lo, Math.min(hi, a * x + b * z + c)), lo, hi, sloped: true};
+}
+function addCeiling(outline) {
+  const plane = ceilingPlane();
+  const shp = new THREE.Shape();
+  outline.map(p => toWorld(p.x, p.y)).forEach((p, i) => i === 0 ? shp.moveTo(p.x, p.z) : shp.lineTo(p.x, p.z));
+  const geo = new THREE.ShapeGeometry(shp, 1);
+  geo.rotateX(Math.PI / 2);            // shape (x, z) -> world (x, 0, z), facing down
+  const pos = geo.attributes.position;
+  for (let i = 0; i < pos.count; i++) pos.setY(i, plane.at(pos.getX(i), pos.getZ(i)));
+  pos.needsUpdate = true; geo.computeVertexNormals();
+  const m = new THREE.Mesh(geo, new THREE.MeshLambertMaterial({color: 0xf3f1ec, side: THREE.FrontSide}));
+  m.userData.ceiling = true; m.userData.top = plane.lo;
+  scene.add(m);
+  if (roomStyle.beams) addBeams(outline, plane);
+}
+// Exposed beams (Room style "Ceiling beams"): across the room's shorter way,
+// about every 0.9 m, 12 cm wide and 18 cm deep under the ceiling, only where
+// they're over the floor. Shown only from below the ceiling (the overview
+// looks down into the room past them).
+function addBeams(outline, plane) {
+  const W = outline.map(p => toWorld(p.x, p.y)), xs = W.map(p => p.x), zs = W.map(p => p.z);
+  const x0 = Math.min(...xs), x1 = Math.max(...xs), z0 = Math.min(...zs), z1 = Math.max(...zs);
+  const alongX = (x1 - x0) <= (z1 - z0);               // (beams run across the short way)
+  const span0 = alongX ? z0 : x0, span1 = alongX ? z1 : x1, n = Math.max(1, Math.round((span1 - span0) / 0.9));
+  const inside = (x, z) => pointInPoly(outline, bbox3d.x + x * SCALE, bbox3d.y + z * SCALE);
+  const mat = new THREE.MeshLambertMaterial({color: 0x6b4f35});
+  for (let k = 1; k < n; k++) {
+    const c = span0 + (span1 - span0) * k / n;
+    // (the stretches of this line that are over the floor)
+    const a0 = alongX ? x0 : z0, a1 = alongX ? x1 : z1, step = 0.05;
+    let run = null;
+    for (let t = a0; t <= a1 + 1e-9; t += step) {
+      const [x, z] = alongX ? [t, c] : [c, t], ok = inside(x, z);
+      if (ok && run == null) run = t;
+      if ((!ok || t + step > a1 + 1e-9) && run != null) {
+        const s0 = Math.max(a0, run - step / 2), e = Math.min(a1, (ok ? t : t - step) + step / 2), len = e - s0;
+        if (len > 0.2) {
+          const mx = alongX ? (s0 + e) / 2 : c, mz = alongX ? c : (s0 + e) / 2, top = plane.at(mx, mz);
+          // (along a sloping ceiling the beam tilts with it)
+          const h0 = alongX ? plane.at(s0, c) : plane.at(c, s0), h1 = alongX ? plane.at(e, c) : plane.at(c, e), tilt = Math.atan2(h1 - h0, len);
+          const b = new THREE.Mesh(new THREE.BoxGeometry(Math.hypot(len, h1 - h0), 0.18, 0.12), mat);
+          b.position.set(mx, top - 0.09, mz);
+          b.rotation.set(0, alongX ? 0 : -Math.PI / 2, tilt, 'YXZ');
+          b.userData.beam = true; b.userData.top = Math.min(h0, h1);
+          scene.add(b);
+        }
+        run = null;
+      }
+    }
+  }
+}
+function setLightMode(m) {
+  lightMode = m === 'evening' ? 'evening' : 'day';
+  try { localStorage.setItem('rp-light', lightMode); } catch {}
+  updateLightBtn();
+  if (view === '3d') init3d();
+}
+function updateLightBtn() {
+  const b = document.getElementById('lightBtn');
+  b.textContent = lightMode === 'evening' ? '🌙 Evening' : '☀ Day';
+  b.classList.toggle('active', lightMode === 'evening');
+}
+const lightBtn = document.getElementById('lightBtn');
+lightBtn.addEventListener('click', () => setLightMode(lightMode === 'evening' ? 'day' : 'evening'));
+updateLightBtn();
 
 function ensureRenderer() {
   const w = wrap.clientWidth - 2, h = wrap.clientHeight - 2;
@@ -2899,18 +3293,21 @@ function build3dHere() {
   const spanX = (bbox3d.x2 - bbox3d.x) / SCALE, spanZ = (bbox3d.y2 - bbox3d.y) / SCALE;
 
   scene = new THREE.Scene();
-  scene.environment = envMapFor(renderer);
+  // (the image-based light is daylight: models would glow in the evening)
+  scene.environment = lightMode === 'evening' ? null : envMapFor(renderer);
   // How far you can move: the room's farthest point from its centre + 3 m.
   const cx = spanX / 2, cz = spanZ / 2;
   move3dBounds = {cx, cz, r: Math.max(...[...getRoomOutline(), ...extras.flatMap(e => e.pts)].map(p => { const w = toWorld(p.x, p.y); return Math.hypot(w.x - cx, w.z - cz); })) + MOVE3D_MARGIN};
   // (init3d runs again on every image/model load, so only a new view goes back to the overview)
-  if (orbitRadius == null) frameWholeRoom();
+  if (orbitRadius == null) { if (walkMode) setWalkMode(false); frameWholeRoom(); }
   updateCameraFromOrbit();
 
-  scene.add(new THREE.AmbientLight(0xffffff, 0.55));
-  const dl = new THREE.DirectionalLight(0xffffff, 0.5);
+  const eve = lightMode === 'evening';
+  renderer.setClearColor(eve ? 0x1b2030 : 0xffffff, 1);
+  scene.add(new THREE.AmbientLight(eve ? 0x9aa3c4 : 0xffffff, eve ? 0.2 : 0.55));
+  const dl = new THREE.DirectionalLight(eve ? 0x8d97c0 : 0xffffff, eve ? 0.07 : 0.5);
   dl.position.set(8, 12, 6); scene.add(dl);
-  const fill = new THREE.DirectionalLight(0xffffff, 0.25);
+  const fill = new THREE.DirectionalLight(0xffffff, eve ? 0.03 : 0.25);
   fill.position.set(-6, 8, -8); scene.add(fill);
 
   // floor, in the room's actual outline (L-shape, circle, free draw).
@@ -2922,8 +3319,10 @@ function build3dHere() {
   floorGeo.rotateX(-Math.PI / 2); // shape (x, -z) -> world (x, 0, z)
   const floorTex = new THREE.CanvasTexture(surfaceCanvas(roomStyle.floorStyle, roomStyle.floorColor));
   floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping;
-  // Unlit: a lit light floor clips to white and disappears against the background.
-  scene.add(new THREE.Mesh(floorGeo, new THREE.MeshBasicMaterial({map: floorTex, side: THREE.DoubleSide})));
+  // Unlit by day: a lit light floor clips to white and disappears against the
+  // background. In the evening it's lit, so the lamps throw pools of light on it.
+  scene.add(new THREE.Mesh(floorGeo, floorMat(floorTex)));
+  addCeiling(getRoomOutline());
 
   // walls: solid slabs just outside each edge of the outline. Walls between
   // the camera and the room fade out (see updateWallCutaway) so they never
@@ -2942,6 +3341,7 @@ function build3dHere() {
   const wallCanvas = surfaceCanvas(roomStyle.wallStyle === 'paint' ? 'plain' : roomStyle.wallStyle, roomStyle.wallColor);
   const polyXZ = roomPts.map(p => ({x: p.x, y: p.z}));
   roomPts.forEach((a, i) => {
+    if (walls[i] && walls[i].open) return;      // (a removed wall: open floor)
     const b = roomPts[(i + 1) % roomPts.length];
     const dx = b.x - a.x, dz = b.z - a.z, chord = Math.hypot(dx, dz);
     if (chord < 1e-6) return;
@@ -3030,6 +3430,26 @@ function build3dHere() {
       }
     });
     partMesh(glass, 0xbfdcee, 0.35); partMesh(frame, 0xf2f2f0, 1); partMesh(leaf, 0xb08a5e, 1);
+    // skirting boards and cornice (on the room side: offsets < 0), in the trim colour
+    const trim = {pos: [], uv: [], sm: []}, sk = Math.min(0.3, +roomStyle.skirting || 0), ch = 0.08;
+    // (no board across a door, or a window that comes down to the floor)
+    const doorsHere = openings.filter(o => o.type === 'door' || o.y < Math.max(sk, 0.001));
+    const reaches = u => openings.some(o => u > o.x - 1e-6 && u < o.x + o.w + 1e-6 && o.y + o.h > hAt(u) - ch - 0.01);
+    if (sk > 0 || roomStyle.cornice) {
+      const cutsT = [...new Set([0, L, ...steps(0, L), ...openings.flatMap(o => [o.x, o.x + o.w])].map(u => +Math.min(L, Math.max(0, u)).toFixed(4)))].sort((p, q) => p - q);
+      for (let k = 0; k + 1 < cutsT.length; k++) {
+        const u0 = cutsT[k], u1 = cutsT[k + 1], um = (u0 + u1) / 2;
+        if (u1 - u0 < 1e-4) continue;
+        const ends = [k === 0 || doorsHere.some(o => Math.abs(o.x + o.w - u0) < 1e-4), k === cutsT.length - 2 || doorsHere.some(o => Math.abs(o.x - u1) < 1e-4)];
+        if (sk > 0 && !doorsHere.some(o => um > o.x && um < o.x + o.w)) prism(trim, u0, u1, 0, 0, sk, sk, -0.014, 0, ends);
+        if (roomStyle.cornice && !reaches(um)) {
+          const a0 = hAt(u0), a1 = hAt(u1);
+          prism(trim, u0, u1, a0 - ch, a1 - ch, a0 - ch / 2, a1 - ch / 2, -0.018, 0, [true, true]);
+          prism(trim, u0, u1, a0 - ch / 2, a1 - ch / 2, a0, a1, -0.04, 0, [true, true]);   // (capped: an end can show, at an open wall or a tall window)
+        }
+      }
+    }
+    if (trim.pos.length) { partMesh(trim, new THREE.Color(roomStyle.trimColor || TRIM_DEFAULTS.trimColor).getHex(), 1); scene.children[scene.children.length - 1].userData.trim = true; }
     const mid = arc.at(0.5), mn = arc.normal(0.5);
     walls3d.push({mesh: wallMesh, nx: mn.x, nz: mn.y, mx: mid.x, mz: mid.y, parts});
   });
@@ -3050,18 +3470,26 @@ function build3dHere() {
       return;
     }
     const fg = new THREE.ShapeGeometry(shp); fg.rotateX(-Math.PI / 2);
-    const ft = new THREE.CanvasTexture(surfaceCanvas(roomStyle.floorStyle, roomStyle.floorColor)); ft.wrapS = ft.wrapT = THREE.RepeatWrapping;
-    scene.add(new THREE.Mesh(fg, new THREE.MeshBasicMaterial({map: ft, side: THREE.DoubleSide})));
+    const pf = partFloor(extras[k]);
+    const ft = new THREE.CanvasTexture(surfaceCanvas(pf.style, pf.color)); ft.wrapS = ft.wrapT = THREE.RepeatWrapping;
+    scene.add(new THREE.Mesh(fg, floorMat(ft)));
+    addCeiling(getRoomOutline());
     buildWalls(getRoomPts().map(p => toWorld(p.x, p.y)));
   }));
   updateWallCutaway();
 
   itemGroups = placed.map((item, i) => { const g = buildItemObject(item, i); scene.add(g); return g; });
+  if (lightMode === 'evening') {
+    let n = 0;
+    itemGroups.forEach((g, i) => { if (n < MAX_LAMP_LIGHTS && isLampItem(placed[i])) { addLampLight(g, placed[i]); n++; } });
+  }
+  itemGroups.forEach((g, i) => { if (isElec(placed[i])) g.visible = showElec; });   // (the ⚡ switch)
 
   if (!animId) animate();
 }
 
 function updateWallCutaway() {
+  if (scene && camera) scene.children.forEach(o => { if (o.userData.beam) o.visible = camera.position.y < o.userData.top - 0.05; });
   const c = camera.position;
   walls3d.forEach(w => {
     const facing = (c.x - w.mx) * w.nx + (c.z - w.mz) * w.nz > 0;
@@ -3125,7 +3553,7 @@ function updateCameraFromOrbit() {
 
 // ── 3D: moving around ────────────────────────────────────────────────────────
 // Besides looking, you can move (the camera and its look point together):
-// middle-drag / Ctrl+drag on empty space, two fingers on a
+// middle-drag / Ctrl+ or Shift+drag on empty space, two fingers on a
 // touch screen, or the keys (W/S forward/back, A/D sideways, arrows too when
 // nothing is selected, E/Q up/down, Shift faster); the wheel / a pinch flies
 // along where you look.
@@ -3146,6 +3574,7 @@ const moveKeys = new Set();
 // forward (level, the way the camera faces) and `up` m up; the camera moves
 // with it. At the boundary you slide along it.
 function moveOrbitTarget(right, fwd, up) {
+  if (walkMode) up = 0;                 // (walking: along the floor only)
   const s = Math.sin(orbitTheta), c = Math.cos(orbitTheta), t = orbitTarget, b = move3dBounds;
   const before = camera.position.clone();
   t.x += right * c - fwd * s;
@@ -3161,6 +3590,14 @@ function moveOrbitTarget(right, fwd, up) {
     updateCameraFromOrbit();
   }
   if (camera.position.y < MIN_EYE) { t.y += MIN_EYE - camera.position.y; updateCameraFromOrbit(); }
+  if (walkMode) {
+    t.y += walkEyeY() - camera.position.y;
+    updateCameraFromOrbit();
+    // (bump into walls, pillars and furniture, sliding along them)
+    const p = camera.position, to = walkCollide(before.x, before.z, p.x, p.z, walkFeet);
+    if (to.x !== p.x || to.z !== p.z) { t.x += to.x - p.x; t.z += to.z - p.z; updateCameraFromOrbit(); }
+    walkStride(Math.hypot(camera.position.x - before.x, camera.position.z - before.z));
+  }
 }
 
 // Fly d m along where the camera looks (back if negative), within the same limits.
@@ -3188,8 +3625,9 @@ function dragMoveView(dx, dy) {
 const MOVE_KEYS = {w: [0, 1, 0], s: [0, -1, 0], a: [-1, 0, 0], d: [1, 0, 0], e: [0, 0, 1], q: [0, 0, -1],
   arrowup: [0, 1, 0], arrowdown: [0, -1, 0], arrowleft: [-1, 0, 0], arrowright: [1, 0, 0]};
 document.addEventListener('keydown', e => {
-  if (view !== '3d' || e.ctrlKey || e.metaKey || e.altKey || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+  if (view !== '3d' || (e.ctrlKey && !walkMode) || e.metaKey || e.altKey || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
   const k = e.key.toLowerCase();
+  if (walkMode && e.ctrlKey && (k === 'z' || k === 'y')) return;      // (Ctrl+Z / Ctrl+Y still undo and redo)
   if (!MOVE_KEYS[k] || (k.startsWith('arrow') && placed[selected] && !placed[selected].locked)) return;   // (arrows nudge a selected item)
   if (!moveKeys.has(k)) { stepMoveKeys(); moveKeys.add(k); }
   e.preventDefault();
@@ -3205,12 +3643,338 @@ let moveFast = false, moveT = 0;
 function stepMoveKeys(now = performance.now()) {
   const dt = (now - moveT) / 1000;
   moveT = now;
-  if (!moveKeys.size || dt <= 0) return;
+  if (walkMode && dt > 0) walkPhysics(Math.min(dt, 0.1));
+  const stick = walkMode && (walkStick.x || walkStick.y);
+  if ((!moveKeys.size && !stick) || dt <= 0) return;
   let right = 0, fwd = 0, up = 0;
   moveKeys.forEach(k => { const m = MOVE_KEYS[k]; right += m[0]; fwd += m[1]; up += m[2]; });
-  const speed = 2.5 * dt * (moveFast ? 2.5 : 1);
+  if (stick) { right += walkStick.x; fwd += walkStick.y; }
+  // (walking: Shift walks slowly, as in Counter-Strike; flying: Shift is faster)
+  const speed = walkMode ? WALK_SPEED * dt * (moveFast ? WALK_SLOW : 1) * (walkCrouch ? WALK_CROUCH_SPEED : 1) : 2.5 * dt * (moveFast ? 2.5 : 1);
   if (right || fwd || up) moveOrbitTarget(right * speed, fwd * speed, up * speed);
 }
+
+// ── Walk mode ───────────────────────────────────────────────────────────────
+// "🚶 Walk" (3D only) puts you on the floor at eye height (WALK_EYE): you stay
+// where you were if that's over the room's floor or a separate area's, else
+// you stand in the middle of the room, looking level the way you faced.
+// W/A/S/D (and the arrows, the wheel, middle-drag) walk level at WALK_SPEED,
+// Shift walks slowly; E/Q do nothing. Looking around is as before (the look
+// point is 1 m ahead, so turning turns you where you stand). Esc (with nothing
+// selected), the button, Reset view, Auto-rotate, 2D, or another room stop it;
+// you're back in the free camera where you stood.
+const WALK_EYE = 1.65, WALK_SPEED = 2.5, WALK_SLOW = 0.52;
+let walkMode = false, walkSavedR = null;   // (the look point's distance before walking, put back after)
+const walkBtn = document.getElementById('walkBtn');
+function onFloorAt(wx, wz) {
+  const px = bbox3d.x + wx * SCALE, py = bbox3d.y + wz * SCALE;
+  return [getRoomOutline(), ...extraPolys('area')].some(R => pointInPoly(R, px, py)) && !extraPolys('pillar').some(R => pointInPoly(R, px, py));
+}
+function setWalkMode(on) {
+  on = !!on && view === '3d';
+  if (on && autoRotate) autoRotateBtn.click();      // (before walkMode is set: that click stops walking)
+  const was = walkMode;
+  walkMode = on;
+  walkBtn.classList.toggle('active', walkMode);
+  walkBtn.textContent = walkMode ? '🚶 Walking' : '🚶 Walk';
+  document.getElementById('walkSensBox').hidden = !walkMode || matchMedia('(pointer: coarse)').matches;   // (mouse look only)
+  document.getElementById('walkOpts').hidden = !walkMode || matchMedia('(pointer: coarse)').matches;   // (on a phone they'd push the toolbar to another row)
+  const touchUI = walkMode && matchMedia('(pointer: coarse)').matches;
+  document.getElementById('walkStick').hidden = !touchUI; document.getElementById('walkJumpBtn').hidden = !touchUI;
+  if (!touchUI) setWalkStick(0, 0);
+  if (!walkMode) {
+    if (lookLocked()) document.exitPointerLock();
+    // (the look point back out to where it was, so the wheel and a pinch go at the usual pace)
+    if (was && walkSavedR && camera) {
+      const c = camera.position.clone(), sp = Math.sin(orbitPhi);
+      orbitRadius = walkSavedR;
+      orbitTarget.set(c.x - orbitRadius * Math.sin(orbitTheta) * sp, c.y - orbitRadius * Math.cos(orbitPhi), c.z - orbitRadius * Math.cos(orbitTheta) * sp);
+      updateCameraFromOrbit();
+    }
+    walkSavedR = null;
+    return;
+  }
+  if (!was) walkSavedR = orbitRadius;
+  let {x, z} = camera.position;
+  if (!onFloorAt(x, z)) {
+    const d = inRoom(walkSpawnAtDoor);
+    if (d) { x = d.x; z = d.z; orbitTheta = d.theta; }
+    else { const m = inRoom(areaLabelPoint); ({x, z} = toWorld(m.x, m.y)); }
+  }
+  orbitRadius = 1; orbitPhi = Math.PI / 2;
+  walkFeet = 0; walkVy = 0; walkCrouch = false;
+  orbitTarget.set(x - Math.sin(orbitTheta), WALK_EYE, z - Math.cos(orbitTheta));
+  updateCameraFromOrbit();
+  toast(matchMedia('(pointer: coarse)').matches ? 'Walking: the circle bottom left walks, swipe anywhere else to look around, Jump jumps. Tap 🚶 again to stop.'
+    : 'Walking: W A S D to walk, Shift to walk slowly, Space jumps, C crouches. Click the view to look with the mouse (Esc lets go), or drag. Esc stops.');
+}
+walkBtn.addEventListener('click', () => setWalkMode(!walkMode));
+
+// Walking with the mouse captured (Pointer Lock): click the 3D view to
+// capture it, then moving the mouse turns the view, without dragging, with a
+// crosshair in the middle; Esc lets go (the browser's own Esc), and a second
+// Esc stops walking. Look speed: a slider shown while walking
+// (localStorage 'rp-walk-sens').
+let walkSens = 1, walkClick = null, walkUnlockedAt = 0;
+try { const v = +localStorage.getItem('rp-walk-sens'); if (v >= 0.3 && v <= 3) walkSens = v; } catch {}
+document.getElementById('walkSens').value = walkSens;
+document.getElementById('walkSens').addEventListener('change', e => e.target.blur());   // (so W A S D and Esc work again)
+document.getElementById('walkSens').addEventListener('input', e => {
+  walkSens = +e.target.value || 1;
+  try { localStorage.setItem('rp-walk-sens', String(walkSens)); } catch {}
+});
+const lookLocked = () => !!renderer && document.pointerLockElement === renderer.domElement;
+document.addEventListener('pointerlockchange', () => {
+  const on = lookLocked();
+  document.getElementById('crosshair').hidden = !on;
+  if (!on) walkUnlockedAt = performance.now();
+  if (on) toast('Mouse captured: move it to look around. Esc lets go.', 3000);
+});
+
+// ── Walk mode extras: where you start, head bob, footsteps ─────────────────
+// Walk starts just inside the room's first door (WALK_SPAWN_IN m in from its
+// middle, facing into the room) when where you are isn't over the floor;
+// with no door, in the middle of the room. Head bob (a small up-and-down,
+// WALK_BOB_AMP, once per step of WALK_STEP_LEN) and footsteps (a short
+// synthesised thud each step; none when walking slowly with Shift or
+// crouching, as in Counter-Strike) are options, off by default, shown while
+// walking (localStorage 'rp-walk-bob', 'rp-walk-steps').
+const WALK_SPAWN_IN = 0.7, WALK_BOB_AMP = 0.025, WALK_STEP_LEN = 0.7;
+let walkBob = false, walkSteps = false, walkStepDist = 0, walkStepCount = 0, walkAudio = null;
+try { walkBob = localStorage.getItem('rp-walk-bob') === '1'; walkSteps = localStorage.getItem('rp-walk-steps') === '1'; } catch {}
+function walkSpawnAtDoor() {
+  const pts = getRoomPts();
+  if (pts.length < 3 || (shape === 'custom' && drawing)) return null;
+  syncWalls();
+  const outline = getRoomOutline();
+  for (let i = 0; i < pts.length; i++) {
+    const w = walls[i]; if (!w || w.open) continue;
+    const door = w.openings.find(o => o.type === 'door');
+    if (!door) continue;
+    const arc = wallArc(i, pts), len = arc.len / SCALE, m = arc.at(Math.min(1, (door.x + door.w / 2) / len));
+    let n = arc.normal(Math.min(1, (door.x + door.w / 2) / len));
+    if (!pointInPoly(outline, m.x - n.x * 4, m.y - n.y * 4)) n = {x: -n.x, y: -n.y};   // (n: out of the room)
+    const p = toWorld(m.x - n.x * WALK_SPAWN_IN * SCALE, m.y - n.y * WALK_SPAWN_IN * SCALE);
+    // (facing into the room: forward is (-sin θ, -cos θ) = -n)
+    return {x: p.x, z: p.z, theta: Math.atan2(n.x, n.y)};
+  }
+  return null;
+}
+const walkBobY = () => walkBob && walkMode && walkVy === 0 ? WALK_BOB_AMP * Math.sin(walkStepDist / WALK_STEP_LEN * 2 * Math.PI) : 0;
+function walkStride(d) {
+  if (!walkMode || d < 1e-6 || walkVy !== 0) return;
+  const before = Math.floor(walkStepDist / WALK_STEP_LEN);
+  walkStepDist += d;
+  if (Math.floor(walkStepDist / WALK_STEP_LEN) > before) { walkStepCount++; if (walkSteps && !moveFast && !walkCrouch) walkFootstep(); }
+  if (walkBob) { orbitTarget.y += walkEyeY() - camera.position.y; updateCameraFromOrbit(); }
+}
+function walkFootstep() {
+  try {
+    walkAudio = walkAudio || new (window.AudioContext || window.webkitAudioContext)();
+    if (walkAudio.state === 'suspended') walkAudio.resume();
+    const a = walkAudio, n = Math.floor(a.sampleRate * 0.09), buf = a.createBuffer(1, n, a.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3);
+    const src = a.createBufferSource(), f = a.createBiquadFilter(), g = a.createGain();
+    src.buffer = buf; f.type = 'lowpass'; f.frequency.value = 420 + Math.random() * 120; g.gain.value = 0.35;
+    src.connect(f); f.connect(g); g.connect(a.destination); src.start();
+  } catch {}
+}
+function setWalkOption(which, on) {
+  if (which === 'bob') walkBob = on; else walkSteps = on;
+  try { localStorage.setItem(which === 'bob' ? 'rp-walk-bob' : 'rp-walk-steps', on ? '1' : '0'); } catch {}
+  document.getElementById(which === 'bob' ? 'walkBobBtn' : 'walkStepsBtn').classList.toggle('active', on);
+  if (which === 'bob' && walkMode && camera) { orbitTarget.y += walkEyeY() - camera.position.y; updateCameraFromOrbit(); }
+}
+document.getElementById('walkBobBtn').addEventListener('click', e => { setWalkOption('bob', !walkBob); e.currentTarget.blur(); });
+document.getElementById('walkStepsBtn').addEventListener('click', e => {
+  setWalkOption('steps', !walkSteps); e.currentTarget.blur();
+  // (made here, in the click: phones and strict autoplay settings only let sound start from one)
+  if (walkSteps) try { walkAudio = walkAudio || new (window.AudioContext || window.webkitAudioContext)(); if (walkAudio.state === 'suspended') walkAudio.resume(); } catch {}
+});
+document.getElementById('walkBobBtn').classList.toggle('active', walkBob);
+document.getElementById('walkStepsBtn').classList.toggle('active', walkSteps);
+
+// ── Walking on a touch screen ───────────────────────────────────────────────
+// A joystick (bottom left, while walking on a touch screen): push it to walk,
+// further for faster (walkStick: -1..1 right and forward, fed into
+// stepMoveKeys like the keys); a second finger anywhere else on the view
+// still looks around. "Jump" (bottom right) jumps. Both are separate
+// elements, so the 3D view's own touch handling never sees those fingers.
+const WALK_STICK_R = 46;            // (px the knob can travel)
+let walkStick = {x: 0, y: 0};
+function setWalkStick(x, y) {
+  stepMoveKeys();                   // (what was held so far, at the old speed)
+  walkStick = {x, y};
+  document.getElementById('walkKnob').style.transform = `translate(${x * WALK_STICK_R}px, ${-y * WALK_STICK_R}px)`;
+}
+{
+  const el = document.getElementById('walkStick');
+  let id = null;
+  const at = e => {
+    const b = el.getBoundingClientRect(), dx = e.clientX - (b.left + b.width / 2), dy = e.clientY - (b.top + b.height / 2), d = Math.hypot(dx, dy), k = d > WALK_STICK_R ? WALK_STICK_R / d : 1;
+    setWalkStick(dx * k / WALK_STICK_R, -dy * k / WALK_STICK_R);
+  };
+  el.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); id = e.pointerId; try { el.setPointerCapture(id); } catch {} at(e); });
+  // (none of these fingers' events reach the 3D view's own handlers on the window: they'd end, or
+  // jolt, the other finger's looking)
+  el.addEventListener('pointermove', e => { e.stopPropagation(); if (e.pointerId === id && walkMode) at(e); });
+  const up = e => { e.stopPropagation(); if (e.pointerId === id) { id = null; setWalkStick(0, 0); } };
+  el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
+  const jb = document.getElementById('walkJumpBtn');
+  jb.addEventListener('pointerdown', e => { e.preventDefault(); e.stopPropagation(); walkJump(); });
+  ['pointermove', 'pointerup', 'pointercancel'].forEach(t => jb.addEventListener(t, e => e.stopPropagation()));
+  [el, jb].forEach(b => b.addEventListener('contextmenu', e => e.preventDefault()));
+}
+
+// ── Jumping and crouching ───────────────────────────────────────────────────
+// Space jumps (WALK_JUMP high, gravity 9.8 m/s²); C or Ctrl crouches (eye at
+// WALK_CROUCH_EYE, slower). Your feet are at walkFeet: the floor, or the top
+// of a piece you're standing on. You step up onto anything up to
+// WALK_STEP_OVER above your feet (a rug, a low step), and from a jump onto a
+// low piece (a coffee table), not onto a sofa. Walking off it, you fall.
+// Stepped with the move keys (every frame, and when a key changes).
+const WALK_JUMP = 0.45, WALK_G = 9.8, WALK_CROUCH_EYE = 1.0, WALK_CROUCH_SPEED = 0.5;
+let walkFeet = 0, walkVy = 0, walkCrouch = false;
+const walkTop = it => (it.zHeight || 0.7) + (it.elev || 0);
+const walkEyeY = () => walkFeet + (walkCrouch ? WALK_CROUCH_EYE : WALK_EYE) + walkBobY();
+// The highest surface under (x, z) you could stand on with your feet at 'feet'.
+function walkGroundAt(x, z, feet) {
+  let g = 0;
+  const px = bbox3d.x + x * SCALE, py = bbox3d.y + z * SCALE;
+  placed.forEach(it => {
+    if (!solidItem(it) || it.kind === 'wall') return;
+    const top = walkTop(it);
+    if (top <= g || top > feet + WALK_STEP_OVER) return;
+    if (pointInPoly(itemPoly(it), px, py)) g = top;
+  });
+  return g;
+}
+function walkPhysics(dt) {
+  if (!camera) return;
+  const p = camera.position, ground = walkGroundAt(p.x, p.z, walkFeet);
+  if (walkVy === 0 && walkFeet <= ground + 1e-6 && walkFeet >= ground - 1e-6) return;
+  if (walkFeet < ground) { walkFeet = ground; walkVy = 0; }       // (stepped up)
+  else {
+    walkFeet += walkVy * dt - 0.5 * WALK_G * dt * dt; walkVy -= WALK_G * dt;   // (exact: the same arc at any frame rate)
+    if (walkFeet <= ground) { walkFeet = ground; walkVy = 0; }      // (landed)
+  }
+  orbitTarget.y += walkEyeY() - camera.position.y;
+  updateCameraFromOrbit();
+}
+function walkJump() {
+  if (!walkMode || walkVy !== 0 || !camera) return;
+  if (Math.abs(walkFeet - walkGroundAt(camera.position.x, camera.position.z, walkFeet)) > 1e-6) return;   // (only from the ground)
+  stepMoveKeys();
+  walkVy = Math.sqrt(2 * WALK_G * WALK_JUMP);
+}
+function setCrouch(on) {
+  if (!walkMode || walkCrouch === on) return;
+  stepMoveKeys();
+  walkCrouch = on;
+  orbitTarget.y += walkEyeY() - camera.position.y; updateCameraFromOrbit();
+}
+// (capture: Space mustn't press a focused button, such as Walk itself)
+window.addEventListener('keydown', e => {
+  if (!walkMode || view !== '3d' || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName) || document.querySelector('dialog[open]')) return;
+  if (e.code === 'Space') { e.preventDefault(); e.stopPropagation(); if (!e.repeat) walkJump(); }
+  else if (e.key === 'Control' || (e.key.toLowerCase() === 'c' && !e.ctrlKey && !e.metaKey)) { setCrouch(true); if (e.key !== 'Control') e.preventDefault(); }
+}, true);
+window.addEventListener('keyup', e => {
+  if (e.key === 'Control' || e.key.toLowerCase() === 'c') setCrouch(false);
+}, true);
+window.addEventListener('blur', () => setCrouch(false));
+// (Ctrl crouches, and Ctrl+W, which is crouching forward, closes the tab in every browser:
+// while walking, the browser asks first)
+window.addEventListener('beforeunload', e => { if (walkMode) { e.preventDefault(); e.returnValue = ''; } });
+
+// Collisions while walking: you're a circle WALK_R across on the floor. You
+// can't pass standing walls (the room's and separate areas'), pillars, or
+// furniture standing on the floor and taller than WALK_STEP_OVER (rugs and
+// curtains never block); doorways and removed walls let you through. A move
+// is taken in short steps, each pushed back out of whatever it overlaps, so
+// you slide along a wall instead of stopping. Something you're already
+// inside (you started there) doesn't hold you.
+const WALK_R = 0.25, WALK_STEP_OVER = 0.2;   // (you step up onto anything up to 20 cm above your feet)
+function walkObstacles(feet = 0) {
+  const w = (x, y) => ({x: (x - bbox3d.x) / SCALE, z: (y - bbox3d.y) / SCALE});
+  const segs = [];
+  // walls, without their doorways
+  const addWalls = () => {
+    const pts = getRoomPts();
+    if (shape === 'custom' && drawing) return;
+    syncWalls();
+    pts.forEach((_, i) => {
+      const wl = walls[i];
+      if (wl && wl.open) return;
+      const arc = wallArc(i, pts), len = arc.len / SCALE, n = arc.straight ? 1 : 24;
+      const doors = (wl ? wl.openings : []).filter(o => o.type === 'door').map(o => [o.x / len, (o.x + o.w) / len]);
+      // (cut at the doorways' edges, keep the pieces not in a doorway)
+      const cuts = [...new Set([0, 1, ...doors.flat().map(v => Math.min(1, Math.max(0, v)))])].sort((a, b) => a - b);
+      for (let c = 0; c < cuts.length - 1; c++) {
+        const t0 = cuts[c], t1 = cuts[c + 1], mid = (t0 + t1) / 2;
+        if (t1 - t0 < 1e-6 || doors.some(([a, b]) => mid > a && mid < b)) continue;
+        const k = Math.max(1, Math.ceil(n * (t1 - t0)));
+        for (let j = 0; j < k; j++) {
+          const a = arc.at(t0 + (t1 - t0) * j / k), b = arc.at(t0 + (t1 - t0) * (j + 1) / k);
+          segs.push({a: w(a.x, a.y), b: w(b.x, b.y)});
+        }
+      }
+    });
+  };
+  inRoom(addWalls);
+  extras.forEach((e, k) => { if (extraKind(e) !== 'pillar') withPart(k, addWalls); });   // (a pillar: by its outline, below)
+  // pillars and furniture: their outlines (a polygon you're inside of doesn't count)
+  const polys = extras.filter(e => extraKind(e) === 'pillar').map((e, k) => e.pts.map(p => w(p.x, p.y)));
+  placed.forEach(it => {
+    if (!solidItem(it) || it.kind === 'wall' || (it.elev || 0) > feet + 1.2 || walkTop(it) <= feet + WALK_STEP_OVER) return;
+    polys.push(itemPoly(it).map(p => w(p.x, p.y)));
+  });
+  return {segs, polys};
+}
+function walkCollide(x0, z0, x1, z1, feet = 0) {
+  if (!bbox3d) return {x: x1, z: z1};
+  const {segs, polys} = walkObstacles(feet);
+  const inside = (P, x, z) => pointInPoly(P.map(p => ({x: p.x, y: p.z})), x, z);
+  const all = [...segs];
+  polys.forEach(P => { if (!inside(P, x0, z0)) P.forEach((a, i) => all.push({a, b: P[(i + 1) % P.length]})); });
+  // (a segment you already overlap at the start only stops you getting closer)
+  const near = (q, sg) => {
+    const dx = sg.b.x - sg.a.x, dz = sg.b.z - sg.a.z, L = dx * dx + dz * dz || 1;
+    const u = Math.max(0, Math.min(1, ((q.x - sg.a.x) * dx + (q.z - sg.a.z) * dz) / L));
+    const cx = sg.a.x + u * dx, cz = sg.a.z + u * dz;
+    return {cx, cz, d: Math.hypot(q.x - cx, q.z - cz)};
+  };
+  const crosses = (a, b, sg) => {
+    const d = (p, q, r) => (q.x - p.x) * (r.z - p.z) - (q.z - p.z) * (r.x - p.x);
+    return d(a, b, sg.a) * d(a, b, sg.b) < 0 && d(sg.a, sg.b, a) * d(sg.a, sg.b, b) < 0;
+  };
+  let p = {x: x0, z: z0};
+  const steps = Math.max(1, Math.ceil(Math.hypot(x1 - x0, z1 - z0) / (WALK_R / 2)));
+  for (let s = 1; s <= steps; s++) {
+    const q = {x: p.x + (x1 - x0) / steps, z: p.z + (z1 - z0) / steps};
+    for (let it = 0; it < 8; it++) {
+      let moved = false;
+      all.forEach(sg => {
+        const before = near(p, sg).d, c = near(q, sg);
+        const lim = Math.min(WALK_R, before);          // (already closer than WALK_R: no closer)
+        if (c.d >= lim - 1e-9) return;
+        let nx = q.x - c.cx, nz = q.z - c.cz, nl = Math.hypot(nx, nz);
+        if (nl < 1e-9) { nx = p.x - c.cx; nz = p.z - c.cz; nl = Math.hypot(nx, nz) || 1; }
+        q.x = c.cx + nx / nl * lim; q.z = c.cz + nz / nl * lim; moved = true;
+      });
+      if (!moved) break;
+    }
+    // (in a narrow wedge the pushes don't settle: then stay put, rather than creep through)
+    if (all.some(sg => crosses(p, q, sg) || near(q, sg).d < Math.min(WALK_R, near(p, sg).d) - 1e-6)) break;
+    p = q;
+  }
+  return p;
+}
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || !walkMode || selected >= 0 || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+  if (lookLocked() || performance.now() - walkUnlockedAt < 300) return;    // (that Esc let go of the mouse; the next one stops walking)
+  setWalkMode(false);
+});
 
 // The starting overview: looking down at the room's centre from a corner, far
 // enough back to see it all. Needs bbox3d (set by build3d).
@@ -3234,6 +3998,7 @@ function autoRotateStep() {
 
 // Back to the overview (orbitRadius = null makes the next build3d frame the room).
 function resetView3d() {
+  if (walkMode) setWalkMode(false);
   orbitRadius = null;
   if (view === '3d') init3d();
 }
@@ -3253,6 +4018,7 @@ function pickItemAt(clientX, clientY) {
   setRay(clientX, clientY);
   const hits = raycaster.intersectObjects(itemGroups, true);
   for (const h of hits) {
+    if (!h.object.visible || (h.object.parent && !h.object.parent.visible)) continue;   // (hidden fittings, ⚡ off)
     let o = h.object;
     while (o && o.userData.index == null) o = o.parent;
     if (o) return o.userData.index;
@@ -3275,9 +4041,10 @@ function onDown3d(e) {
     renderer.domElement.style.cursor = 'grabbing';
     return;
   }
-  // Middle button anywhere, or Ctrl + left on empty space: slide the view.
+  // Middle button anywhere, or Ctrl / Shift + left on empty space: slide the
+  // view (Shift on a piece still turns it).
   const idx = e.button === 0 ? pickItemAt(e.clientX, e.clientY) : -1;
-  if (e.button === 1 || (e.button === 0 && e.ctrlKey && idx < 0)) {
+  if (e.button === 1 || (e.button === 0 && (e.ctrlKey || e.shiftKey) && idx < 0 && e.pointerType !== 'touch')) {
     e.preventDefault();
     moveDragging = true; orbitLastX = e.clientX; orbitLastY = e.clientY;
     renderer.domElement.style.cursor = 'move';
@@ -3375,6 +4142,8 @@ const touches3d = new Map();
 let pinch3d = null;
 window.addEventListener('pointermove', e => {
   if (view !== '3d') return;
+  if (lookLocked()) { lookAround(e.movementX * walkSens, e.movementY * walkSens); return; }
+  if (walkClick && !walkClick.started && Math.hypot(e.clientX - walkClick.x, e.clientY - walkClick.y) >= 4) { walkClick.started = true; onDown3d(walkClick.ev); }
   if (touches3d.has(e.pointerId)) {
     touches3d.set(e.pointerId, {x: e.clientX, y: e.clientY});
     if (touches3d.size === 2) {
@@ -3393,6 +4162,13 @@ window.addEventListener('pointermove', e => {
   onMove3d(e.clientX, e.clientY, e.shiftKey);
 });
 const pointerUp3d = e => {
+  // (walking: a click, without dragging, captures the mouse)
+  if (walkClick && !walkClick.started && e.type === 'pointerup' && walkMode && !lookLocked() && renderer) {
+    // (right after letting go, the browser can refuse for a moment)
+    const no = () => toast('Click the view again to look with the mouse.', 2500);
+    try { const p = renderer.domElement.requestPointerLock(); if (p && p.catch) p.catch(no); } catch { no(); }
+  }
+  walkClick = null;
   touches3d.delete(e.pointerId);
   if (touches3d.size < 2) pinch3d = null;
   onUp3d();
@@ -3404,6 +4180,11 @@ function attach3dControls(el) {
   el.style.cursor = 'grab';
   el.style.touchAction = 'none';
   el.addEventListener('pointerdown', e => {
+    if (lookLocked()) { e.preventDefault(); return; }       // (captured: the mouse only looks)
+    // (walking, a mouse press waits: a click captures the mouse, and only a drag of 4 px or more does what a
+    // press normally does, so the capturing click doesn't pick up the piece under it and throw it across the room)
+    walkClick = walkMode && e.pointerType === 'mouse' && e.button === 0 ? {x: e.clientX, y: e.clientY, ev: e, started: false} : null;
+    if (walkClick) { e.preventDefault(); return; }
     if (e.pointerType === 'touch') {
       touches3d.set(e.pointerId, {x: e.clientX, y: e.clientY});
       if (touches3d.size === 2) {
@@ -3419,7 +4200,7 @@ function attach3dControls(el) {
   el.addEventListener('mousedown', e => { if (e.button === 1) e.preventDefault(); });   // (no auto-scroll on a middle-drag)
   el.addEventListener('wheel', e => {
     e.preventDefault();
-    flyForward(-e.deltaY * 0.001 * orbitRadius);
+    flyForward(-e.deltaY * 0.001 * (walkMode ? 2 : orbitRadius));
   }, {passive: false});
 }
 
@@ -3492,6 +4273,18 @@ document.getElementById('zoomReset').addEventListener('click', resetZoom2d);
 // "Sizes": each piece's width × depth (cm) on the plan, under its name; in
 // exported plans too. A viewing preference, remembered in this browser.
 const sizesBtn = document.getElementById('sizesBtn');
+// The ⚡ switch: show or hide the electrical plan (power points, switches, lights), on the plan and in 3D.
+function setShowElec(on) {
+  showElec = on;
+  const b = document.getElementById('elecBtn');
+  b.classList.toggle('active', on); b.setAttribute('aria-pressed', String(on));
+  try { localStorage.setItem('rp-show-elec', on ? '1' : '0'); } catch {}
+  if (!on && isElec(placed[selected])) select(-1);
+  itemGroups.forEach((g, i) => { if (isElec(placed[i])) g.visible = on; });
+  draw2d();
+}
+document.getElementById('elecBtn').addEventListener('click', () => setShowElec(!showElec));
+document.getElementById('elecBtn').classList.toggle('active', showElec);
 function setShowSizes(on) {
   showSizes = on;
   sizesBtn.classList.toggle('active', on); sizesBtn.setAttribute('aria-pressed', String(on));
@@ -3537,7 +4330,9 @@ const WALK_M = 0.6;       // about what it takes to walk through
 // pieces standing flush against each other or a wall don't count as touching.
 function itemPoly(it, inset = 0) {
   const w = it.w * SCALE, h = it.h * SCALE, cx = it.x + w / 2, cy = it.y + h / 2, r = it.rot || 0, c = Math.cos(r), s = Math.sin(r);
+  const so = stairsOutline(it);
   let local = it.footprint && it.footprint.length > 2 ? it.footprint.map(p => ({x: p.x * SCALE, y: p.y * SCALE}))
+    : so ? so.map(p => ({x: (it.flip ? -p.x : p.x) * SCALE, y: p.y * SCALE}))
     : [{x: -w / 2, y: -h / 2}, {x: w / 2, y: -h / 2}, {x: w / 2, y: h / 2}, {x: -w / 2, y: h / 2}];
   if (inset) local = local.map(p => { const d = Math.hypot(p.x, p.y) || 1, k = Math.max(0, d - inset) / d; return {x: p.x * k, y: p.y * k}; });
   return local.map(p => ({x: cx + p.x * c - p.y * s, y: cy + p.x * s + p.y * c}));
@@ -3625,6 +4420,7 @@ function drawMeasures() {
   ctx.restore();
 }
 function setMeasureMode(on) {
+  if (on) selWall = null;
   if (on) { if (noteMode) setNoteMode(false); if (traceMode) setTraceMode(null); }   // (one plan tool at a time)
   measureMode = on; measureDrag = null; measureSel = -1; updateMeasureClear();
   const b = document.getElementById('measureBtn');
@@ -3698,6 +4494,7 @@ function editNote(i) {
   draw2d();
 }
 function setNoteMode(on) {
+  if (on) selWall = null;
   if (on) { if (measureMode) setMeasureMode(false); if (traceMode) setTraceMode(null); }
   noteMode = on;
   document.getElementById('noteBtn').classList.toggle('active', on);
@@ -3736,13 +4533,14 @@ function snapDraggedItem(i, free, moved) {
     const pts = getRoomPts();
     pts.forEach((p, w) => {
       const q = pts[(w + 1) % pts.length];
-      if (walls[w] && walls[w].bulge) return;
+      if (walls[w] && (walls[w].bulge || walls[w].open)) return;
       if (Math.abs(p.x - q.x) < 0.5 && overlaps(Math.min(p.y, q.y), Math.max(p.y, q.y), b.y0, b.y1)) lines.x.push([p.x, Math.min(p.y, q.y), Math.max(p.y, q.y), false]);
       if (Math.abs(p.y - q.y) < 0.5 && overlaps(Math.min(p.x, q.x), Math.max(p.x, q.x), b.x0, b.x1)) lines.y.push([p.y, Math.min(p.x, q.x), Math.max(p.x, q.x), false]);
     });
   }
   extras.forEach(e => e.pts.forEach((p, w) => {         // (pillars' and separate areas' straight edges too)
     const q = e.pts[(w + 1) % e.pts.length];
+    if (e.walls && e.walls[w] && e.walls[w].open) return;
     if (Math.abs(p.x - q.x) < 0.5 && overlaps(Math.min(p.y, q.y), Math.max(p.y, q.y), b.y0, b.y1)) lines.x.push([p.x, Math.min(p.y, q.y), Math.max(p.y, q.y), false]);
     if (Math.abs(p.y - q.y) < 0.5 && overlaps(Math.min(p.x, q.x), Math.max(p.x, q.x), b.x0, b.x1)) lines.y.push([p.y, Math.min(p.x, q.x), Math.max(p.x, q.x), false]);
   }));
@@ -3798,7 +4596,7 @@ function polyGap(A, B) {
 }
 
 const spanOf = it => [it.elev || 0, (it.elev || 0) + (it.zHeight || 0.7)];
-const solidItem = it => it.kind !== 'rug' && !(it.shape && it.shape.kind === 'curtain');
+const solidItem = it => it.kind !== 'rug' && !(it.shape && /^(curtain|elec)$/.test(it.shape.kind));
 const onFloor = it => (it.elev || 0) < 0.3 && it.kind !== 'wall';
 const bigItem = it => !it.kind && Math.min(it.w, it.h) >= 0.35 && it.w * it.h >= 0.3;
 // ── Units: metres or feet and inches ──────────────────────────────────────────
@@ -3932,7 +4730,7 @@ function doorSwings() {
 function doorSwingsHere() {
   const pts = getRoomPts(), out = [];
   walls.forEach((w, i) => {
-    if (i >= pts.length) return;
+    if (i >= pts.length || w.open) return;
     const arc = wallArc(i, pts), len = arc.len;
     if (len < 1) return;
     w.openings.forEach((o, k) => {
@@ -3958,10 +4756,16 @@ function fitCheckHere() {
   if (shape === 'custom' && drawing) return {problems, tight, bad, doors: []};
   const polys = placed.map(it => itemPoly(it, 1.5)), room = getRoomOutline();
   const floors = [room, ...extraPolys('area')], pillars = extraPolys('pillar');
+  // (standing walls only: across a removed wall is open floor)
+  const solid = [...solidWallPieces(), ...extras.flatMap((e, k) => extraKind(e) === 'area' ? withPart(k, solidWallPieces) : [])];
+  const onFloorPt = p => floors.some(R => pointInPoly(R, p.x, p.y) || R.some((a, j) => distToSegment(p.x, p.y, a, R[(j + 1) % R.length]) <= 1));
+  // (its corners, the middles of its sides and its middle: a piece across a gap with no floor counts)
+  const samples = P => [...P, ...P.map((p, j) => { const q = P[(j + 1) % P.length]; return {x: (p.x + q.x) / 2, y: (p.y + q.y) / 2}; }),
+    {x: P.reduce((a, p) => a + p.x, 0) / P.length, y: P.reduce((a, p) => a + p.y, 0) / P.length}];
   placed.forEach((it, i) => {
     const P = polys[i];
-    // (inside the room or inside one of its separate areas)
-    if (!floors.some(R => P.every(p => pointInPoly(R, p.x, p.y)) && !polysCross(P, R))) {
+    // (on the floor of the room or its separate areas, and not through a standing wall)
+    if (!samples(P).every(onFloorPt) || P.some((p, j) => solid.some(w => segsCross(p, P[(j + 1) % P.length], w.a, w.b)))) {
       problems.push({i, text: `${it.label} goes through a wall`}); bad.add(i);
     } else if (solidItem(it) && pillars.some(Q => polysOverlap(P, Q))) {
       problems.push({i, text: `${it.label} goes through a pillar`}); bad.add(i);
@@ -4077,7 +4881,7 @@ setInterval(() => { if (view === '3d') renderFitBox(fitCheck()); }, 500);
 // Carried upright or on its side, does it go through the widest door (or a
 // standard 82 × 204 cm one if none is drawn)?
 function doorFit(item) {
-  if (item.kind === 'rug' || item.kind === 'wall' || (item.shape && item.shape.kind === 'curtain') || item.id === 'column' || item.id === 'radiator') return null;
+  if (item.kind === 'rug' || item.kind === 'wall' || (item.shape && /^(curtain|elec|stairs)$/.test(item.shape.kind)) || item.id === 'column' || item.id === 'radiator') return null;
   // (a sliding door's panels overlap: about half of it is open at a time)
   const doors = walls.flatMap(w => w.openings.filter(o => o.type === 'door').map(o => o.style === 'sliding' ? {...o, w: o.w * 0.5} : o));
   const door = doors.length ? doors.reduce((a, b) => (a.w > b.w ? a : b)) : {w: 0.82, h: 2.04};
@@ -4105,6 +4909,7 @@ function setItemRot(item, rad, snap) {
 }
 
 function select(i) {
+  if (i >= 0) selWall = null;
   if (group.length) { group = []; updateGroupBar(); }
   selected = i >= 0 && i < placed.length ? i : -1;
   if (selected >= 0) selCorner = null;
@@ -4139,7 +4944,7 @@ function updateSelPanel() {
   const shapeSel = document.getElementById('selShape');
   shapeSel.querySelector('option[value="modular"]').hidden = !item.modules;
   const sh = item.shape;
-  shapeSel.value = !sh ? 'box' : sh.kind === 'modular' ? 'modular' : sh.kind === 'chair' ? `chair:${sh.style}:${sh.base}` : sh.kind === 'bed' ? 'bed' : sh.kind === 'beanbag' ? (sh.arms ? 'beanbag-arms' : 'beanbag') : sh.kind === 'table' ? `table:${sh.top}:${sh.base}` : sh.kind === 'cabinet' ? `cabinet:${sh.front}` : sh.kind === 'shelf' ? 'shelf' : sh.kind === 'seat' ? `seat:${sh.style}` : sh.kind === 'lamp' ? `lamp:${sh.style}` : DECOR_KIND[sh.kind] ? sh.kind : sh.style === 'curved' ? 'curved' : sh.chaise;
+  shapeSel.value = !sh ? 'box' : sh.kind === 'modular' ? 'modular' : sh.kind === 'chair' ? `chair:${sh.style}:${sh.base}` : sh.kind === 'bed' ? 'bed' : sh.kind === 'beanbag' ? (sh.arms ? 'beanbag-arms' : 'beanbag') : sh.kind === 'table' ? `table:${sh.top}:${sh.base}` : sh.kind === 'cabinet' ? `cabinet:${sh.front}` : sh.kind === 'shelf' ? 'shelf' : sh.kind === 'seat' ? `seat:${sh.style}` : sh.kind === 'lamp' ? `lamp:${sh.style}` : sh.kind === 'stairs' ? `stairs:${sh.turn || 'straight'}` : sh.kind === 'elec' ? `elec:${sh.type}` : DECOR_KIND[sh.kind] ? sh.kind : sh.style === 'curved' ? 'curved' : sh.chaise;
   document.getElementById('selColor').value = /^#[0-9a-f]{6}$/i.test(item.color) ? item.color : '#888888';
   const priceEl = document.getElementById('selPrice');
   if (document.activeElement !== priceEl) priceEl.value = item.price > 0 ? +item.price.toFixed(2) : '';
@@ -4180,6 +4985,7 @@ function deleteItem(i) {
 // bar's buttons turn them about their middle; arrows nudge; Delete removes.
 // Each action is one undo step.
 function setGroup(list) {
+  if (list.length) selWall = null;
   const all = [...new Set(list)].filter(i => placed[i]), ids = all.filter(i => !placed[i].locked).sort((a, b) => a - b);
   if (ids.length < all.length) toast('Locked pieces are left out of the selection.');
   if (ids.length < 2) { group = []; select(ids.length ? ids[0] : -1); updateGroupBar(); return; }
@@ -4306,6 +5112,8 @@ document.getElementById('selShape').addEventListener('change', e => {
     : v === 'beanbag-arms' ? {kind: 'beanbag', arms: true}
     : v === 'shelf' ? {kind: 'shelf'}
     : v.startsWith('lamp:') ? {kind: 'lamp', style: v.split(':')[1]}
+    : v.startsWith('stairs:') ? {kind: 'stairs', turn: v.split(':')[1]}
+    : v.startsWith('elec:') ? {kind: 'elec', type: v.split(':')[1]}
     : DECOR_KIND[v] ? {kind: v}
     : v.startsWith('table:') ? {kind: 'table', top: v.split(':')[1], base: v.split(':')[2]}
     : v.startsWith('cabinet:') ? {kind: 'cabinet', front: v.split(':')[1]}
@@ -4484,6 +5292,7 @@ function cancelLengthBox() {
   document.querySelectorAll('.wall-len-input').forEach(el => { if (el.isConnected) el.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'})); });
 }
 function setTraceMode(m) {
+  if (m) selWall = null;
   if (m && trace) { if (measureMode) setMeasureMode(false); if (noteMode) setNoteMode(false); }
   traceMode = trace ? m : null; traceScalePt = null; traceHover = null; traceDrag = null; tracePending = null;
   cancelLengthBox();
@@ -4629,11 +5438,98 @@ function addFurnButton(entry) {
   el.dataset.search = foldText(f.label + ' ' + (keywords || ''));
   el.draggable = true;
   el.title = 'Drag onto the plan, or click to add';
-  el.addEventListener('dragstart', () => { draggingFurn = {...f, shape: f.shape && {...f.shape}}; });
+  // (stairs go up to the room's highest wall top, and a ceiling light just under the ceiling, as the room is when they're added)
+  const make = () => { const o = {...f, shape: f.shape && {...f.shape}};
+    if (o.shape && o.shape.kind === 'stairs') { syncWalls(); o.zHeight = Math.max(roomStyle.wallHeight, ...walls.flatMap(w => [w.hStart ?? 0, w.hEnd ?? 0])); }
+    if (o.shape && o.shape.kind === 'elec' && /^(ceiling|downlight)$/.test(o.shape.type)) o.elev = +(roomStyle.wallHeight - o.zHeight).toFixed(3);
+    return o; };
+  el.addEventListener('dragstart', () => { draggingFurn = make(); });
   // Click adds to the room centre — the only way in while the 3D view is showing.
-  el.addEventListener('click', () => addItem({...f, shape: f.shape && {...f.shape}}));
+  el.addEventListener('click', () => { addItem(make()); if (!showElec) setShowElec(true); });
   furnList.appendChild(el);
 }
+
+// ── My furniture ─────────────────────────────────────────────────────────────
+// "☆ Save to My furniture" in the inspector keeps a copy of the selected piece
+// (size, colour, shape, photo and model links, price, link) in this browser
+// (localStorage 'rp-my-furniture', [{id, item}]), listed first under
+// Furniture to add again in any room or home. The same name saved again
+// replaces the old one. Save file writes the list too (myFurniture) and Open
+// file adds any it doesn't have; share links leave it out.
+const MY_FURN_KEY = 'rp-my-furniture', MY_FURN_MAX = 60;
+const MY_FURN_IMG_MAX = 50000, MY_FURN_TOTAL_MAX = 1000000;   // (localStorage is ~5M characters, shared with autosave)
+const escMine = t => String(t).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'})[c]);   // (escHtml comes later in the file; this runs at load)
+let myFurniture = [];
+try { const v = JSON.parse(localStorage.getItem(MY_FURN_KEY) || '[]'); if (Array.isArray(v)) myFurniture = v.filter(m => m && m.item && m.item.label && m.item.w > 0 && m.item.h > 0); } catch {}
+// (saves list, and only then makes it the list: a save that fails changes nothing)
+function saveMyFurniture(list = myFurniture) {
+  const json = JSON.stringify(list);
+  if (json.length > MY_FURN_TOTAL_MAX) { toast('My furniture is full (pictures take room): remove some pieces first.'); return false; }
+  try { localStorage.setItem(MY_FURN_KEY, json); myFurniture = list; return true; }
+  catch { toast('My furniture is full in this browser: remove some first.'); return false; }
+}
+// (what's kept: the piece, not where it is or the state of this copy)
+function myFurnitureItem(it) {
+  const out = {};
+  // (fitToModel stays: a piece saved before its model loaded still gets the model's real size)
+  Object.keys(it).forEach(k => { if (!k.startsWith('_') && !['x', 'y', 'rot', 'locked', 'inSet'].includes(k)) out[k] = JSON.parse(JSON.stringify(it[k])); });
+  if (/^data:/.test(out.imgUrl || '') && out.imgUrl.length > MY_FURN_IMG_MAX) delete out.imgUrl;     // (a big pasted picture won't fit)
+  if (it.inSet) { delete out.price; delete out.currency; }   // (part of a set: its price is on the set's first piece)
+  return out;
+}
+function addToMyFurniture(it) {
+  const item = myFurnitureItem(it), i = myFurniture.findIndex(m => m.item.label === item.label);
+  if (i < 0 && myFurniture.length >= MY_FURN_MAX) { toast(`My furniture holds ${MY_FURN_MAX} pieces: remove one first.`); return; }
+  const list = myFurniture.slice();
+  if (i >= 0) list[i] = {id: list[i].id, item};
+  else list.unshift({id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6), item});
+  if (!saveMyFurniture(list)) return;
+  renderMyFurniture(); openPanelOf('furnList');
+  toast(i >= 0 ? `Updated "${item.label}" in My furniture.` : `Saved "${item.label}" to My furniture (under Furniture).`);
+}
+function renderMyFurniture() {
+  furnList.querySelectorAll('[data-mine]').forEach(el => el.remove());
+  if (!myFurniture.length) return;
+  const first = furnList.firstChild;
+  const h = document.createElement('div');
+  h.className = 'furn-group'; h.textContent = 'My furniture'; h.dataset.mine = '1';
+  furnList.insertBefore(h, first);
+  myFurniture.forEach(m => {
+    const el = document.createElement('div');
+    el.className = 'furn-item'; el.dataset.mine = m.id;
+    el.innerHTML = `<span class="furn-emoji">${escMine(m.item.emoji || '⭐')}</span><span>${escMine(m.item.label)}</span><button class="furn-x" title="Remove from My furniture">✕</button>`;
+    el.dataset.search = foldText(m.item.label + ' my furniture saved mine');
+    el.draggable = true;
+    el.title = 'Drag onto the plan, or click to add';
+    const copy = () => JSON.parse(JSON.stringify(m.item));
+    el.addEventListener('dragstart', () => { draggingFurn = copy(); });
+    el.addEventListener('click', e => {
+      if (e.target.closest('.furn-x')) {
+        saveMyFurniture(myFurniture.filter(q => q.id !== m.id)); renderMyFurniture();
+        toast(`Removed "${m.item.label}" from My furniture.`);
+        return;
+      }
+      addItem(copy());
+    });
+    furnList.insertBefore(el, first);
+  });
+  document.getElementById('furnSearch').dispatchEvent(new Event('input'));
+}
+// (from a file: the ones not here yet, by name)
+function mergeMyFurniture(list) {
+  if (!Array.isArray(list)) return 0;
+  let n = 0;
+  const next = myFurniture.slice();
+  list.forEach(m => {
+    if (!m || !m.item || !m.item.label || !(m.item.w > 0) || !(m.item.h > 0) || next.some(q => q.item.label === m.item.label) || next.length >= MY_FURN_MAX) return;
+    next.push({id: String(m.id || Date.now().toString(36) + n), item: myFurnitureItem(m.item)}); n++;
+  });
+  if (!n || !saveMyFurniture(next)) return 0;
+  renderMyFurniture();
+  return n;
+}
+renderMyFurniture();
+document.getElementById('selMine').addEventListener('click', () => { if (placed[selected]) addToMyFurniture(placed[selected]); });
 
 // Add an item centred in the room and select it.
 function addItem(props) {
@@ -4668,6 +5564,7 @@ canvas.addEventListener('drop', e => {
   if (!draggingFurn) return;
   const {mx, my} = canvasPoint(e);
   const {_x, _y, ...f} = draggingFurn;
+  if (isElec(f) && !showElec) setShowElec(true);
   placed.push({
     ...f,
     x: mx - f.w * SCALE / 2,
@@ -4690,6 +5587,8 @@ canvas.addEventListener('dragleave', () => { if (draggingFurn) { draggingFurn._x
 function itemHit(it, mx, my) {
   const iw = it.w * SCALE, ih = it.h * SCALE;
   const dx = mx - (it.x + iw/2), dy = my - (it.y + ih/2);
+  // (an electrical fitting: its symbol, at least 10 screen px round, can be clicked; hidden ones can't)
+  if (isElec(it)) return showElec && Math.hypot(dx, dy) <= Math.max(10 / (view2d.k || 1), Math.min(iw, ih) / 2);
   const c = Math.cos(-(it.rot || 0)), s = Math.sin(-(it.rot || 0));
   const lx = (dx * c - dy * s) / SCALE, ly = (dx * s + dy * c) / SCALE;
   if (it.footprint && it.footprint.length > 2) return pointInPoly(it.footprint, lx, ly);
@@ -4698,8 +5597,15 @@ function itemHit(it, mx, my) {
 
 function itemIndexAt(mx, my) {
   const order = drawOrder();
-  for (let k = order.length - 1; k >= 0; k--) if (itemHit(placed[order[k]], mx, my)) return order[k];
-  return -1;
+  // (a ceiling light over a sofa: the sofa first, the light only where nothing else is)
+  let ceil = -1;
+  for (let k = order.length - 1; k >= 0; k--) {
+    const it = placed[order[k]];
+    if (!itemHit(it, mx, my)) continue;
+    if (isElec(it) && /^(ceiling|downlight)$/.test(it.shape.type)) { if (ceil < 0) ceil = order[k]; continue; }
+    return order[k];
+  }
+  return ceil;
 }
 
 function onHandle(mx, my) {
@@ -4799,7 +5705,7 @@ canvas.addEventListener('pointerdown', e => {
   // The room outline (or a part's): a wall's length label, a corner, then furniture, then a wall.
   const hit = outlineHitAt(mx, my), part = hit && hit.part != null ? hit.part : -1;
   // (preventDefault: the press would otherwise move focus off the new box, closing it)
-  selCorner = null;
+  selCorner = null; selWall = null;
   const i = itemIndexAt(mx, my);
   const pressed = withPart(part, () => {
     if (hit && hit.type === 'label') { e.preventDefault(); select(-1); editWallLength(hit.i); return true; }
@@ -4925,6 +5831,8 @@ const pointerUp2d = e => {
   if (roomEdit) {
     // (a click on a corner, without dragging it, selects it for Delete)
     if (roomEdit.type === 'vertex' && !roomEdit.moved) { selCorner = roomEdit.i; selCornerPart = roomEdit.part ?? -1; }
+    // (a click on a wall, without dragging it, selects it: its toolbar can delete it)
+    if (roomEdit.type === 'wall' && !roomEdit.moved && !((roomEdit.part ?? -1) !== -1 && extras[roomEdit.part] && extraKind(extras[roomEdit.part]) === 'pillar')) selWall = {part: roomEdit.part ?? -1, i: roomEdit.i};
     roomEdit = null; redraw(); checkpoint();
   }
   if (elevDrag) { elevDrag = null; draw2d(); checkpoint(); }
@@ -5044,7 +5952,7 @@ function finishDrawing() {
       const e = extras[extras.length - 1], touch = lastPointerType !== 'mouse';
       toast(extraKind(e) === 'pillar' ? `Added a pillar. Drag its corners to adjust it; ${touch ? 'double-tap' : 'right-click'} it to remove it.`
         : extraCrossesRoom(e) ? 'This part crosses the room\'s wall, so it\'s a separate area with its own walls. For an alcove or a bay, drag the room\'s own wall or add a corner with + instead.'
-        : `Added a separate area of this room. Drag its corners to adjust it; ${touch ? 'double-tap' : 'right-click'} its wall to remove it.`);
+        : `Added a separate area of this room. Drag its corners to adjust it; ${touch ? 'double-tap' : 'double-click'} its wall for its walls, windows and floor; ${touch ? 'double-tap' : 'right-click'} its wall to remove it.`);
     }
     updateRoomHint(); redraw(); checkpoint();
     return;
@@ -5269,7 +6177,7 @@ function insertCorner(i, t) {
   const [ha, hb] = wallHeights(i), hm = ha + (hb - ha) * t, keepH = w.hStart == null && w.hEnd == null;
   // A curved wall splits into two arcs of the same circle.
   const sag = f => arc.straight ? 0 : Math.sign(w.bulge) * arc.R * (1 - Math.cos(f * arc.len / arc.R / 2)) / SCALE;
-  const second = {hStart: keepH ? null : hm, hEnd: w.hEnd, bulge: sag(1 - t),
+  const second = {hStart: keepH ? null : hm, hEnd: w.hEnd, bulge: sag(1 - t), ...(w.open ? {open: true} : {}),
     openings: w.openings.filter(o => o.x + o.w / 2 >= at).map(o => ({...o, x: o.x - at}))};
   w.openings = w.openings.filter(o => o.x + o.w / 2 < at);
   if (!keepH) w.hEnd = hm;
@@ -5291,7 +6199,7 @@ function deleteCorner(v) {
   const openings = [...A.openings.map(o => ({o, c: at(p, o)})), ...B.openings.map(o => ({o, c: at(v, o)}))];
   const s0 = customPts[p], s1 = customPts[(v + 1) % n], len = Math.hypot(s1.x - s0.x, s1.y - s0.y) || 1;
   openings.forEach(({o, c}) => { o.x = ((c.x - s0.x) * (s1.x - s0.x) + (c.y - s0.y) * (s1.y - s0.y)) / len / SCALE - o.w / 2; });
-  walls[p] = {hStart: A.hStart, hEnd: B.hEnd, bulge: 0, openings: openings.map(({o}) => o)};
+  walls[p] = {hStart: A.hStart, hEnd: B.hEnd, bulge: 0, openings: openings.map(({o}) => o), ...(A.open && B.open ? {open: true} : {})};
   customPts.splice(v, 1);
   walls.splice(v, 1);
   syncWalls();
@@ -5304,6 +6212,13 @@ function deleteCorner(v) {
 function drawRoomOverlay() {
   // (the hover, the drag and the selected corner belong to one outline: the room or a part)
   const hov = roomHover && (roomHover.part ?? -1) === focusPart ? roomHover : null;
+  if (!exporting && selWall && selWall.part === focusPart && selWall.i < getRoomPts().length) {
+    // (the selected wall: an orange band along it)
+    const arc = wallArc(selWall.i), n = arc.straight ? 1 : 24;
+    ctx.save(); ctx.beginPath();
+    for (let k = 0; k <= n; k++) { const p = arc.at(k / n); k ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); }
+    ctx.strokeStyle = 'rgba(232,131,74,0.75)'; ctx.lineWidth = 11; ctx.lineCap = 'round'; ctx.stroke(); ctx.restore();
+  }
   const edit = roomEdit && (roomEdit.part ?? -1) === focusPart ? roomEdit : null;
   const selC = selCornerPart === focusPart ? selCorner : null;
   wallLabels = [];
@@ -5489,6 +6404,28 @@ function getRoomOutline() {
   return out;
 }
 function wallLen(i) { return wallArc(i).len / SCALE; }
+// The outline's walls on the plan (editing state): standing ones dark-edged in
+// the wall colour, a removed one (walls[i].open) a thin dashed line at the
+// floor's edge.
+function strokeWalls() {
+  const pts = getRoomPts();
+  syncWalls();
+  const path = i => { const arc = wallArc(i, pts), n = arc.straight ? 1 : 24; ctx.beginPath(); for (let k = 0; k <= n; k++) { const p = arc.at(k / n); k ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y); } };
+  if (!walls.some(w => w && w.open)) {        // (all standing: one path, so the corners join)
+    tracePath(getRoomOutline());
+    ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 9; ctx.stroke();
+    ctx.strokeStyle = roomStyle.wallColor; ctx.lineWidth = 7; ctx.stroke();
+    return;
+  }
+  ctx.save(); ctx.lineCap = 'square';
+  [['rgba(0,0,0,0.45)', 9], [roomStyle.wallColor, 7]].forEach(([c, w]) => pts.forEach((_, i) => {
+    if (walls[i] && walls[i].open) return;
+    path(i); ctx.strokeStyle = c; ctx.lineWidth = w; ctx.stroke();
+  }));
+  ctx.lineCap = 'butt'; ctx.setLineDash([5, 4]);
+  pts.forEach((_, i) => { if (!(walls[i] && walls[i].open)) return; path(i); ctx.strokeStyle = 'rgba(0,0,0,0.35)'; ctx.lineWidth = 1; ctx.stroke(); });
+  ctx.restore();
+}
 
 // Floor area (m²) and the length of wall around it (m). Curved walls count
 // along their arcs (getRoomOutline, ~12 cm steps); a circle is exact.
@@ -5558,6 +6495,8 @@ function elevFrame() {
 }
 
 function openElevation(i) {
+  selWall = null;
+  document.getElementById('wallBar').hidden = true;     // (placeWallBar only runs with the plan)
   if (measureMode) setMeasureMode(false);
   if (noteMode) setNoteMode(false);
   if (traceMode) setTraceMode(null);
@@ -5594,6 +6533,15 @@ function drawElevation() {
   ctx.beginPath(); ctx.moveTo(X(0), Y(0)); ctx.lineTo(X(L), Y(0)); ctx.lineTo(X(L), Y(h1)); ctx.lineTo(X(0), Y(h0)); ctx.closePath();
   ctx.fillStyle = roomStyle.wallColor; ctx.fill();
   ctx.strokeStyle = 'rgba(0,0,0,0.55)'; ctx.lineWidth = 2; ctx.stroke();
+  {
+    const sk = +roomStyle.skirting || 0, ch = 0.08;
+    ctx.fillStyle = roomStyle.trimColor || TRIM_DEFAULTS.trimColor; ctx.strokeStyle = 'rgba(0,0,0,0.35)'; ctx.lineWidth = 1;
+    if (sk > 0) { ctx.fillRect(X(0), Y(sk), X(L) - X(0), Y(0) - Y(sk)); ctx.beginPath(); ctx.moveTo(X(0), Y(sk)); ctx.lineTo(X(L), Y(sk)); ctx.stroke(); }
+    if (roomStyle.cornice) {
+      ctx.beginPath(); ctx.moveTo(X(0), Y(h0)); ctx.lineTo(X(L), Y(h1)); ctx.lineTo(X(L), Y(h1 - ch)); ctx.lineTo(X(0), Y(h0 - ch)); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(X(0), Y(h0 - ch)); ctx.lineTo(X(L), Y(h1 - ch)); ctx.moveTo(X(0), Y(h0 - ch / 2)); ctx.lineTo(X(L), Y(h1 - ch / 2)); ctx.stroke();
+    }
+  }
   const tag = (text, x, y, hot) => {
     ctx.font = '600 11px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     const tw = ctx.measureText(text).width + 10;
@@ -5669,7 +6617,7 @@ function drawElevation() {
 function drawPlanOpenings(pts) {
   ctx.save();
   walls.forEach((w, i) => {
-    if (!w.openings.length || i >= pts.length) return;
+    if (!w.openings.length || i >= pts.length || w.open) return;
     const arc = wallArc(i, pts), len = arc.len;
     if (len < 1) return;
     // along the wall (the arc, if curved), u in metres from corner i
@@ -5848,11 +6796,83 @@ document.getElementById('elevDoorSwing').addEventListener('change', e => setDoor
 // The elevation bar of a separate area: say so, and offer to remove it.
 // (a press on the side panels or the toolbar while a part's elevation is open: back to the room first)
 function leavePart() { if (focusPart !== -1) { if (elevWall != null) closeElevation(); else swapTo(-1); } }
-document.querySelectorAll('.sidebar, .toolbar, .room-tabs').forEach(el => el.addEventListener('pointerdown', leavePart, true));
+document.querySelectorAll('.sidebar, .toolbar, .tabs-row').forEach(el => el.addEventListener('pointerdown', leavePart, true));
+// The selected wall's toolbar, beside the wall's middle on the room side.
+function placeWallBar() {
+  const bar = document.getElementById('wallBar');
+  const ok = selWall && view === '2d' && elevWall == null && !isDrawing() && !group.length && !measureMode && !noteMode && !traceMode && (selWall.part === -1 || extras[selWall.part]);
+  if (!ok) { bar.hidden = true; return; }
+  const info = withPart(selWall.part, () => {
+    const pts = getRoomPts();
+    if (selWall.i >= pts.length) return null;
+    syncWalls();
+    const arc = wallArc(selWall.i, pts), m = arc.at(0.5);
+    const pillar = selWall.part !== -1 && extraKind(extras[selWall.part]) === 'pillar';
+    // (d: from the wall towards the floor: into the room or area, out of a pillar)
+    let d = arc.normal(0.5);
+    if (pointInPoly(getRoomOutline(), m.x + d.x * 4, m.y + d.y * 4) === pillar) d = {x: -d.x, y: -d.y};
+    return {m, d, open: !!(walls[selWall.i] && walls[selWall.i].open), pillar};
+  });
+  if (!info) { bar.hidden = true; return; }
+  bar.hidden = false;
+  document.getElementById('wallDel').hidden = info.open;
+  document.getElementById('wallBack').hidden = !info.open;
+  document.getElementById('wallElev').hidden = info.open || info.pillar;
+  // (on the floor side, clear of the wall and of its length label on the other side)
+  const kk = canvas.clientWidth / canvas.width || 1, v = viewOf2d();
+  const off = 14 + Math.abs(info.d.x) * bar.offsetWidth / 2 + Math.abs(info.d.y) * bar.offsetHeight / 2;
+  bar.style.left = (canvas.offsetLeft + (info.m.x * v.k + v.x) * kk + info.d.x * off) + 'px';
+  bar.style.top = (canvas.offsetTop + (info.m.y * v.k + v.y) * kk + info.d.y * off) + 'px';
+}
+// Delete a wall (it becomes an opening: the floor stays), or put it back.
+function setWallOpen(open) {
+  if (!selWall) return;
+  const {part, i} = selWall;
+  withPart(part, () => { syncWalls(); if (!walls[i]) return; if (open) walls[i].open = true; else delete walls[i].open; });
+  redraw(); checkpoint();
+  if (open) toast('Wall removed: the floor stays open there. Select it again to put it back.');
+}
+document.getElementById('wallDel').addEventListener('click', () => setWallOpen(true));
+document.getElementById('wallBack').addEventListener('click', () => setWallOpen(false));
+document.getElementById('wallElev').addEventListener('click', () => {
+  if (!selWall) return;
+  const {part, i} = selWall; selWall = null;
+  if (part !== -1) swapTo(part);
+  openElevation(i);
+});
+
 function updatePartBar() {
   const b = document.getElementById('elevRemovePart');
-  if (b) b.hidden = !(elevWall != null && focusPart !== -1);
+  const on = elevWall != null && focusPart !== -1;
+  if (b) b.hidden = !on;
+  const box = document.getElementById('elevFloorBox');
+  box.hidden = !on;
+  if (on) {
+    const e = extras[focusPart], f = partFloor(e);
+    document.getElementById('elevFloorStyle').value = e && e.floor ? e.floor.style : '';
+    document.getElementById('elevFloorColor').value = f.color;
+  }
 }
+// A separate area's floor: {style, color} of its own (extras[k].floor), else the room's.
+const FLOOR_STYLE_IDS = ['wood', 'tile', 'carpet', 'concrete', 'plain'];
+function partFloor(e) {
+  return e && e.floor ? {style: e.floor.style, color: e.floor.color} : {style: roomStyle.floorStyle, color: roomStyle.floorColor};
+}
+document.getElementById('elevFloorStyle').addEventListener('change', ev => {
+  const e = extras[focusPart];
+  if (!e) return;
+  const v = ev.target.value;
+  e.floor = v ? {style: v, color: document.getElementById('elevFloorColor').value} : null;
+  updatePartBar(); checkpoint();
+  ev.target.blur();
+});
+document.getElementById('elevFloorColor').addEventListener('input', ev => {
+  const e = extras[focusPart];
+  if (!e) return;
+  e.floor = {style: e.floor ? e.floor.style : roomStyle.floorStyle, color: ev.target.value};
+  updatePartBar();
+});
+document.getElementById('elevFloorColor').addEventListener('change', ev => { checkpoint(); ev.target.blur(); });   // (so Ctrl+Z and Delete work straight away)
 document.getElementById('elevRemovePart').addEventListener('click', () => {
   const k = focusPart;
   if (k === -1 || !confirm('Remove this separate area?')) return;
@@ -5926,7 +6946,10 @@ function checkpoint() {
 function restoreSnapshot(pos) {
   histPos = pos;
   const reopen = elevWall != null && focusPart !== -1 ? {k: focusPart, w: elevWall} : null;
+  const vBefore = JSON.stringify(versions), homeBefore = (() => { const h = JSON.parse(homeToJson()); delete h.versions; return JSON.stringify(h); })();
   applyHome(JSON.parse(undoStack[pos]));
+  if (JSON.stringify(versions) !== vBefore && (() => { const h = JSON.parse(homeToJson()); delete h.versions; return JSON.stringify(h) === homeBefore; })())
+    toast('That changed the list of versions (the plan is the same).');
   if (reopen && extras[reopen.k] && extraKind(extras[reopen.k]) === 'area') { swapTo(reopen.k); openElevation(reopen.w); }
   undoStack[pos] = homeToJson();         // (same home, as this build writes it)
   updateRoomHint();
@@ -5962,6 +6985,10 @@ document.addEventListener('keydown', e => {
     e.preventDefault(); e.stopImmediatePropagation();
     return;
   }
+  if (selWall && selected < 0 && !group.length && !measureMode && !noteMode && !traceMode && view === '2d' && elevWall == null && !isDrawing()) {
+    if (e.key === 'Delete' || e.key === 'Backspace') { setWallOpen(true); selWall = null; draw2d(); e.preventDefault(); e.stopImmediatePropagation(); return; }
+    if (e.key === 'Escape') { selWall = null; draw2d(); }
+  }
   if (selCorner != null && selected < 0 && view === '2d' && elevWall == null && !(shape === 'custom' && drawing)) {
     if (e.key === 'Delete' || e.key === 'Backspace') { const c = selCorner; withPart(selCornerPart, () => deleteCorner(c)); selCorner = null; redraw(); e.preventDefault(); e.stopImmediatePropagation(); return; }
     if (e.key === 'Escape') { selCorner = null; draw2d(); }
@@ -5982,6 +7009,7 @@ document.addEventListener('keydown', e => {
 // Sync the room-shape buttons and inputs to `s`. `pts` is a finished
 // free-drawn outline (from a saved layout); without it, Free draw starts drawing.
 function setShape(s, pts) {
+  selWall = null;
   leavePart();
   shape = s;
   document.querySelectorAll('.shape-btn').forEach(b => b.classList.toggle('active', b.dataset.shape === s));
@@ -6017,7 +7045,11 @@ Object.entries(STYLE_PRESETS).forEach(([key, p]) => {
 });
 
 function syncStyleControls() {
+  document.getElementById('beams').checked = !!roomStyle.beams;
   ['wallColor', 'wallStyle', 'floorColor', 'floorStyle', 'wallHeight'].forEach(k => { document.getElementById(k).value = roomStyle[k]; });
+  document.getElementById('skirting').value = String(+roomStyle.skirting || 0);
+  document.getElementById('cornice').checked = !!roomStyle.cornice;
+  document.getElementById('trimColor').value = roomStyle.trimColor || TRIM_DEFAULTS.trimColor;
   presetsEl.querySelectorAll('.preset').forEach(el => el.classList.toggle('active', el.dataset.preset === roomStyle.preset));
 }
 
@@ -6028,6 +7060,58 @@ function syncStyleControls() {
     syncStyleControls();
     redraw();
   });
+});
+
+document.getElementById('beams').addEventListener('change', e => { roomStyle = {...roomStyle, beams: e.target.checked}; redraw(); });
+// Skirting, cornice and their colour (not part of a preset: a preset keeps them)
+document.getElementById('skirting').addEventListener('change', e => { roomStyle = {...roomStyle, skirting: +e.target.value || 0}; redraw(); });
+document.getElementById('cornice').addEventListener('change', e => { roomStyle = {...roomStyle, cornice: e.target.checked}; redraw(); });
+document.getElementById('trimColor').addEventListener('input', e => { roomStyle = {...roomStyle, trimColor: e.target.value}; redraw(); });
+// ── Colour palette helper ────────────────────────────────────────────────────
+// "🎨 Suggest colours" (Room style): from the furniture's colours (by area on
+// the plan; rugs count, the walls' own items don't) three palettes of wall,
+// floor and an accent, each a click to apply (wall and floor colours; the
+// textures stay): Calm (a pale wall of the furniture's own hue, a warm wood
+// floor), Contrast (a pale wall of the opposite hue, a darker floor),
+// Tonal (wall and floor both light shades of the furniture's hue). Undoable.
+const hexToHsl = hex => { const c = new THREE.Color(hex), o = {}; c.getHSL(o); return o; };
+const hslToHex = (h, s, l) => '#' + new THREE.Color().setHSL(((h % 1) + 1) % 1, Math.max(0, Math.min(1, s)), Math.max(0, Math.min(1, l))).getHexString();
+function furnitureColours() {
+  const by = {};
+  // (a piece still at the default grey, as a model or photo piece is until its colour is known, says nothing)
+  placed.forEach(it => { if (it.kind === 'wall' || !/^#[0-9a-f]{6}$/i.test(it.color || '') || it.color.toLowerCase() === '#888780') return; by[it.color.toLowerCase()] = (by[it.color.toLowerCase()] || 0) + it.w * it.h; });
+  return Object.entries(by).sort((a, b) => b[1] - a[1]).map(([c, a]) => ({c, a}));
+}
+function suggestPalettes() {
+  const cols = furnitureColours();
+  // (the furniture's main hue: an area-weighted average on the colour wheel, of the colours with some colour in them)
+  let x = 0, y = 0, sat = 0, wsum = 0;
+  cols.forEach(({c, a}) => { const h = hexToHsl(c); const w = a * h.s; x += Math.cos(h.h * 2 * Math.PI) * w; y += Math.sin(h.h * 2 * Math.PI) * w; sat += h.s * a; wsum += a; });
+  const hue = cols.length && (x || y) ? (Math.atan2(y, x) / (2 * Math.PI) + 1) % 1 : 0.08;   // (no furniture: warm neutral)
+  const s = wsum ? Math.min(0.6, sat / wsum) : 0.3, accent = cols.length ? cols[0].c : hslToHex(hue, 0.5, 0.45);
+  return [
+    {name: 'Calm', wall: hslToHex(hue, 0.18, 0.93), floor: hslToHex(0.08, 0.38, 0.62), accent},
+    {name: 'Contrast', wall: hslToHex(hue + 0.5, Math.max(0.15, Math.min(0.35, s)), 0.88), floor: hslToHex(0.07, 0.35, 0.42), accent: hslToHex(hue + 0.5, Math.max(0.45, s), 0.45)},
+    // (the floor stays a wood tone: the furniture's mean hue can be one no wood has, purple and orange give red)
+    {name: 'Tonal', wall: hslToHex(hue, Math.min(0.25, s * 0.6), 0.9), floor: hslToHex(0.06 + 0.04 * Math.max(0, Math.cos((hue - 0.08) * 2 * Math.PI)), 0.3, 0.7), accent},
+  ];
+}
+function renderPalettes() {
+  const list = document.getElementById('paletteList');
+  list.innerHTML = suggestPalettes().map((p, k) => `<button class="pal-opt" data-k="${k}" title="Wall ${p.wall}, floor ${p.floor}; the third colour is an accent for cushions, art or a rug (not applied)"><span class="pal-sw"><i style="background:${p.wall}"></i><i style="background:${p.floor}"></i><i style="background:${p.accent}"></i></span>${p.name}</button>`).join('')
+    + (furnitureColours().length ? '' : '<div class="hint-text">Add some furniture: the suggestions follow its colours.</div>');
+}
+document.getElementById('paletteBtn').addEventListener('click', () => {
+  const list = document.getElementById('paletteList');
+  list.hidden = !list.hidden;
+  if (!list.hidden) renderPalettes();
+});
+document.getElementById('paletteList').addEventListener('click', e => {
+  const b = e.target.closest('.pal-opt'); if (!b) return;
+  const p = suggestPalettes()[+b.dataset.k];
+  roomStyle = {...roomStyle, wallColor: p.wall, floorColor: p.floor, preset: null};
+  syncStyleControls(); redraw(); renderPalettes();
+  toast(`${p.name} colours applied (Ctrl+Z to undo).`);
 });
 
 // ── View switching ────────────────────────────────────────────────────────────
@@ -6047,13 +7131,16 @@ document.getElementById('btn2d').addEventListener('click', () => {
   document.getElementById('btn3d').classList.remove('active');
   autoRotateBtn.style.display = 'none';
   resetViewBtn.style.display = 'none';
+  lightBtn.style.display = 'none';
+  walkBtn.style.display = 'none';
+  if (walkMode) setWalkMode(false);
   toolbarHint.title = toolbarHint.textContent = HINT_2D;
   draw2d();
 });
 
 document.getElementById('btn3d').addEventListener('click', () => {
   if (elevWall != null) closeElevation();
-  view = '3d'; selCorner = null;
+  view = '3d'; selCorner = null; selWall = null; document.getElementById('wallBar').hidden = true;
   if (extraDraft) { extraDraft = null; updateRoomHint(); }
   if (measureMode) setMeasureMode(false);
   if (noteMode) setNoteMode(false);
@@ -6064,6 +7151,8 @@ document.getElementById('btn3d').addEventListener('click', () => {
   document.getElementById('btn3d').classList.add('active');
   autoRotateBtn.style.display = 'inline-block';
   resetViewBtn.style.display = 'inline-block';
+  lightBtn.style.display = 'inline-block';
+  walkBtn.style.display = 'inline-block';
   updateZoomBar();
   toolbarHint.title = toolbarHint.textContent = HINT_3D;
   diag('view 3d', {items: placed.map(it => ({label: it.label.slice(0, 30), model: it.modelUrl ? (modelCache[it.modelUrl] || {}).status : null, img: it.imgUrl ? (imgCache[it.imgUrl] || {}).status : null}))});
@@ -6071,6 +7160,7 @@ document.getElementById('btn3d').addEventListener('click', () => {
 });
 
 autoRotateBtn.addEventListener('click', () => {
+  if (walkMode) setWalkMode(false);
   autoRotate = !autoRotate;
   autoRotateBtn.textContent = 'Auto-rotate: ' + (autoRotate ? 'On' : 'Off');
   autoRotateBtn.classList.toggle('active', autoRotate);
@@ -6739,8 +7829,8 @@ function layoutToJsonHere() {
     app: 'room-planner', version: 1,
     shape, roomW, roomH, roomStyle,
     customPts: shape === 'custom' && !drawing ? customPts.map(p => toM(p.x, p.y)) : null,
-    extras: extras.map(e => ({pts: e.pts.map(p => toM(p.x, p.y)), walls: (e.walls || []).map(w => ({hStart: w.hStart, hEnd: w.hEnd, bulge: w.bulge || 0, openings: w.openings.map(o => ({...o}))}))})),
-    walls: walls.map(w => ({hStart: w.hStart, hEnd: w.hEnd, bulge: w.bulge || 0, openings: w.openings.map(o => ({...o}))})),
+    extras: extras.map(e => ({pts: e.pts.map(p => toM(p.x, p.y)), walls: (e.walls || []).map(w => ({hStart: w.hStart, hEnd: w.hEnd, bulge: w.bulge || 0, openings: w.openings.map(o => ({...o})), ...(w.open ? {open: true} : {})})), ...(e.floor ? {floor: {...e.floor}} : {})})),
+    walls: walls.map(w => ({hStart: w.hStart, hEnd: w.hEnd, bulge: w.bulge || 0, openings: w.openings.map(o => ({...o})), ...(w.open ? {open: true} : {})})),
     items,
     measures: measures.map(m => { const a = toM(m.x1, m.y1), b = toM(m.x2, m.y2); return {x1: a.x, y1: a.y, x2: b.x, y2: b.y}; }),
     notes: notes.map(n => ({...toM(n.x, n.y), text: n.text})),
@@ -6755,8 +7845,88 @@ function homeToJson() {
     budget: budget.amount > 0 ? {...budget} : null,
     current: curRoom,
     rooms: rooms.map((r, i) => ({name: r.name, layout: i === curRoom ? here : r.data})),
+    versions,
   });
 }
+
+// ── Layout versions ─────────────────────────────────────────────────────────
+// Named snapshots of the whole home ("Sofa by the window", "Sofa facing the
+// TV"), kept in the layout file: versions = [{name, at, current, rooms}] where
+// rooms is homeToJson()'s rooms with the floor-plan pictures left out (each is
+// up to 300k characters; switching keeps the pictures the rooms have now).
+// Switching replaces the home with that version; Ctrl+Z goes back.
+let versions = [];
+const MAX_VERSIONS = 20;
+function versionRooms() {
+  return JSON.parse(homeToJson()).rooms.map(r => ({name: r.name, layout: {...r.layout, trace: null}}));
+}
+function sameRooms(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
+function currentVersion() { const now = versionRooms(); return versions.findIndex(v => sameRooms(v.rooms, now)); }
+function saveVersion(name, at) {
+  name = String(name || '').trim().slice(0, 40) || `Version ${versions.length + 1}`;
+  const v = {name, at: new Date().toISOString(), current: curRoom, rooms: versionRooms()};
+  if (at != null) versions[at] = v;
+  else {
+    if (versions.length >= MAX_VERSIONS) { toast(`Up to ${MAX_VERSIONS} versions: delete one first.`); return; }
+    versions.push(v);
+  }
+  checkpoint(); renderVersions();
+  toast(at != null ? `"${name}" now holds the layout as it is.` : `Saved "${name}".`);
+}
+function switchToVersion(k) {
+  const v = versions[k];
+  if (!v) return;
+  const unsaved = currentVersion() < 0;
+  checkpoint();
+  const now = JSON.parse(homeToJson()).rooms;
+  const traceFor = (r, i) => { const m = now.find(q => q.name === r.name) || (now.length === v.rooms.length ? now[i] : null); return m ? m.layout.trace : null; };
+  const home = {app: 'room-planner', version: 2, budget: budget.amount > 0 ? {...budget} : null, current: Math.min(v.current | 0, v.rooms.length - 1),
+    rooms: v.rooms.map((r, i) => ({name: r.name, layout: {...r.layout, trace: traceFor(r, i) || null}})), versions};
+  applyHome(JSON.parse(JSON.stringify(home)));
+  redraw(); checkpoint(); renderVersions();
+  toast(unsaved ? `Showing "${v.name}". Your changes before it weren't saved as a version: Ctrl+Z brings them back.` : `Showing "${v.name}".`);
+}
+const versionsPop = document.getElementById('versionsPop');
+function renderVersions() {
+  if (versionsPop.hidden) return;
+  const cur = currentVersion();
+  const when = iso => { if (!iso) return ''; const d = new Date(iso); return isNaN(d) ? '' : d.toLocaleString(undefined, {month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'}); };
+  versionsPop.innerHTML = '<div class="v-head">Versions of this layout</div>' +
+    (versions.length ? versions.map((v, k) => `<div class="v-row${k === cur ? ' current' : ''}" data-k="${k}">
+      <button class="menu-item v-open" title="Switch to this version">${k === cur ? '● ' : ''}${escHtml(v.name)}<small>${escHtml(when(v.at))}</small></button>
+      <button class="v-act v-update" title="Replace this version with the layout as it is now">⟳</button>
+      <button class="v-act v-rename" title="Rename">✎</button>
+      <button class="v-act v-delete" title="Delete this version">✕</button></div>`).join('')
+      : '<div class="v-empty">Save the layout as a version, try another arrangement, save that too, then click between them to compare.</div>') +
+    `<div class="v-new"><input type="text" id="versionName" maxlength="40" placeholder="Name, e.g. Sofa by the window"><button class="view-btn" id="versionSave">Save as version</button></div>`;
+}
+document.getElementById('versionsBtn').addEventListener('click', () => {
+  versionsPop.hidden = !versionsPop.hidden;
+  renderVersions();
+  if (!versionsPop.hidden && !matchMedia('(pointer: coarse)').matches) document.getElementById('versionName').focus();
+});
+document.addEventListener('pointerdown', e => { if (!versionsPop.hidden && !versionsPop.contains(e.target) && e.target.id !== 'versionsBtn') versionsPop.hidden = true; });
+versionsPop.addEventListener('click', e => {
+  if (e.target.closest('#versionSave')) { saveVersion(document.getElementById('versionName').value); return; }
+  const row = e.target.closest('.v-row');
+  if (!row) return;
+  const k = +row.dataset.k, v = versions[k];
+  if (!v) return;
+  if (e.target.closest('.v-open')) switchToVersion(k);
+  else if (e.target.closest('.v-update')) saveVersion(v.name, k);
+  else if (e.target.closest('.v-rename')) {
+    const n = prompt('Rename this version:', v.name);
+    if (n && n.trim()) { v.name = n.trim().slice(0, 40); checkpoint(); renderVersions(); }
+  } else if (e.target.closest('.v-delete')) {
+    versions.splice(k, 1); checkpoint(); renderVersions();
+    toast(`Deleted "${v.name}" (Ctrl+Z brings it back).`);
+  }
+});
+versionsPop.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.id === 'versionName') { e.preventDefault(); saveVersion(e.target.value); }
+  if (e.key === 'Escape') { versionsPop.hidden = true; e.stopPropagation(); }
+  e.stopPropagation();          // (typing a name mustn't reach the plan's keys)
+});
 
 // A home, or a single room's layout.
 function applyHome(data) {
@@ -6766,17 +7936,22 @@ function applyHome(data) {
     rooms = data.rooms.map((r, i) => ({name: String(r.name || `Room ${i + 1}`).slice(0, 40), data: r.layout}));
     curRoom = Math.min(Math.max(0, data.current | 0), rooms.length - 1);
     budget = data.budget && data.budget.amount > 0 ? {amount: +data.budget.amount, currency: data.budget.currency || null} : {amount: null, currency: null};
+    if (Array.isArray(data.versions)) versions = data.versions.filter(v => v && Array.isArray(v.rooms) && v.rooms.length && v.rooms.every(r => r && r.layout && Array.isArray(r.layout.items)))
+      .slice(0, MAX_VERSIONS).map(v => ({name: String(v.name || 'Version').slice(0, 40), at: v.at || null, current: v.current | 0, rooms: v.rooms}));
+    // (no versions in it, as in a share link or an older file: the versions saved here stay)
     applyLayout(rooms[curRoom].data);
   } else {
     budget = {amount: null, currency: null};
     applyLayout(data);            // (a single-room layout may carry its own budget)
     rooms = [{name: 'Room 1', data: null}]; curRoom = 0;
   }
-  if (curRoom !== before) orbitRadius = null;      // (a different room: frame it afresh in 3D)
+  if (curRoom !== before) { orbitRadius = null; if (walkMode) setWalkMode(false); }      // (a different room: frame it afresh in 3D)
   renderRoomTabs();
+  renderVersions();
 }
 
 function applyLayout(data) {
+  selWall = null;
   if (focusPart !== -1) { if (elevWall != null) closeElevation(); swapTo(-1); }
   selCornerPart = -1;
   if (!data || data.app !== 'room-planner' || !Array.isArray(data.items)) throw new Error('not a Room Planner layout');
@@ -6787,13 +7962,14 @@ function applyLayout(data) {
   document.getElementById('roomH').value = roomH;
   const pts = data.shape === 'custom' && Array.isArray(data.customPts) && data.customPts.length > 2 ? data.customPts.map(toPx) : null;
   setShape(data.shape === 'custom' && !pts ? 'rect' : (data.shape || 'rect'), pts);
-  roomStyle = {...roomStyle, ...data.roomStyle};
-  walls = Array.isArray(data.walls) ? data.walls.map(w => ({hStart: w.hStart ?? null, hEnd: w.hEnd ?? null, bulge: +w.bulge || 0, openings: (w.openings || []).map(o => ({...o}))})) : [];
+  roomStyle = {...roomStyle, beams: false, ...TRIM_DEFAULTS, ...data.roomStyle};
+  walls = Array.isArray(data.walls) ? data.walls.map(w => ({hStart: w.hStart ?? null, hEnd: w.hEnd ?? null, bulge: +w.bulge || 0, openings: (w.openings || []).map(o => ({...o})), ...(w.open ? {open: true} : {})})) : [];
   if (elevWall != null) { elevSel = null; if (elevWall >= getRoomPts().length) closeElevation(); }
   syncStyleControls();
   placed = data.items.map(it => ({...it, ...toPx(it)}));
   extras = Array.isArray(data.extras) ? data.extras.filter(e => e && Array.isArray(e.pts) && e.pts.length >= 3 && e.pts.every(p => Number.isFinite(p.x) && Number.isFinite(p.y)))
-    .map(e => ({pts: e.pts.map(toPx), walls: Array.isArray(e.walls) ? e.walls.map(w => ({hStart: w.hStart ?? null, hEnd: w.hEnd ?? null, bulge: +w.bulge || 0, openings: (w.openings || []).map(o => ({...o}))})) : []})) : [];
+    .map(e => ({pts: e.pts.map(toPx), walls: Array.isArray(e.walls) ? e.walls.map(w => ({hStart: w.hStart ?? null, hEnd: w.hEnd ?? null, bulge: +w.bulge || 0, openings: (w.openings || []).map(o => ({...o})), ...(w.open ? {open: true} : {})})) : [],
+      floor: e.floor && FLOOR_STYLE_IDS.includes(e.floor.style) && /^#[0-9a-f]{6}$/i.test(e.floor.color) ? {style: e.floor.style, color: e.floor.color} : null})) : [];
   extraDraft = null; extraDrag = null;
   measures = Array.isArray(data.measures) ? data.measures.filter(m => [m.x1, m.y1, m.x2, m.y2].every(Number.isFinite)).map(m => {
     const a = toPx({x: m.x1, y: m.y1}), b = toPx({x: m.x2, y: m.y2}); return {x1: a.x, y1: a.y, x2: b.x, y2: b.y}; }) : [];
@@ -6832,7 +8008,9 @@ function restoreLayout() {
 
 document.getElementById('saveFileBtn').addEventListener('click', () => {
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([homeToJson()], {type: 'application/json'}));
+  const home = JSON.parse(homeToJson());
+  if (myFurniture.length) home.myFurniture = myFurniture;      // (so it goes with you to another computer)
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(home)], {type: 'application/json'}));
   a.download = 'room-plan-' + new Date().toLocaleDateString('en-CA') + '.json';
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
@@ -6852,6 +8030,8 @@ openFileInput.addEventListener('change', async () => {
     applyHome(data);
     checkpoint();
     autosave();
+    const added = mergeMyFurniture(data.myFurniture);
+    if (added) toast(`Added ${added} piece${added > 1 ? 's' : ''} from the file to My furniture.`);
   } catch (err) {
     if (orbitRadius == null) orbitRadius = keepRadius;
     alert('Couldn\'t open "' + file.name + '": ' + (err instanceof SyntaxError ? 'the file isn\'t valid JSON' : err.message) + '.');
@@ -7370,6 +8550,7 @@ async function unpackLayout(code) {
 
 async function makeShareLink() {
   const data = JSON.parse(homeToJson());
+  delete data.versions;           // (each version is a whole home: the link would grow many times over)
   // Pictures pasted in as data: URLs would make the link enormous.
   let dropped = 0;
   data.rooms.forEach(r => r.layout.items.forEach(it => { if (/^data:/.test(it.imgUrl || '')) { it.imgUrl = null; dropped++; } }));
@@ -7519,29 +8700,93 @@ const today = () => new Date().toLocaleDateString('en-CA');   // YYYY-MM-DD, loc
 // handles or selection, cropped to the room and furniture, with a title and
 // a 1 m scale bar. Product photos that can't be read back (no CORS) would
 // lock the picture, so if that happens it's drawn again without them.
-function planImage() { return inRoom(planImageHere); }
-function planImageHere() {
+function planImage(opts = {}) { return inRoom(() => planImageHere(opts)); }
+// A builder's plan (planImage({dims: true})): outside each straight wall
+// that has windows or doors, a chain of dimensions from corner to opening to
+// opening to corner (DIM_CHAIN px out); further out (DIM_OVERALL px), the
+// room's overall width along the top and depth down the left. Plan px, drawn
+// on the export canvas after the plan.
+const DIM_CHAIN = 66, DIM_OVERALL = 94;   // (clear of the wall-length labels, which sit about 20–55 px out)
+function drawExportDims() {
+  if (getRoomPts().length < 3 || (shape === 'custom' && drawing)) return;
+  const outline = getRoomOutline(), areaOutlines = extras.flatMap((e, k) => extraKind(e) === 'area' ? [withPart(k, getRoomOutline)] : []);
+  ctx.save();
+  ctx.strokeStyle = '#2b4a6b'; ctx.fillStyle = '#2b4a6b'; ctx.lineWidth = 1;
+  ctx.font = '600 10px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  // one dimension: a line from a to b, offset o px along n (outward), ticks, the length in the middle
+  const dim = (a, b, n, o, metres, alt) => {
+    const A = {x: a.x + n.x * o, y: a.y + n.y * o}, B = {x: b.x + n.x * o, y: b.y + n.y * o};
+    ctx.beginPath(); ctx.moveTo(A.x, A.y); ctx.lineTo(B.x, B.y);
+    [A, B].forEach(P => { ctx.moveTo(P.x - n.x * 5 + (n.y) * 3, P.y - n.y * 5 - n.x * 3); ctx.lineTo(P.x + n.x * 5 - n.y * 3, P.y + n.y * 5 + n.x * 3); });
+    ctx.stroke();
+    // (light extension lines back to the wall)
+    ctx.save(); ctx.globalAlpha = 0.35; ctx.beginPath(); ctx.moveTo(a.x + n.x * 6, a.y + n.y * 6); ctx.lineTo(A.x + n.x * 4, A.y + n.y * 4); ctx.moveTo(b.x + n.x * 6, b.y + n.y * 6); ctx.lineTo(B.x + n.x * 4, B.y + n.y * 4); ctx.stroke(); ctx.restore();
+    const m = {x: (A.x + B.x) / 2, y: (A.y + B.y) / 2}, t = units === 'ft' ? fmtLen(metres) : (metres * 100).toFixed(0);
+    // (read from the bottom or the right: a vertical one always bottom to top)
+    let ang = Math.atan2(B.y - A.y, B.x - A.x); if (ang >= Math.PI / 2 - 1e-6 || ang < -Math.PI / 2) ang += Math.PI;
+    const w = ctx.measureText(t).width + 6, piece = Math.hypot(B.x - A.x, B.y - A.y);
+    // (a label wider than its piece goes out beside the line, every other one a row further)
+    if (w > piece - 4) { const o2 = alt ? 26 : 13; m.x += n.x * o2; m.y += n.y * o2; }
+    ctx.save(); ctx.translate(m.x, m.y); ctx.rotate(ang);
+    ctx.fillStyle = '#fff'; ctx.fillRect(-w / 2, -6, w, 12); ctx.fillStyle = '#2b4a6b'; ctx.fillText(t, 0, 0);
+    ctx.restore();
+  };
+  // each outline's straight walls with windows or doors (the room's, then its separate areas')
+  const chains = poly => {
+  syncWalls();
+  const pts = getRoomPts(), xs0 = poly.map(p => p.x), ys0 = poly.map(p => p.y);
+  pts.forEach((a, i) => {
+    const w = walls[i], b = pts[(i + 1) % pts.length];
+    if (!w || w.bulge || w.open || !w.openings.length) return;      // (a curved or removed wall: no chain)
+    const len = Math.hypot(b.x - a.x, b.y - a.y), L = len / SCALE;
+    if (len < 1) return;
+    const u = {x: (b.x - a.x) / len, y: (b.y - a.y) / len};
+    let n = {x: u.y, y: -u.x};
+    if (pointInPoly(poly, (a.x + b.x) / 2 + n.x * 3, (a.y + b.y) / 2 + n.y * 3)) n = {x: -n.x, y: -n.y};
+    // (a wall facing into a notch, an L's inner corner: its chain goes just inside the room instead,
+    // where it can't cross the other notch wall's)
+    const mx = (a.x + b.x) / 2 + n.x * DIM_CHAIN, my = (a.y + b.y) / 2 + n.y * DIM_CHAIN;
+    let off = DIM_CHAIN;
+    if (mx > Math.min(...xs0) && mx < Math.max(...xs0) && my > Math.min(...ys0) && my < Math.max(...ys0)) { n = {x: -n.x, y: -n.y}; off = 30; }
+    const cuts = [...new Set([0, L, ...w.openings.flatMap(o => [o.x, o.x + o.w]).map(v => Math.min(L, Math.max(0, v)))].map(v => +v.toFixed(4)))].sort((p, q) => p - q);
+    const at = v => ({x: a.x + u.x * v * SCALE, y: a.y + u.y * v * SCALE});
+    let alt = false;
+    for (let k = 0; k + 1 < cuts.length; k++) if (cuts[k + 1] - cuts[k] > 0.005) { dim(at(cuts[k]), at(cuts[k + 1]), n, off, cuts[k + 1] - cuts[k], alt); alt = !alt; }
+  });
+  };
+  chains(outline);
+  extras.forEach((e, k) => { if (extraKind(e) === 'area') withPart(k, () => chains(getRoomOutline())); });
+  // overall: across the top and down the left of the box round the room and its separate areas
+  const all = [...outline, ...areaOutlines.flat()], xs = all.map(p => p.x), ys = all.map(p => p.y), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  dim({x: x0, y: y0}, {x: x1, y: y0}, {x: 0, y: -1}, DIM_OVERALL, (x1 - x0) / SCALE);
+  dim({x: x0, y: y0}, {x: x0, y: y1}, {x: -1, y: 0}, DIM_OVERALL, (y1 - y0) / SCALE);
+  ctx.restore();
+}
+function planImageHere(opts = {}) {
   const saved = {view, selected, elevWall, ctx};
-  const R = 2, off = document.createElement('canvas');
-  off.width = canvas.width * R; off.height = canvas.height * R;
+  // (with dimensions, the drawing gets a margin M round it: they can reach past the canvas's edge)
+  const R = 2, M = opts.dims ? DIM_OVERALL + 40 : 0, off = document.createElement('canvas');
+  off.width = (canvas.width + 2 * M) * R; off.height = (canvas.height + 2 * M) * R;
   const shoot = mode => {
     exporting = mode; view = '2d'; selected = -1; elevWall = null;
     ctx = off.getContext('2d');
-    ctx.setTransform(R, 0, 0, R, 0, 0);
+    ctx.setTransform(R, 0, 0, R, M * R, M * R);
     draw2d();
-    // bounds: the room, the furniture and the wall-length labels around it
-    const pts = [...getRoomOutline(), ...extras.flatMap(e => e.pts), ...placed.flatMap(it => itemPoly(it)), ...doorTips(), ...measures.flatMap(m => [{x: m.x1, y: m.y1}, {x: m.x2, y: m.y2}]), ...noteBoxes.flatMap(b => [{x: b.x, y: b.y}, {x: b.x + b.w, y: b.y + b.h}])];
-    const x0 = Math.max(0, Math.min(...pts.map(p => p.x)) - 50), y0 = Math.max(0, Math.min(...pts.map(p => p.y)) - 40);
-    const x1 = Math.min(canvas.width, Math.max(...pts.map(p => p.x)) + 50), y1 = Math.min(canvas.height, Math.max(...pts.map(p => p.y)) + 40);
+    if (opts.dims) drawExportDims();
+    // bounds: the room, the furniture and the wall-length labels around it (and the dimensions)
+    const ob = getRoomBBox(), pad = opts.dims ? DIM_OVERALL + 14 : 0;
+    const pts = [...(opts.dims ? [{x: ob.x - pad, y: ob.y - pad}, {x: ob.x2 + DIM_CHAIN + 14, y: ob.y2 + DIM_CHAIN + 14}] : []), ...getRoomOutline(), ...extras.flatMap(e => e.pts), ...placed.flatMap(it => itemPoly(it)), ...doorTips(), ...measures.flatMap(m => [{x: m.x1, y: m.y1}, {x: m.x2, y: m.y2}]), ...noteBoxes.flatMap(b => [{x: b.x, y: b.y}, {x: b.x + b.w, y: b.y + b.h}])];
+    const x0 = Math.max(-M, Math.min(...pts.map(p => p.x)) - 50), y0 = Math.max(-M, Math.min(...pts.map(p => p.y)) - 40);
+    const x1 = Math.min(canvas.width + M, Math.max(...pts.map(p => p.x)) + 50), y1 = Math.min(canvas.height + M, Math.max(...pts.map(p => p.y)) + 40);
     const head = 44, foot = 36, out = document.createElement('canvas');
     out.width = (x1 - x0) * R; out.height = (y1 - y0 + head + foot) * R;
     const g = out.getContext('2d');
     g.fillStyle = '#fff'; g.fillRect(0, 0, out.width, out.height);
-    g.drawImage(off, x0 * R, y0 * R, (x1 - x0) * R, (y1 - y0) * R, 0, head * R, (x1 - x0) * R, (y1 - y0) * R);
+    g.drawImage(off, (x0 + M) * R, (y0 + M) * R, (x1 - x0) * R, (y1 - y0) * R, 0, head * R, (x1 - x0) * R, (y1 - y0) * R);
     g.scale(R, R);
     const bb = getRoomBBox();
     g.fillStyle = '#1a1a1a'; g.font = '600 15px system-ui'; g.textBaseline = 'middle';
-    g.fillText(roomName(), 12, 16);
+    g.fillText(roomName() + (opts.dims ? ` · dimensions in ${units === 'ft' ? 'feet and inches' : 'cm'}` : ''), 12, 16);
     g.fillStyle = '#777'; g.font = '11px system-ui';
     g.fillText(`${fmtDims((bb.x2 - bb.x) / SCALE, (bb.y2 - bb.y) / SCALE)} · ${fmtArea(roomArea())} · ${placed.length} item${placed.length === 1 ? '' : 's'} · ${new Date().toLocaleDateString()}`, 12, 33);
     const sy = head + (y1 - y0) + foot / 2;
@@ -7549,6 +8794,14 @@ function planImageHere() {
     const bar = units === 'ft' ? 3 * 12 * M_PER_IN * SCALE : SCALE;     // (1 m, or 3 ft)
     g.beginPath(); g.moveTo(12, sy); g.lineTo(12 + bar, sy); g.moveTo(12, sy - 4); g.lineTo(12, sy + 4); g.moveTo(12 + bar, sy - 4); g.lineTo(12 + bar, sy + 4); g.stroke();
     g.fillStyle = '#333'; g.fillText(units === 'ft' ? '3 ft' : '1 m', 18 + bar, sy);
+    // (the colours: wall, floor and up to four of the furniture's, by area)
+    const sw = [[roomStyle.wallColor, 'Walls'], [roomStyle.floorColor, 'Floor'], ...furnitureColours().slice(0, 4).map(f => [f.c, ''])];
+    let sx = 70 + bar;
+    g.font = '10px system-ui';
+    const room = out.width / R - 8;
+    sw.forEach(([c, t]) => { if (sx + 14 + (t ? 18 + g.measureText(t).width : 0) > room) return;   // (a narrow picture: what fits)
+      g.fillStyle = c; g.fillRect(sx, sy - 7, 14, 14); g.strokeStyle = 'rgba(0,0,0,.25)'; g.lineWidth = 1; g.strokeRect(sx, sy - 7, 14, 14);
+      if (t) { g.fillStyle = '#777'; g.fillText(t, sx + 18, sy); sx += 18 + g.measureText(t).width + 10; } else sx += 18; });
     return out.toDataURL('image/png');          // throws if a photo locked the canvas
   };
   try {
@@ -7558,6 +8811,63 @@ function planImageHere() {
     exporting = false; ctx = saved.ctx; view = saved.view; selected = saved.selected; elevWall = saved.elevWall;
     if (view === '2d') draw2d();
   }
+}
+
+// Every room's plan on one sheet: each room's planImage() (its name, size,
+// area and scale bar come with it), two to a row, under a heading with the
+// number of rooms and the total area. The rooms are loaded into the editing
+// state one at a time (curRoom too, for the names) and the open one put back.
+async function homePlanImage() {
+  if (isDrawing()) throw new Error('finish drawing the outline first');   // (a half-drawn outline doesn't survive the round trip)
+  // (put back afterwards: the open elevation and the part it's of, the selection, and the view;
+  // in 2D meanwhile, so 3D isn't rebuilt for every room)
+  const ev = elevWall, evPart = focusPart, sel = selected, grp = group.slice(), was = view;
+  if (elevWall != null) closeElevation();
+  view = '2d';
+  const back = curRoom, here = layoutToJson(), shots = [];
+  let total = 0;
+  // (a first pass draws each room once, so the plan pictures of generated pieces, made in the
+  // background, are ready for the real one)
+  try { rooms.forEach((rm, i) => { curRoom = i; applyLayout(i === back ? JSON.parse(here) : rm.data || emptyRoom()); draw2d(); }); }
+  finally { curRoom = back; applyLayout(JSON.parse(here)); }
+  view = was; redraw();
+  await new Promise(ok => setTimeout(ok, 500));
+  view = '2d';
+  try {
+    rooms.forEach((rm, i) => {
+      curRoom = i;
+      applyLayout(i === back ? JSON.parse(here) : rm.data || emptyRoom());
+      total += roomArea();
+      shots.push(planImage());
+    });
+  } finally {
+    curRoom = back; applyLayout(JSON.parse(here)); renderRoomTabs();
+    view = was;
+    if (grp.length > 1) setGroup(grp); else if (sel >= 0 && placed[sel]) select(sel);
+    if (ev != null) { if (evPart !== -1) swapTo(evPart); openElevation(ev); }
+    redraw();
+  }
+  const imgs = await Promise.all(shots.map(u => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = u; })));
+  const cols = Math.min(2, imgs.length), gap = 24, head = 70;
+  const cw = Math.max(...imgs.map(i => i.width)), rows = Math.ceil(imgs.length / cols);
+  const rh = [...Array(rows)].map((_, r) => Math.max(...imgs.slice(r * cols, r * cols + cols).map(i => i.height)));
+  const out = document.createElement('canvas');
+  out.width = cols * cw + (cols + 1) * gap; out.height = head + rh.reduce((a, b) => a + b, 0) + (rows + 1) * gap;
+  const g = out.getContext('2d');
+  g.fillStyle = '#fff'; g.fillRect(0, 0, out.width, out.height);
+  g.fillStyle = '#1a1a1a'; g.font = '600 34px system-ui'; g.textBaseline = 'middle';
+  g.fillText('Whole home', gap, 34);
+  g.fillStyle = '#777'; g.font = '22px system-ui';
+  g.fillText(`${rooms.length} room${rooms.length === 1 ? '' : 's'} · ${fmtArea(total)} in all · ${new Date().toLocaleDateString()}`, gap + 210, 36);
+  let y = head + gap;
+  imgs.forEach((im, k) => {
+    const r = Math.floor(k / cols), c = k % cols;
+    if (c === 0 && k) y += rh[r - 1] + gap;
+    const x = gap + c * (cw + gap);
+    g.drawImage(im, x, y);
+    g.strokeStyle = '#e2e0d8'; g.lineWidth = 2; g.strokeRect(x - 1, y - 1, im.width + 2, im.height + 2);
+  });
+  return out.toDataURL('image/png');
 }
 
 // What the 3D view shows (switching to it for a moment if needed), without
@@ -7585,6 +8895,15 @@ document.addEventListener('pointerdown', e => { if (!exportPop.hidden && !export
 document.getElementById('exportPlan').addEventListener('click', () => {
   exportPop.hidden = true;
   downloadUrl(planImage(), `room-plan-${today()}.png`);
+});
+document.getElementById('exportPlanDims').addEventListener('click', () => {
+  exportPop.hidden = true;
+  downloadUrl(planImage({dims: true}), `room-plan-dimensions-${today()}.png`);
+});
+document.getElementById('exportHome').addEventListener('click', async () => {
+  exportPop.hidden = true;
+  try { downloadUrl(await homePlanImage(), `home-plan-${today()}.png`); }
+  catch (err) { toast('Could not make the whole-home picture: ' + (err && err.message || err) + '.'); }
 });
 document.getElementById('export3d').addEventListener('click', async () => {
   exportPop.hidden = true;
