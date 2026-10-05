@@ -53,6 +53,9 @@
   .furn-item:hover { border-color: #bbb; background: #f0f0ec; }
   .furn-item:active { cursor: grabbing; }
   .furn-emoji { font-size: 16px; width: 22px; text-align: center; }
+  .furn-group { font-size: 10px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: #8a8a84; margin: 6px 0 0 2px; }
+  .furn-group:first-child { margin-top: 0; }
+  .furn-list [hidden] { display: none; }
 
   .custom-dims { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 8px; }
   .custom-dims label { font-size: 11px; color: #555; display: flex; flex-direction: column; gap: 3px; }
@@ -95,10 +98,17 @@
   .elev-bar input { width: 58px; padding: 2px 4px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
   .elev-sel { display: flex; gap: 6px; align-items: center; padding: 2px 6px; border-left: 1px solid #ddd; }
   .elev-bar .primary-btn { margin-left: auto; background: #4a7fe8; color: #fff; border-color: #4a7fe8; }
+  .note-input { position: absolute; width: 180px; padding: 3px 6px; font: 12px system-ui; border: 2px solid #d9a400; border-radius: 5px; background: #fff8d6; z-index: 5; transform: translate(-50%, -50%); }
+  @media (pointer: coarse) { .note-input { font-size: 16px; } }
   .wall-len-input { position: absolute; width: 72px; padding: 2px 5px; font: 600 12px system-ui; border: 2px solid #4a7fe8; border-radius: 5px; z-index: 5; }
   canvas { display: block; touch-action: none; }
 
   /* Selected-item inspector, floats over the canvas in both views */
+  .group-bar { position: absolute; top: 10px; right: 10px; display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,.96); border: 1px solid #e0e0d8; border-radius: 10px; padding: 6px 8px; box-shadow: 0 4px 16px rgba(0,0,0,.08); font-size: 12px; color: #444; z-index: 2; flex-wrap: wrap; }
+  .group-bar #groupCount { margin-right: 4px; font-weight: 600; }
+  .group-bar .view-btn { padding: 4px 8px; }
+  .group-bar .danger { color: #c04040; }
+  .group-bar[hidden] { display: none; }
   .sel-panel { position: absolute; top: 10px; right: 10px; width: 244px; background: rgba(255,255,255,.96); border: 1px solid #e0e0d8; border-radius: 10px; padding: 10px 12px; box-shadow: 0 4px 16px rgba(0,0,0,.08); font-size: 12px; color: #444; z-index: 2; }
   .sel-panel[hidden] { display: none; }
   .zoom-bar { position: absolute; top: 10px; left: 10px; display: flex; gap: 4px; z-index: 1; }
@@ -120,6 +130,7 @@
   .sel-dims label { font-size: 10px; color: #777; display: flex; flex-direction: column; gap: 2px; }
   .sel-dims input { width: 100%; padding: 3px 5px; border: 1px solid #ddd; border-radius: 5px; font-size: 12px; }
   .sel-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .sel-actions button.on { background: #fff4e0; border-color: #e8a64a; }
   .sel-actions .danger { color: #c04040; border-color: #f0b0b0; }
   .sel-panel a { font-size: 11px; color: #2a5cc8; display: block; margin-bottom: 8px; }
   .sel-hint { font-size: 10px; color: #aaa; margin-top: 8px; line-height: 1.4; }
@@ -163,6 +174,26 @@
   .fit-list a:hover { text-decoration: underline; }
   .fit-list label { color: #888; font-size: 11px; display: flex; gap: 4px; align-items: center; margin-top: 4px; }
 
+  /* IKEA catalogue */
+  .cat-dialog { width: min(980px, calc(100vw - 32px)); }
+  .cat-dialog .shop-inner { height: calc(100vh - 64px); height: calc(100dvh - 64px); }
+  .cat-filters { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 18px; border-bottom: 1px solid #eee; }
+  .cat-filters input { flex: 1 1 220px; padding: 7px 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; }
+  .cat-filters select { flex: 0 1 220px; padding: 6px 8px; border: 1px solid #ddd; border-radius: 6px; font-size: 12px; background: #fff; min-width: 0; }
+  .cat-filters input:focus, .cat-filters select:focus { outline: none; border-color: #4a7fe8; }
+  .cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); grid-auto-rows: max-content; gap: 10px; padding: 12px 18px; overflow-y: auto; flex: 1; align-content: start; }
+  .cat-card { display: flex; flex-direction: column; border: 1px solid #e8e8e4; border-radius: 10px; overflow: hidden; background: #fff; font-size: 12px; }
+  .cat-card:hover { border-color: #bbb; }
+  .cat-card img { width: 100%; aspect-ratio: 1; object-fit: contain; background: #f6f6f3; display: block; }
+  .cat-body { padding: 8px; display: flex; flex-direction: column; gap: 3px; flex: 1; }
+  .cat-series { font-weight: 700; letter-spacing: .02em; }
+  .cat-type { color: #555; line-height: 1.3; }
+  .cat-meta { color: #999; font-size: 11px; }
+  .cat-price { font-weight: 600; font-variant-numeric: tabular-nums; }
+  .cat-body select { width: 100%; font-size: 11px; padding: 3px 4px; border: 1px solid #ddd; border-radius: 5px; background: #fff; }
+  .cat-body .add-btn { margin-top: auto; }
+  .cat-empty { grid-column: 1 / -1; color: #999; font-size: 13px; padding: 30px 0; text-align: center; line-height: 1.6; }
+
   /* Shopping list */
   .shop-dialog { border: none; border-radius: 12px; padding: 0; margin: auto;   /* (the * reset above took away the dialog's centring) */ width: min(760px, calc(100vw - 32px)); max-height: calc(100vh - 64px); box-shadow: 0 12px 40px rgba(0,0,0,.25); color: #1a1a1a; }
   .shop-dialog::backdrop { background: rgba(20,20,20,.35); }
@@ -182,6 +213,22 @@
   .shop-price:placeholder-shown { border-color: #f0c070; background: #fffaf0; }
   .shop-table .shop-room td { font-weight: 600; font-size: 12px; color: #555; padding: 14px 6px 6px; border-bottom: 1px solid #ddd; }
   .shop-table tfoot td { border-bottom: none; font-weight: 600; font-size: 14px; }
+  /* (a phone: the table fits the dialog instead of scrolling sideways) */
+  @media (max-width: 600px) {
+    .shop-scroll { padding: 4px 8px; }
+    .shop-table { font-size: 12px; table-layout: fixed; }
+    .shop-table th, .shop-table td { padding: 6px 3px; }
+    .shop-table th:nth-child(1) { width: 34px; }
+    .shop-table th:nth-child(3) { width: 30px; }
+    .shop-table th:nth-child(4) { width: 70px; }
+    .shop-table th:nth-child(5) { width: 72px; }
+    .shop-table th { font-size: 9px; letter-spacing: .02em; white-space: normal; }
+    .shop-thumb { width: 30px; height: 30px; }
+    .shop-name, .shop-meta { overflow-wrap: anywhere; }
+    .shop-price { width: 100%; padding: 3px 4px; font-size: 12px; }
+    .shop-table .num { white-space: normal; }
+    .shop-table tfoot td { font-size: 12px; }
+  }
   .shop-foot { display: flex; gap: 8px; align-items: center; padding: 12px 18px; border-top: 1px solid #eee; flex-wrap: wrap; }
   .shop-foot .note { flex: 1; font-size: 11px; color: #999; min-width: 160px; }
 
@@ -191,6 +238,10 @@
   .share-pop input { width: 100%; padding: 6px 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 12px; margin: 6px 0; color: #333; }
   .share-pop .ok { color: #3a9d63; font-weight: 600; }
   .share-pop .row { display: flex; gap: 6px; }
+  .trace-row { display: flex; gap: 4px; margin-top: 6px; }
+  .trace-row .view-btn { flex: 1; padding-left: 4px; padding-right: 4px; }
+  .trace-opacity { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 11px; color: #666; }
+  .trace-opacity input { flex: 1; }
   .export-pop { width: 300px; padding: 6px; }
   .menu-item { display: block; width: 100%; text-align: left; border: none; background: none; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; color: #222; }
   .menu-item:hover { background: #f2f4f8; }
@@ -211,6 +262,14 @@
   .example:hover { border-color: #4a7fe8; background: #f3f7ff; }
   .example b { display: block; font-size: 13px; color: #1a1a1a; margin-bottom: 2px; }
   .example .ico { font-size: 22px; display: block; margin-bottom: 4px; }
+  .welcome-foot kbd { padding: 0 4px; border: 1px solid #ccc; border-radius: 3px; font: 600 10px system-ui; }
+  .keys-body:focus { outline: none; }
+  .keys-body { padding: 4px 18px 16px; columns: 2 300px; column-gap: 28px; }
+  .keys-body h3 { font-size: 12px; font-weight: 600; color: #555; margin: 14px 0 4px; break-after: avoid; }
+  .keys-table { width: 100%; border-collapse: collapse; font-size: 12px; break-inside: avoid; }
+  .keys-table td { padding: 3px 0; vertical-align: top; color: #333; }
+  .keys-table td:first-child { width: 46%; padding-right: 10px; color: #555; }
+  .keys-table kbd { display: inline-block; min-width: 18px; padding: 0 5px; border: 1px solid #ccc; border-bottom-width: 2px; border-radius: 4px; background: #fafafa; font: 600 11px system-ui; text-align: center; }
   .welcome-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
   .welcome-foot .note { font-size: 11px; color: #999; }
   @media (max-width: 520px) { .examples { grid-template-columns: 1fr; } .welcome-card { padding: 16px; } }
@@ -277,6 +336,12 @@
     </div>
 
     <div class="panel">
+      <h3>IKEA catalogue</h3>
+      <button class="add-btn primary" id="ikeaCatBtn">Browse IKEA furniture</button>
+      <div class="hint-text" style="margin-top: 6px">IKEA Australia products with official 3D models: search, pick a colour, add.</div>
+    </div>
+
+    <div class="panel">
       <h3>Room shape</h3>
       <div class="shape-btns">
         <div class="shape-btn active" data-shape="rect">Rectangle</div>
@@ -288,7 +353,19 @@
         <label>Width (m) <input type="number" id="roomW" value="6" min="2" max="20" step="0.5"></label>
         <label>Depth (m) <input type="number" id="roomH" value="5" min="2" max="20" step="0.5"></label>
       </div>
+      <div class="hint-text" id="roomArea" style="margin-top: 6px; color: #666"></div>
       <button class="view-btn" id="editWallsBtn" style="width: 100%; margin-top: 8px">Wall heights, windows &amp; doors…</button>
+      <button class="view-btn" id="traceAddBtn" style="width: 100%; margin-top: 6px" title="A photo or screenshot of a real floor plan, to draw the room over">Add plan image…</button>
+      <input type="file" id="traceFile" accept="image/*" hidden>
+      <div id="traceTools" hidden>
+        <label class="trace-opacity">Plan image <input type="range" id="traceOpacity" min="0.1" max="1" step="0.05"></label>
+        <div class="trace-row">
+          <button class="view-btn" id="traceScaleBtn" title="Click two points on the picture and type the real distance">Set scale</button>
+          <button class="view-btn" id="traceMoveBtn" title="Drag the picture to line it up">Move</button>
+          <button class="view-btn" id="traceRemoveBtn">Remove</button>
+        </div>
+        <div class="hint-text" id="traceHint"></div>
+      </div>
       <div class="hint-text" id="drawHint" style="display:none">Click on canvas to place corners. Right-click to close the shape.</div>
     </div>
 
@@ -320,7 +397,9 @@
 
     <div class="panel">
       <h3>Furniture</h3>
+      <input type="search" id="furnSearch" class="txt-input" placeholder="Search: bed, fridge, lamp…" style="margin-bottom: 8px">
       <div class="furn-list" id="furnList"></div>
+      <div class="hint-text" id="furnNone" hidden>Nothing called that. Try another word, or paste a product link above.</div>
     </div>
 
   </div>
@@ -364,6 +443,12 @@
         <button class="view-btn" id="zoomOut" title="Zoom out (or scroll / pinch)">−</button>
         <button class="view-btn" id="zoomReset" title="Back to 100%">100%</button>
         <button class="view-btn" id="zoomIn" title="Zoom in (or scroll / pinch)">+</button>
+        <button class="view-btn" id="sizesBtn" title="Show each piece's width × depth on the plan" aria-pressed="false">Sizes</button>
+        <button class="view-btn" id="measureBtn" title="Measure: drag between two points on the plan (they snap to walls and furniture edges)">📏 Measure</button>
+        <button class="view-btn" id="measureDel" title="Remove the selected measurement (Delete)" hidden>Delete tape</button>
+        <button class="view-btn" id="measureClear" title="Remove all the measurements" hidden>Clear</button>
+        <button class="view-btn" id="noteBtn" title="Add a note: click the plan where it goes, then type (drag a note to move it, double-click to edit)">📝 Note</button>
+        <button class="view-btn" id="unitsBtn">m</button>
       </div>
       <div class="elev-bar" id="elevBar" style="display:none">
         <button class="view-btn" id="elevPrev" title="Previous wall">◀</button>
@@ -371,7 +456,7 @@
         <button class="view-btn" id="elevNext" title="Next wall">▶</button>
         <label>Height left <input type="number" id="elevHL" step="0.05" min="1" max="8"></label>
         <label>right <input type="number" id="elevHR" step="0.05" min="1" max="8"></label>
-        <label title="How far the middle of the wall bows out, in metres (negative: into the room; 0: straight). Or drag the ◆ on the plan.">Curve <input type="number" id="elevCurve" step="0.05"></label>
+        <label title="How far the middle of the wall bows out (negative: into the room; 0: straight). Or drag the ◆ on the plan.">Curve <input type="number" id="elevCurve" step="0.05"></label>
         <button class="view-btn" id="elevAddWindow">+ Window</button>
         <button class="view-btn" id="elevAddDoor">+ Door</button>
         <span class="elev-sel" id="elevSelBox" style="display:none">
@@ -380,9 +465,27 @@
           <label>H <input type="number" id="elevOH" step="0.05" min="0.2"></label>
           <label>Sill <input type="number" id="elevOY" step="0.05" min="0"></label>
           <label>From left <input type="number" id="elevOX" step="0.05" min="0"></label>
+          <select id="elevDoorStyle" title="What kind of door">
+            <option value="single">Single door</option><option value="double">Double doors</option>
+            <option value="sliding">Sliding door</option><option value="opening">Open archway</option>
+          </select>
+          <select id="elevDoorHinge" title="Which side the hinges are on, as seen in this view">
+            <option value="left">Hinges left</option><option value="right">Hinges right</option>
+          </select>
+          <select id="elevDoorSwing" title="Opens into this room, or out of it">
+            <option value="in">Opens in</option><option value="out">Opens out</option>
+          </select>
           <button class="view-btn" id="elevDel">Delete</button>
         </span>
         <button class="view-btn primary-btn" id="elevDone">Back to plan</button>
+      </div>
+      <div class="group-bar" id="groupBar" hidden>
+        <span id="groupCount"></span>
+        <button class="view-btn" id="groupRotL" title="Turn them 90° anticlockwise (Shift+R: 15°)">⟲ 90°</button>
+        <button class="view-btn" id="groupRotR" title="Turn them 90° clockwise (R: 15°)">⟳ 90°</button>
+        <button class="view-btn" id="groupDup">Duplicate</button>
+        <button class="view-btn danger" id="groupDel">Delete</button>
+        <button class="view-btn" id="groupClose" title="Done (Esc)">✕</button>
       </div>
       <div class="sel-panel" id="selPanel" hidden>
         <div class="sel-head"><strong id="selName"></strong><button class="icon-btn sel-more-btn" id="selMore" title="Size, shape, colour, price">⋯</button><button class="icon-btn" id="selClose" title="Deselect (Esc)">×</button></div>
@@ -415,6 +518,7 @@
             <option value="right">Sofa + chaise right</option>
             <option value="both">Sofa + chaise both ends</option>
             <option value="chair:dining:legs">Dining chair</option>
+            <option value="chair:dining:pedestal">Office / swivel chair</option>
             <option value="chair:armchair:legs">Armchair</option>
             <option value="chair:armchair:rocker">Armchair, rocking</option>
             <option value="chair:lounge:legs">Lounge chair</option>
@@ -452,10 +556,12 @@
         </div>
         <div class="sel-note" id="selPriceNote" hidden></div>
         <div class="sel-actions">
+          <button id="selFlip" title="Mirror it left to right (chaise on the other side, the other hand)">⇋ Flip</button>
+          <button id="selLock" title="Lock it so it can't be moved, turned or deleted by accident">🔒 Lock</button>
           <button id="selDuplicate">Duplicate</button>
           <button id="selDelete" class="danger">Delete</button>
         </div>
-        <div class="sel-hint">R / Shift+R rotate 15° · arrows nudge · Del removes</div>
+        <div class="sel-hint" id="selHint">R / Shift+R rotate 15° · arrows nudge · Del removes</div>
       </div>
       <div class="budget-bar" id="budgetBar" hidden>
         <div class="budget-main">
@@ -487,15 +593,29 @@
             <button class="example" data-example="studio"><span class="ico">🏠</span><b>Studio</b>6 × 4.5 m, bed, sofa, dining</button>
           </div>
           <div class="welcome-foot">
-            <span class="note">Everything stays in your browser. Nothing is uploaded.</span>
+            <span class="note">Everything stays in your browser. Nothing is uploaded. · <a href="#" id="keysLink">Keyboard shortcuts</a> (or press <kbd>?</kbd>)</span>
             <button class="add-btn primary" id="welcomeEmpty" style="width:auto;padding:7px 16px">Start with an empty room</button>
           </div>
         </div>
       </div>
     </div>
-    <div class="legend">Scale: 1 grid square = 1 metre · <span id="buildTag"></span></div>
+    <div class="legend"><span id="scaleLegend">Scale: 1 grid square = 1 metre</span> · <span id="buildTag"></span></div>
   </div>
 </div>
+
+<dialog class="shop-dialog keys-dialog" id="keysDialog">
+  <div class="shop-inner">
+    <div class="shop-head"><h2>Keyboard and mouse</h2><button class="icon-btn" id="keysClose" title="Close (Esc)">×</button></div>
+    <div class="shop-scroll keys-body" tabindex="-1">
+      <h3>Furniture on the plan</h3><table class="keys-table"><tr><td>Drag</td><td>Move it</td></tr><tr><td>Drag the orange ↻</td><td>Turn it (hold <kbd>Shift</kbd> for 15° steps)</td></tr><tr><td><kbd>R</kbd> / <kbd>Shift</kbd>+<kbd>R</kbd></td><td>Turn it 15° one way / the other</td></tr><tr><td>Double-click</td><td>Turn it 90°</td></tr><tr><td>Arrow keys</td><td>Nudge it 5 cm (<kbd>Shift</kbd>: 25 cm)</td></tr><tr><td><kbd>Delete</kbd> / <kbd>Backspace</kbd> or right-click</td><td>Remove it</td></tr><tr><td><kbd>Esc</kbd></td><td>Deselect</td></tr></table>
+      <h3>The plan</h3><table class="keys-table"><tr><td>Scroll / pinch</td><td>Zoom in and out</td></tr><tr><td>Drag empty floor</td><td>Move the plan around</td></tr><tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Undo</td></tr><tr><td><kbd>Ctrl</kbd>+<kbd>Y</kbd> or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd></td><td>Redo</td></tr><tr><td>Click a wall length</td><td>Type the wall's length</td></tr><tr><td>Drag a corner or a wall</td><td>Reshape the room (a dragged corner lines up with its neighbours; hold <kbd>Alt</kbd> not to)</td></tr><tr><td>Drag the orange ◆</td><td>Curve the wall</td></tr><tr><td>Press the blue +</td><td>Add a corner there</td></tr><tr><td>Click a corner, then <kbd>Delete</kbd></td><td>Remove the corner</td></tr><tr><td>Double-click a wall</td><td>Its heights, windows and doors</td></tr><tr><td><kbd>Shift</kbd>+click, <kbd>Shift</kbd>+drag</td><td>Select several pieces (then drag, <kbd>R</kbd>, arrows, <kbd>Delete</kbd>)</td></tr><tr><td>Hold <kbd>Alt</kbd> while dragging a piece</td><td>Don't line it up with walls and other pieces</td></tr><tr><td>📏 Measure, then drag</td><td>A tape measure (click a tape, then <kbd>Delete</kbd>; right-click removes it)</td></tr><tr><td>📝 Note, then click</td><td>A note on the plan (drag it, double-click to edit)</td></tr></table>
+      <h3>Drawing a room (Free draw)</h3><table class="keys-table"><tr><td>Click</td><td>Place a corner</td></tr><tr><td>Type a number, <kbd>Enter</kbd></td><td>Next wall that long, toward the pointer</td></tr><tr><td>Click the first corner, <kbd>Enter</kbd>, double-click or right-click</td><td>Finish the room</td></tr><tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td><td>Take back the last corner</td></tr><tr><td>Hold <kbd>Alt</kbd></td><td>Any angle (not just 45° steps)</td></tr><tr><td><kbd>Esc</kbd></td><td>Finish / give up</td></tr></table>
+      <h3>A wall's elevation</h3><table class="keys-table"><tr><td>Drag a window or door</td><td>Move it; drag its edges to resize</td></tr><tr><td>Drag the wall's top</td><td>Change its height</td></tr><tr><td><kbd>Delete</kbd></td><td>Remove the selected window or door</td></tr><tr><td><kbd>Esc</kbd></td><td>Deselect, then back to the plan</td></tr></table>
+      <h3>3D view</h3><table class="keys-table"><tr><td>Drag a piece</td><td>Move it along the floor (<kbd>Shift</kbd>+drag: turn it)</td></tr><tr><td>Right-drag, or drag empty space</td><td>Look around</td></tr><tr><td>Scroll</td><td>Walk forward / back</td></tr><tr><td><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>, arrows</td><td>Walk (arrows when nothing is selected)</td></tr><tr><td><kbd>E</kbd> / <kbd>Q</kbd></td><td>Up / down</td></tr><tr><td>Hold <kbd>Shift</kbd></td><td>Faster</td></tr><tr><td><kbd>R</kbd>, <kbd>Delete</kbd>, <kbd>Esc</kbd></td><td>Work on the selected piece here too</td></tr><tr><td>Middle-drag, or <kbd>Ctrl</kbd>+drag on empty space</td><td>Slide sideways and up / down</td></tr></table>
+      <h3>On a phone or tablet</h3><table class="keys-table"><tr><td>Two fingers</td><td>Pinch to zoom; in 3D, move together to walk</td></tr><tr><td>Double-tap</td><td>Like a double-click</td></tr><tr><td>In 3D: hold a piece still</td><td>Pick it up and move it</td></tr><tr><td>In 3D: swipe</td><td>Look around</td></tr></table>
+    </div>
+  </div>
+</dialog>
 
 <dialog class="shop-dialog" id="shopDialog">
   <div class="shop-inner">
@@ -510,25 +630,58 @@
   </div>
 </dialog>
 
+<dialog class="shop-dialog cat-dialog" id="catDialog">
+  <div class="shop-inner">
+    <div class="shop-head"><h2>IKEA catalogue</h2><button class="icon-btn" id="catClose" title="Close">×</button></div>
+    <div class="cat-filters">
+      <input type="search" id="catSearch" placeholder="Search, e.g. billy bookcase, kivik, white desk">
+      <select id="catTop"></select>
+      <select id="catSub"></select>
+    </div>
+    <div class="cat-grid" id="catGrid"></div>
+    <div class="shop-foot"><span class="note" id="catNote"></span></div>
+  </div>
+</dialog>
+
 <script>
 const FURNITURE = [
-  {id:'sofa',    label:'Sofa',         emoji:'🛋', w:2.2, h:0.9, color:'#7F77DD', zHeight:0.8, shape:{kind:'sofa', chaise:'none', seatH:0.45, seatD:null, armW:0.18, armH:null}},
-  {id:'bed',     label:'Double bed',   emoji:'🛏', w:1.6, h:2.0, color:'#B08A5E', zHeight:0.9, shape:{kind:'bed'}},
-  {id:'desk',    label:'Desk',         emoji:'🖥', w:1.2, h:0.6, color:'#EF9F27'},
-  {id:'table',   label:'Dining table', emoji:'🪑', w:1.5, h:0.9, color:'#D85A30'},
-  {id:'tv',      label:'TV unit',      emoji:'📺', w:1.4, h:0.4, color:'#378ADD'},
-  {id:'wardrobe',label:'Wardrobe',     emoji:'🚪', w:1.2, h:0.6, color:'#D4537E'},
-  {id:'plant',   label:'Plant',        emoji:'🪴', w:0.5, h:0.5, color:'#639922'},
-  {id:'bathtub', label:'Bathtub',      emoji:'🛁', w:1.7, h:0.8, color:'#5DCAA5'},
-  {id:'toilet',  label:'Toilet',       emoji:'🚽', w:0.5, h:0.7, color:'#888888'},
-  {id:'couch',   label:'Armchair',     emoji:'💺', w:0.9, h:0.9, color:'#BA7517'},
-  {id:'rug',     label:'Rug',          emoji:'🟫', w:2.0, h:1.4, color:'#B9A58F', zHeight:0.015, shape:{kind:'rug'}},
-  {id:'floorlamp', label:'Floor lamp', emoji:'💡', w:0.4, h:0.4, color:'#E8DCC4', zHeight:1.6, shape:{kind:'lamp', style:'floor'}},
-  {id:'tablelamp', label:'Table lamp', emoji:'🕯', w:0.3, h:0.3, color:'#E8DCC4', zHeight:0.5, shape:{kind:'lamp', style:'table'}},
-  {id:'curtains', label:'Curtains',    emoji:'🪟', w:2.0, h:0.15, color:'#CFC6B8', zHeight:2.3, shape:{kind:'curtain'}},
-  {id:'walltv',  label:'TV on the wall', emoji:'🖥', w:1.45, h:0.06, color:'#222222', zHeight:0.83, shape:{kind:'tv'}},
-  {id:'art',     label:'Wall art',     emoji:'🖼', w:0.9, h:0.04, color:'#8FA3B0', zHeight:0.6, shape:{kind:'art'}},
-  {id:'wallshelf', label:'Wall shelf', emoji:'📚', w:1.0, h:0.25, color:'#B08A5E', zHeight:0.2, shape:{kind:'wallshelf'}},
+  {id:'sofa',    label:'Sofa',         emoji:'🛋', w:2.2, h:0.9, color:'#7F77DD', zHeight:0.8, shape:{kind:'sofa', chaise:'none', seatH:0.45, seatD:null, armW:0.18, armH:null}, keywords:'couch lounge', room:'living'},
+  {id:'bed',     label:'Double bed',   emoji:'🛏', w:1.6, h:2.0, color:'#B08A5E', zHeight:0.9, shape:{kind:'bed'}, keywords:'queen', room:'bedroom'},
+  {id:'desk',    label:'Desk',         emoji:'🖥', w:1.2, h:0.6, color:'#EF9F27', keywords:'study', room:'office'},
+  {id:'table',   label:'Dining table', emoji:'🪑', w:1.5, h:0.9, color:'#D85A30', keywords:'dining', room:'dining'},
+  {id:'tv',      label:'TV unit',      emoji:'📺', w:1.4, h:0.4, color:'#378ADD', keywords:'television entertainment', room:'living'},
+  {id:'wardrobe',label:'Wardrobe',     emoji:'🚪', w:1.2, h:0.6, color:'#D4537E', keywords:'closet cupboard', room:'bedroom'},
+  {id:'plant',   label:'Plant',        emoji:'🪴', w:0.5, h:0.5, color:'#639922', keywords:'pot', room:'any'},
+  {id:'bathtub', label:'Bathtub',      emoji:'🛁', w:1.7, h:0.8, color:'#5DCAA5', room:'bathroom'},
+  {id:'toilet',  label:'Toilet',       emoji:'🚽', w:0.5, h:0.7, color:'#888888', room:'bathroom'},
+  {id:'couch',   label:'Armchair',     emoji:'💺', w:0.9, h:0.9, color:'#BA7517', keywords:'lounge', room:'living'},
+  {id:'rug',     label:'Rug',          emoji:'🟫', w:2.0, h:1.4, color:'#B9A58F', zHeight:0.015, shape:{kind:'rug'}, keywords:'carpet mat', room:'any'},
+  {id:'floorlamp', label:'Floor lamp', emoji:'💡', w:0.4, h:0.4, color:'#E8DCC4', zHeight:1.6, shape:{kind:'lamp', style:'floor'}, room:'any'},
+  {id:'tablelamp', label:'Table lamp', emoji:'🕯', w:0.3, h:0.3, color:'#E8DCC4', zHeight:0.5, shape:{kind:'lamp', style:'table'}, room:'any'},
+  {id:'curtains', label:'Curtains',    emoji:'🪟', w:2.0, h:0.15, color:'#CFC6B8', zHeight:2.3, shape:{kind:'curtain'}, keywords:'drapes blinds', room:'any'},
+  {id:'walltv',  label:'TV on the wall', emoji:'🖥', w:1.45, h:0.06, color:'#222222', zHeight:0.83, shape:{kind:'tv'}, keywords:'television', room:'living'},
+  {id:'art',     label:'Wall art',     emoji:'🖼', w:0.9, h:0.04, color:'#8FA3B0', zHeight:0.6, shape:{kind:'art'}, keywords:'picture painting print frame', room:'any'},
+  {id:'singlebed', label:'Single bed',  emoji:'🛏', w:0.92, h:1.88, color:'#B08A5E', zHeight:0.9, shape:{kind:'bed'}, room:'bedroom'},
+  {id:'bunkbed',  label:'Bunk bed',     emoji:'🛏', w:0.97, h:2.0, color:'#B08A5E', zHeight:1.6, room:'bedroom'},
+  {id:'cot',      label:'Cot',          emoji:'👶', w:0.65, h:1.25, color:'#E8DCC4', zHeight:0.9, room:'bedroom'},
+  {id:'bench',    label:'Kitchen bench', emoji:'🍳', w:2.4, h:0.6, color:'#D8D2C6', zHeight:0.9, shape:{kind:'cabinet', front:'doors'}, keywords:'counter cupboard', room:'kitchen'},
+  {id:'island',   label:'Kitchen island', emoji:'🍽', w:1.8, h:0.9, color:'#D8D2C6', zHeight:0.9, shape:{kind:'cabinet', front:'drawers'}, keywords:'counter', room:'kitchen'},
+  {id:'fridge',   label:'Fridge',       emoji:'🧊', w:0.7, h:0.7, color:'#D9DCDF', zHeight:1.8, shape:{kind:'cabinet', front:'doors'}, keywords:'refrigerator', room:'kitchen'},
+  {id:'oven',     label:'Oven / cooktop', emoji:'🔥', w:0.6, h:0.6, color:'#3A3A3A', zHeight:0.9, keywords:'stove cooker range', room:'kitchen'},
+  {id:'sink',     label:'Sink',         emoji:'🚰', w:0.8, h:0.6, color:'#C9CDD1', zHeight:0.9, keywords:'tap', room:'kitchen'},
+  {id:'barstool', label:'Bar stool',    emoji:'🪑', w:0.4, h:0.4, color:'#8A6A44', zHeight:0.75, shape:{kind:'seat', style:'stool'}, keywords:'counter stool', room:'kitchen'},
+  {id:'shower',   label:'Shower',       emoji:'🚿', w:0.9, h:0.9, color:'#A9D6E5', zHeight:2.0, keywords:'bathroom', room:'bathroom'},
+  {id:'vanity',   label:'Vanity',       emoji:'🪞', w:0.9, h:0.5, color:'#E8E2D8', zHeight:0.85, shape:{kind:'cabinet', front:'drawers'}, room:'bathroom'},
+  {id:'washer',   label:'Washing machine', emoji:'🧺', w:0.6, h:0.6, color:'#E6E8EA', zHeight:0.85, keywords:'laundry dryer', room:'bathroom'},
+  {id:'bookcase', label:'Bookcase',     emoji:'📚', w:0.8, h:0.3, color:'#B08A5E', zHeight:1.8, shape:{kind:'shelf'}, keywords:'shelves bookshelf', room:'office'},
+  {id:'officechair', label:'Office chair', emoji:'💺', w:0.6, h:0.6, color:'#333333', zHeight:1.0, shape:{kind:'chair', style:'dining', base:'pedestal'}, keywords:'desk chair swivel', room:'office'},
+  {id:'piano',    label:'Upright piano', emoji:'🎹', w:1.5, h:0.6, color:'#1E1E1E', zHeight:1.25, room:'living'},
+  {id:'outdoortable', label:'Outdoor table', emoji:'⛱', w:1.5, h:0.9, color:'#9C7A54', zHeight:0.74, shape:{kind:'table', top:'rect', base:'legs'}, room:'outdoor'},
+  {id:'outdoorchair', label:'Outdoor chair', emoji:'🪑', w:0.55, h:0.6, color:'#9C7A54', zHeight:0.85, shape:{kind:'chair', style:'dining', base:'legs'}, room:'outdoor'},
+  {id:'lounger',  label:'Sun lounger',  emoji:'🏖', w:0.65, h:1.95, color:'#C9B79C', zHeight:0.8, shape:{kind:'chair', style:'sunlounger', base:'legs'}, room:'outdoor'},
+  {id:'radiator', label:'Radiator',     emoji:'♨', w:1.0, h:0.1, color:'#EEEEEE', zHeight:0.6, room:'any'},
+  {id:'column',   label:'Column',       emoji:'🏛', w:0.4, h:0.4, color:'#F2F0EC', zHeight:2.4, room:'any'},
+  {id:'wallshelf', label:'Wall shelf', emoji:'📚', w:1.0, h:0.25, color:'#B08A5E', zHeight:0.2, shape:{kind:'wallshelf'}, room:'any'},
 ];
 
 const STYLE_PRESETS = {
@@ -557,7 +710,7 @@ const STYLE_PRESETS = {
 // diag() keeps the last 150 steps/errors in localStorage ('rp-diag'), which
 // Claude can read back from the Edge profile on disk when something works in
 // tests but not in the user's browser (see CLAUDE.md).
-const BUILD = '2026-10-03.1';
+const BUILD = '2026-10-05.2';
 function diag(event, data) {
   try {
     const log = JSON.parse(localStorage.getItem('rp-diag') || '[]');
@@ -586,6 +739,14 @@ let placed = [];
 let selected = -1;
 let draggingFurn = null;
 let draggingPlaced = null;
+let measures = [];         // tape measurements on the plan (this room): [{x1, y1, x2, y2}] in plan px
+let measureMode = false, measureDrag = null, measureSel = -1;   // the "Measure" tool; the one being drawn
+let notes = [];            // text notes on the plan (this room): [{x, y, text}], plan px (the note's middle)
+let noteMode = false, noteDrag = null, noteBoxes = [], noteEditing = null;   // "Note" tool; a note being moved; hit boxes drawn last
+let group = [];            // several pieces selected together (indices into placed, 2 or more), else []
+let groupDrag = null;      // {mx, my, start: [{x, y}]} while dragging them
+let boxSel = null;         // {x0, y0, x1, y1}: Shift+drag on empty floor, selecting what's inside
+let snapGuides = [], dragStart = {x: 0, y: 0};       // alignment lines shown while dragging a piece: [{x1, y1, x2, y2}]
 let rotating2d = false;
 let dragOff = {x:0, y:0};
 let customPts = [];
@@ -604,6 +765,13 @@ let ctx = canvas.getContext('2d');   // (swapped for a larger offscreen one whil
 let exporting = false;                // true / 'safe' while drawing the plan for export
 // 2D zoom and pan (see "2D zoom and pan"): screen canvas px = plan px * k + (x, y).
 const view2d = {k: 1, x: 0, y: 0};
+let showSizes = false;      // "Sizes" on the zoom bar: width × depth under each piece's name (per browser)
+try { showSizes = localStorage.getItem('rp-show-sizes') === '1'; } catch {}
+let units = 'm';           // 'm' or 'ft' (feet and inches): what lengths are shown in (per browser)
+try { if (localStorage.getItem('rp-units') === 'ft') units = 'ft'; } catch {}
+let trace = null;          // a floor plan picture under the plan (see "Trace a floor plan")
+let traceMode = null;      // 'scale' (picking two points) or 'move' (dragging the picture)
+let traceScalePt = null, traceHover = null, traceDrag = null, tracePending = null, traceImgCache = {src: null, img: null};
 let selCorner = null;      // index of the room corner selected for Delete (getRoomPts), or null
 const IDENTITY_VIEW = {k: 1, x: 0, y: 0};
 const viewOf2d = () => elevWall == null && !exporting ? view2d : IDENTITY_VIEW;
@@ -2017,7 +2185,15 @@ function sofaTopImage(item) {
 // background. Taking the most common colour rather than the average keeps a
 // lifestyle photo's fence/deck/people out of it. Needs a CORS-clean image
 // (canvas pixels are otherwise locked).
-function photoColor(img) {
+// wholeHue: also count the lighter and darker bins of the same colour (each
+// channel shifted alike, same saturation), not just the neighbours of the
+// commonest bin. A curved sofa's photo is mostly its shaded, rounded front,
+// so the commonest bin is the shadow and the lit side is 2-3 bins lighter:
+// Ariya came out #8c7f70 against a lit fabric of about rgb(180,170,157);
+// with this, #b2a99d. The lighter of this and the usual rule wins (see
+// below). Not used for everything: it makes the dark Mira velvet
+// darker and JÄTTEBO's green lighter than the colours chosen for them.
+function photoColor(img, wholeHue = false) {
   const N = 48, c = document.createElement('canvas'); c.width = c.height = N;
   const g = c.getContext('2d');
   g.drawImage(img, 0, 0, N, N);
@@ -2037,16 +2213,40 @@ function photoColor(img) {
   // shaded sides of the same fabric both count…
   const topKey = +Object.keys(bins).reduce((a, b) => bins[b].length > bins[a].length ? b : a);
   const near = (k, s) => Math.abs((k >> s & 7) - (topKey >> s & 7)) <= 1;
-  const px = [];
-  for (const k in bins) if (near(+k, 6) && near(+k, 3) && near(+k, 0)) px.push(...bins[k]);
+  const spread = k => { const c = [6, 3, 0].map(sh => k >> sh & 7); return Math.max(...c) - Math.min(...c); };
+  // Same-hue bins by brightness step from the commonest bin (-3…+3). Only
+  // steps reached without a gap count: a light wall behind a grey sofa is the
+  // same hue a few steps up, but nothing in between joins it to the sofa.
+  const step = k => {
+    const dd = [6, 3, 0].map(sh => (k >> sh & 7) - (topKey >> sh & 7));
+    if (Math.max(...dd) - Math.min(...dd) > 1 || !dd.every(v => Math.abs(v) <= 3) || spread(k) !== spread(topKey)) return null;
+    return Math.round((dd[0] + dd[1] + dd[2]) / 3);
+  };
+  const perStep = {};
+  for (const k in bins) { const st = step(+k); if (st != null) perStep[st] = (perStep[st] || 0) + bins[k].length; }
+  const enough = st => (perStep[st] || 0) >= 0.05 * perStep[0];
+  let lo = 0, hi = 0;
+  while (hi < 3 && enough(hi + 1)) hi++;
+  while (lo > -3 && enough(lo - 1)) lo--;
+  const sameHue = k => { const st = step(k); return st != null && st >= lo && st <= hi; };
   // …but the colour is that of its lit side: the 70th–95th brightness
   // percentile (the top 5% is sheen). The scene's lighting adds the shading
   // again; averaging in the photo's shadows made a dark-blue velvet bean bag
   // (photo median rgb(19,28,46), lit side rgb(35,49,76)) come out black.
-  px.sort((a, b) => (a[0] * 3 + a[1] * 6 + a[2]) - (b[0] * 3 + b[1] * 6 + b[2]));
-  const lit = px.slice(Math.floor(px.length * 0.7), Math.max(Math.floor(px.length * 0.7) + 1, Math.floor(px.length * 0.95)));
-  const avg = j => Math.round(lit.reduce((s, p) => s + p[j], 0) / lit.length);
-  return '#' + [0, 1, 2].map(j => avg(j).toString(16).padStart(2, '0')).join('');
+  const luma = p => p[0] * 3 + p[1] * 6 + p[2];
+  const litColour = keep => {
+    const px = [];
+    for (const k in bins) if (keep(+k)) px.push(...bins[k]);
+    px.sort((a, b) => luma(a) - luma(b));
+    const lit = px.slice(Math.floor(px.length * 0.7), Math.max(Math.floor(px.length * 0.7) + 1, Math.floor(px.length * 0.95)));
+    return [0, 1, 2].map(j => Math.round(lit.reduce((s, p) => s + p[j], 0) / lit.length));
+  };
+  let rgb = litColour(k => near(k, 6) && near(k, 3) && near(k, 0));
+  // Whole-hue sampling can come out darker for saturated fabrics (terracotta,
+  // green velvet), so a curved sofa takes whichever of the two is lighter:
+  // never darker than the usual rule.
+  if (wholeHue) { const w = litColour(sameHue); if (luma(w) > luma(rgb)) rgb = w; }
+  return '#' + rgb.map(v => v.toString(16).padStart(2, '0')).join('');
 }
 
 function whenImageLoaded(url) {
@@ -2217,10 +2417,16 @@ function drawPlacedItem(item) {
   ctx.translate(item.x + iw/2, item.y + ih/2);
   ctx.rotate(item.rot || 0);
   const upright = Math.cos(item.rot || 0) < -0.01;       // turned past 90°: flip the label so it reads upright
+  if (item.flip) ctx.scale(-1, 1);                       // (Flip; undone again before the labels)
 
   const model = item.modelUrl ? getModelEntry(item.modelUrl) : null;
   const entry = item.imgUrl ? getImageEntry(item.imgUrl) : null;
-  const label = (item.label.length > 28 ? item.label.slice(0, 26) + '…' : item.label) + (item.elev > 0.05 ? ` · ${item.elev.toFixed(2)} m up` : '');
+  // (Sizes on: a second row above the name, except on a long thin piece —
+  // a wall TV, curtains — where that row would land on the walls' labels:
+  // there it goes on the name's row)
+  const sizeInline = showSizes && ih < 34 && iw > ih * 2, sizeRow = showSizes && !sizeInline;
+  const label = (item.label.length > 28 ? item.label.slice(0, 26) + '…' : item.label) + (item.elev > 0.05 ? ` · ${fmtLen(item.elev)} up` : '')
+    + (item.locked ? ' 🔒' : '') + (sizeInline ? ' · ' + planSizeText(item) : '');
 
   const sofaTop = !(model && model.status === 'ok') && item.shape ? sofaTopImage(item) : null;
   const topImg = (model && model.topImg) || sofaTop;
@@ -2231,8 +2437,10 @@ function drawPlacedItem(item) {
     ctx.drawImage(topImg, -iw/2, -ih/2, iw, ih);
     ctx.strokeStyle = 'rgba(0,0,0,0.18)'; ctx.lineWidth = 1;
     ctx.strokeRect(-iw/2, -ih/2, iw, ih);
+    if (item.flip) ctx.scale(-1, 1);
     if (upright) ctx.rotate(Math.PI);
     drawLabelChip(label, ih/2 - 8);
+    if (sizeRow) drawLabelChip(planSizeText(item), ih/2 - 23);
   } else if (entry && entry.status === 'ok' && !(exporting === 'safe' && !entry.cors)) {
     // Draw the real image, cropped to fill the item's footprint (cover fit)
     drawItemShape2d(item, iw, ih);
@@ -2249,8 +2457,10 @@ function drawPlacedItem(item) {
     ctx.lineWidth = 1.5;
     drawItemShape2d(item, iw, ih);
     ctx.stroke();
+    if (item.flip) ctx.scale(-1, 1);
     if (upright) ctx.rotate(Math.PI);
     drawLabelChip(label, ih/2 - 8);
+    if (sizeRow) drawLabelChip(planSizeText(item), ih/2 - 23);
   } else {
     // Fallback: colored box. Shows a loading mark or broken-image mark if an
     // image URL was given but hasn't resolved yet / failed.
@@ -2263,6 +2473,7 @@ function drawPlacedItem(item) {
     ctx.fillStyle = item.color;
     ctx.font = '11px system-ui';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    if (item.flip) ctx.scale(-1, 1);
     if (upright) ctx.rotate(Math.PI);
     if ((entry && entry.status === 'loading') || (model && model.status === 'loading')) {
       ctx.fillText('⏳ ' + label, 0, 0);
@@ -2272,6 +2483,7 @@ function drawPlacedItem(item) {
     } else {
       ctx.fillText(item.emoji + ' ' + label, 0, 0);
     }
+    if (sizeRow) { ctx.font = '10px system-ui'; ctx.globalAlpha = 0.8; ctx.fillText(planSizeText(item), 0, 13); }
   }
   ctx.restore();
 }
@@ -2293,6 +2505,7 @@ function drawSelection(item) {
   ctx.setLineDash([6, 4]);
   ctx.strokeRect(-iw/2 - 4, -ih/2 - 4, iw + 8, ih + 8);
   ctx.setLineDash([]);
+  if (item.locked) { ctx.font = '12px system-ui'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('🔒', 0, -ih/2 - 14); ctx.restore(); return; }
   ctx.beginPath(); ctx.moveTo(0, -ih/2 - 4); ctx.lineTo(0, -ih/2 - HANDLE_GAP + 7); ctx.stroke();
   ctx.beginPath(); ctx.arc(0, -ih/2 - HANDLE_GAP, 7, 0, Math.PI * 2);
   ctx.fillStyle = '#fff'; ctx.fill(); ctx.stroke();
@@ -2318,7 +2531,7 @@ function tracePath(pts) {
 }
 
 function draw2d() {
-  if (!exporting) updateZoomBar();
+  if (!exporting) { updateZoomBar(); updateRoomArea(); }
   if (view !== '2d') return;
   syncWalls();
   if (!exporting) ctx.setTransform(1, 0, 0, 1, 0, 0);   // (exporting sets its own scale)
@@ -2350,6 +2563,13 @@ function draw2d() {
     drawPlanOpenings(pts);
   }
 
+  if (!exporting && trace) {
+    drawTrace();                       // (the plan picture: over the floor, under the outline's handles)
+    if (pts.length > 2 && !(shape === 'custom' && drawing)) {
+      ctx.save(); tracePath(getRoomOutline()); ctx.strokeStyle = 'rgba(40,60,120,0.75)'; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
+    }
+  }
+
   // wall lengths, corner handles, the wall being drawn
   drawRoomOverlay();
 
@@ -2368,9 +2588,25 @@ function draw2d() {
   }
 
   // placed furniture
-  drawOrder().forEach(i => drawPlacedItem(placed[i]));
+  // The floor area goes on the floor: over rugs (usually in the middle of
+  // the room), under the furniture.
+  const order = drawOrder(), rugs = order.filter(i => layerOf(placed[i]) === 0);
+  rugs.forEach(i => drawPlacedItem(placed[i]));
+  const ap = pts.length > 0 && roomReady() ? areaLabelPoint() : null;
+  if (ap) {
+    ctx.save();
+    ctx.font = '600 13px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,0.75)'; ctx.fillStyle = 'rgba(40,40,36,0.7)';
+    ctx.strokeText(fmtArea(roomArea()), ap.x, ap.y); ctx.fillText(fmtArea(roomArea()), ap.x, ap.y);
+    ctx.restore();
+  }
+  order.slice(rugs.length).forEach(i => drawPlacedItem(placed[i]));
   if (!exporting) drawFitOverlay();
+  drawMeasures();
+  drawNotes();
   if (placed[selected]) drawSelection(placed[selected]);
+  if (!exporting && (group.length || boxSel)) drawGroupOverlay();
+  if (!exporting) drawSnapGuides();
 
   // drag ghost from sidebar
   if (draggingFurn && draggingFurn._x != null) {
@@ -2433,6 +2669,7 @@ function applyItemTransform(item, group) {
   group.position.set(c.x, item.elev || 0, c.z);
   // Canvas rotation is clockwise in a y-down space; negate it for 3D.
   group.rotation.y = -(item.rot || 0);
+  group.scale.x = item.flip ? -1 : 1;              // (Flip: mirrored left / right)
 }
 
 function buildItemObject(item, idx) {
@@ -2647,8 +2884,14 @@ function build3d() {
         over(frame, o.x, o.x + f, o.y, o.y + o.h, -0.005, t + 0.005);
         over(frame, o.x + o.w - f, o.x + o.w, o.y, o.y + o.h, -0.005, t + 0.005);
         over(frame, o.x + o.w / 2 - 0.015, o.x + o.w / 2 + 0.015, o.y, o.y + o.h, t / 2 - 0.02, t / 2 + 0.02);
-      } else {
-        over(leaf, o.x + 0.01, o.x + o.w - 0.01, 0, o.h - 0.01, 0.005, 0.045);
+      } else if (o.style === 'sliding') {
+        over(leaf, o.x + 0.01, o.x + o.w * 0.56, 0, o.h - 0.01, t / 2 - 0.04, t / 2 - 0.005);
+        over(leaf, o.x + o.w * 0.44, o.x + o.w - 0.01, 0, o.h - 0.01, t / 2 + 0.005, t / 2 + 0.04);
+      } else if (o.style !== 'opening') {
+        // (closed, on the side it opens to; a double door shows its two leaves)
+        const [o0, o1] = o.swing === 'out' ? [t - 0.045, t - 0.005] : [0.005, 0.045];
+        if (o.style === 'double') { over(leaf, o.x + 0.01, o.x + o.w / 2 - 0.004, 0, o.h - 0.01, o0, o1); over(leaf, o.x + o.w / 2 + 0.004, o.x + o.w - 0.01, 0, o.h - 0.01, o0, o1); }
+        else over(leaf, o.x + 0.01, o.x + o.w - 0.01, 0, o.h - 0.01, o0, o1);
       }
     });
     partMesh(glass, 0xbfdcee, 0.35); partMesh(frame, 0xf2f2f0, 1); partMesh(leaf, 0xb08a5e, 1);
@@ -2791,7 +3034,7 @@ const MOVE_KEYS = {w: [0, 1, 0], s: [0, -1, 0], a: [-1, 0, 0], d: [1, 0, 0], e: 
 document.addEventListener('keydown', e => {
   if (view !== '3d' || e.ctrlKey || e.metaKey || e.altKey || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
   const k = e.key.toLowerCase();
-  if (!MOVE_KEYS[k] || (k.startsWith('arrow') && placed[selected])) return;   // (arrows nudge a selected item)
+  if (!MOVE_KEYS[k] || (k.startsWith('arrow') && placed[selected] && !placed[selected].locked)) return;   // (arrows nudge a selected item)
   if (!moveKeys.has(k)) { stepMoveKeys(); moveKeys.add(k); }
   e.preventDefault();
 });
@@ -2893,14 +3136,16 @@ function onDown3d(e) {
     const h = holdPick3d = {idx, x: e.clientX, y: e.clientY, moved: false};
     h.timer = setTimeout(() => {
       if (holdPick3d !== h || h.moved) return;
-      holdPick3d = null; orbitDragging = false;
+      holdPick3d = null;
+      if (placed[h.idx] && placed[h.idx].locked) { select(h.idx); return; }   // (locked: selected, the finger keeps looking)
+      orbitDragging = false;
       startItemDrag3d(h.idx, h.x, h.y, false);
       if (navigator.vibrate) navigator.vibrate(15);
     }, HOLD_MS);
     return;
   }
-  if (idx >= 0) { startItemDrag3d(idx, e.clientX, e.clientY, e.shiftKey); return; }
-  select(-1);
+  if (idx >= 0 && !placed[idx].locked) { startItemDrag3d(idx, e.clientX, e.clientY, e.shiftKey); return; }
+  select(idx >= 0 ? idx : -1);            // (a locked piece is selected, and the drag looks around)
   orbitDragging = true; orbitLastX = e.clientX; orbitLastY = e.clientY;
   renderer.domElement.style.cursor = 'grabbing';
 }
@@ -2914,6 +3159,7 @@ function cancelHoldPick3d() { if (holdPick3d) { clearTimeout(holdPick3d.timer); 
 function startItemDrag3d(idx, x, y, rotate) {
   select(idx);
   const item = placed[idx];
+  if (item.locked) return;
   if (rotate) {
     drag3d = {idx, mode: 'rotate', startX: x, startRot: item.rot || 0};
   } else {
@@ -3087,6 +3333,19 @@ document.getElementById('zoomIn').addEventListener('click', () => zoom2dAt(view2
 document.getElementById('zoomOut').addEventListener('click', () => zoom2dAt(view2d.k / 1.25, canvas.width / 2, canvas.height / 2));
 document.getElementById('zoomReset').addEventListener('click', resetZoom2d);
 
+// "Sizes": each piece's width × depth (cm) on the plan, under its name; in
+// exported plans too. A viewing preference, remembered in this browser.
+const sizesBtn = document.getElementById('sizesBtn');
+function setShowSizes(on) {
+  showSizes = on;
+  sizesBtn.classList.toggle('active', on); sizesBtn.setAttribute('aria-pressed', String(on));
+  try { localStorage.setItem('rp-show-sizes', on ? '1' : '0'); } catch {}
+  draw2d();
+}
+sizesBtn.addEventListener('click', () => setShowSizes(!showSizes));
+sizesBtn.classList.toggle('active', showSizes); sizesBtn.setAttribute('aria-pressed', String(showSizes));
+function planSizeText(item) { return units === 'ft' ? `${cm(item.w)} × ${cm(item.h)}` : `${Math.round(item.w * 100)} × ${Math.round(item.h * 100)} cm`; }
+
 function resizeCanvas() {
   // Rooms are centred on the canvas, so shift everything stored in canvas
   // pixels by the change in centre to keep furniture where it was in the room.
@@ -3098,6 +3357,8 @@ function resizeCanvas() {
   const dx = canvas.width / 2 - ox, dy = canvas.height / 2 - oy;
   placed.forEach(it => { it.x += dx; it.y += dy; });
   customPts.forEach(p => { p.x += dx; p.y += dy; });
+  measures.forEach(m => { m.x1 += dx; m.y1 += dy; m.x2 += dx; m.y2 += dy; });
+  notes.forEach(n => { n.x += dx; n.y += dy; });
   clampView2d();
   if (view === '3d') init3d(); else draw2d();
 }
@@ -3121,6 +3382,227 @@ function itemPoly(it, inset = 0) {
     : [{x: -w / 2, y: -h / 2}, {x: w / 2, y: -h / 2}, {x: w / 2, y: h / 2}, {x: -w / 2, y: h / 2}];
   if (inset) local = local.map(p => { const d = Math.hypot(p.x, p.y) || 1, k = Math.max(0, d - inset) / d; return {x: p.x * k, y: p.y * k}; });
   return local.map(p => ({x: cx + p.x * c - p.y * s, y: cy + p.x * s + p.y * c}));
+}
+
+// ── Tape measure ───────────────────────────────────────────────────────────────
+// With "Measure" on, a drag on the plan lays a tape between two points; its
+// ends snap (within 10 screen px) to the nearest point on a wall or a piece's
+// edge, and to corners first. Measurements stay with the room (saved, undo,
+// exports and print) until Clear; Alt measures freely.
+function measureSnap(mx, my, free) {
+  if (free) return {x: mx, y: my};
+  const tol = 10 / viewOf2d().k;
+  const segs = [];
+  const out = getRoomOutline();
+  out.forEach((p, i) => segs.push([p, out[(i + 1) % out.length]]));
+  placed.forEach(it => { const ps = itemPoly(it); ps.forEach((p, i) => segs.push([p, ps[(i + 1) % ps.length]])); });
+  let best = null;
+  segs.forEach(([a]) => { const d = Math.hypot(mx - a.x, my - a.y); if (d <= tol && (!best || d < best.d - 2)) best = {d, x: a.x, y: a.y}; });
+  if (best) return best;
+  segs.forEach(([a, b]) => {
+    const dx = b.x - a.x, dy = b.y - a.y, L = dx * dx + dy * dy || 1, t = Math.max(0, Math.min(1, ((mx - a.x) * dx + (my - a.y) * dy) / L));
+    const x = a.x + t * dx, y = a.y + t * dy, d = Math.hypot(mx - x, my - y);
+    if (d <= tol && (!best || d < best.d)) best = {d, x, y};
+  });
+  return best || {x: mx, y: my};
+}
+function measureSegs() {
+  const segs = [], out = getRoomOutline();
+  out.forEach((p, i) => segs.push([p, out[(i + 1) % out.length]]));
+  placed.forEach(it => { const ps = itemPoly(it); ps.forEach((p, i) => segs.push([p, ps[(i + 1) % ps.length]])); });
+  return segs;
+}
+function measureEnd(m, mx, my, free) {
+  if (free) return {x: mx, y: my};
+  const dx = mx - m.x1, dy = my - m.y1, a = Math.abs(Math.atan2(dy, dx)) % Math.PI, tol = 10 / viewOf2d().k;
+  const level = Math.min(a, Math.PI - a) < 0.13, plumb = Math.abs(a - Math.PI / 2) < 0.13;
+  if (!level && !plumb) return measureSnap(mx, my);
+  const p = level ? {x: mx, y: m.y1} : {x: m.x1, y: my};
+  // Where the locked line crosses a wall or a piece's edge, the nearest one within reach.
+  let best = null;
+  measureSegs().forEach(([u, v]) => {
+    let t, x, y;
+    if (level) { if ((u.y - p.y) * (v.y - p.y) > 0 || u.y === v.y) return; t = (p.y - u.y) / (v.y - u.y); x = u.x + t * (v.x - u.x); y = p.y; }
+    else { if ((u.x - p.x) * (v.x - p.x) > 0 || u.x === v.x) return; t = (p.x - u.x) / (v.x - u.x); x = p.x; y = u.y + t * (v.y - u.y); }
+    const d = Math.hypot(x - p.x, y - p.y);
+    if (d <= tol && (!best || d < best.d)) best = {d, x, y};
+  });
+  return best || p;
+}
+// The tape under a point (on its line or label), or -1.
+function measureAt(mx, my) {
+  const tol = 6 / viewOf2d().k;
+  for (let i = measures.length - 1; i >= 0; i--) {
+    const m = measures[i];
+    if (distToSegment(mx, my, {x: m.x1, y: m.y1}, {x: m.x2, y: m.y2}) <= tol) return i;
+    if (Math.abs(mx - (m.x1 + m.x2) / 2) < 24 && Math.abs(my - (m.y1 + m.y2) / 2) < 9) return i;
+  }
+  return -1;
+}
+function deleteMeasure(i) {
+  if (!measures[i]) return;
+  measures.splice(i, 1); measureSel = -1; updateMeasureClear(); draw2d(); checkpoint();
+}
+function drawMeasures() {
+  const list = measureDrag ? [...measures, measureDrag] : measures;
+  if (!list.length) return;
+  const k = viewOf2d().k;
+  ctx.save();
+  list.forEach((m, i) => {
+    const L = Math.hypot(m.x2 - m.x1, m.y2 - m.y1);
+    if (L < 1) return;
+    const ux = (m.x2 - m.x1) / L, uy = (m.y2 - m.y1) / L, t = 5 / k, sel = i === measureSel && !exporting;
+    ctx.strokeStyle = sel ? '#2a5cc8' : '#d4462f'; ctx.lineWidth = 1.5 / k; ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(m.x1, m.y1); ctx.lineTo(m.x2, m.y2);
+    [[m.x1, m.y1], [m.x2, m.y2]].forEach(([x, y]) => { ctx.moveTo(x - uy * t, y + ux * t); ctx.lineTo(x + uy * t, y - ux * t); });
+    ctx.stroke();
+    const text = fmtLen(L / SCALE);
+    ctx.font = `600 ${11 / k}px system-ui`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    const tw = ctx.measureText(text).width + 8 / k, cx = (m.x1 + m.x2) / 2, cy = (m.y1 + m.y2) / 2;
+    ctx.fillStyle = sel ? '#2a5cc8' : '#d4462f'; ctx.fillRect(cx - tw / 2, cy - 8 / k, tw, 16 / k);
+    ctx.fillStyle = '#fff'; ctx.fillText(text, cx, cy);
+  });
+  ctx.restore();
+}
+function setMeasureMode(on) {
+  if (on) { if (noteMode) setNoteMode(false); if (traceMode) setTraceMode(null); }   // (one plan tool at a time)
+  measureMode = on; measureDrag = null; measureSel = -1; updateMeasureClear();
+  const b = document.getElementById('measureBtn');
+  b.classList.toggle('active', on);
+  canvas.style.cursor = on ? 'crosshair' : 'default';
+  if (on) select(-1);
+  draw2d();
+}
+function updateMeasureClear() {
+  document.getElementById('measureClear').hidden = !measures.length;
+  document.getElementById('measureDel').hidden = !measures[measureSel];
+}
+document.getElementById('measureDel').addEventListener('click', () => deleteMeasure(measureSel));
+document.getElementById('measureBtn').addEventListener('click', () => setMeasureMode(!measureMode));
+document.getElementById('measureClear').addEventListener('click', () => { measures = []; updateMeasureClear(); draw2d(); checkpoint(); });
+document.addEventListener('keydown', e => {
+  if (!measureMode || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+  if (e.key === 'Escape') { setMeasureMode(false); e.stopImmediatePropagation(); }
+  else if ((e.key === 'Delete' || e.key === 'Backspace') && measures[measureSel]) { deleteMeasure(measureSel); e.preventDefault(); e.stopImmediatePropagation(); }
+}, true);
+// ── Notes on the plan ─────────────────────────────────────────────────────────
+// "Note", then a click on the plan, puts a note there and opens a box to type
+// it ("outlet here"). Drag a note to move it; double-click (double-tap) to
+// edit; an empty note is removed. Saved with the room; in exports and print;
+// not in 3D.
+const NOTE_MAX = 120;
+function drawNotes() {
+  noteBoxes = [];
+  if (!notes.length) return;
+  const k = viewOf2d().k;
+  ctx.save();
+  ctx.font = `${12 / k}px system-ui`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  notes.forEach((n, i) => {
+    if (noteEditing === i) return;
+    const tw = ctx.measureText(n.text).width, w = tw + 14 / k, h = 20 / k, x = n.x - w / 2, y = n.y - h / 2;
+    ctx.fillStyle = '#fff3b0'; ctx.strokeStyle = '#d9a400'; ctx.lineWidth = 1 / k;
+    ctx.shadowColor = 'rgba(0,0,0,0.15)'; ctx.shadowBlur = 3 / k; ctx.shadowOffsetY = 1 / k;
+    ctx.fillRect(x, y, w, h); ctx.shadowColor = 'transparent'; ctx.strokeRect(x, y, w, h);
+    ctx.fillStyle = '#4a3b00'; ctx.fillText(n.text, n.x, n.y + 0.5 / k);
+    noteBoxes.push({i, x, y, w, h});
+  });
+  ctx.restore();
+}
+const noteAt = (mx, my) => { for (let k = noteBoxes.length - 1; k >= 0; k--) { const b = noteBoxes[k]; if (mx >= b.x && mx <= b.x + b.w && my >= b.y && my <= b.y + b.h) return b.i; } return -1; };
+// A text box over note i (a new one if it's past the end), at its place on screen.
+function editNote(i) {
+  document.querySelectorAll('.note-input').forEach(el => el.remove());
+  const n = notes[i];
+  if (!n) return;
+  noteEditing = i;
+  const input = document.createElement('input');
+  input.type = 'text'; input.className = 'note-input'; input.maxLength = NOTE_MAX; input.value = n.text;
+  input.placeholder = 'Type a note, then Enter';
+  const kk = canvas.clientWidth / canvas.width || 1, v = viewOf2d();
+  input.style.left = (canvas.offsetLeft + (n.x * v.k + v.x) * kk) + 'px';
+  input.style.top = (canvas.offsetTop + (n.y * v.k + v.y) * kk) + 'px';
+  canvas.parentElement.appendChild(input);
+  input.focus(); input.select();
+  let done = false;
+  const finish = ok => {
+    if (done) return; done = true;
+    const text = input.value.trim().slice(0, NOTE_MAX);
+    noteEditing = null;
+    if (input.isConnected) input.remove();
+    if (ok) { if (text) n.text = text; else notes.splice(notes.indexOf(n), 1); }
+    else if (!n.text) notes.splice(notes.indexOf(n), 1);        // (a new note, cancelled)
+    draw2d(); checkpoint();
+  };
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') finish(true); if (e.key === 'Escape') finish(false); e.stopPropagation(); });
+  input.addEventListener('blur', () => finish(true));
+  draw2d();
+}
+function setNoteMode(on) {
+  if (on) { if (measureMode) setMeasureMode(false); if (traceMode) setTraceMode(null); }
+  noteMode = on;
+  document.getElementById('noteBtn').classList.toggle('active', on);
+  canvas.style.cursor = on ? 'copy' : 'default';
+}
+document.getElementById('noteBtn').addEventListener('click', () => setNoteMode(!noteMode));
+document.addEventListener('keydown', e => { if (noteMode && e.key === 'Escape' && !e.target.classList.contains('note-input')) { setNoteMode(false); e.stopImmediatePropagation(); } }, true);
+// ── Snapping a dragged piece into line ──────────────────────────────────────
+// Its edges, as drawn, snap to the edges of pieces beside it (left to left or
+// right, right to right or left) and its middle to their middle, and its
+// edges to straight walls beside it, within 6 screen pixels, shown as a thin
+// guide; Alt drags freely. An axis only snaps once the pointer has moved
+// along it (3 px), so a click doesn't move anything and sliding a piece
+// along a wall keeps its gap. Things on the wall snap to the wall themselves.
+const SNAP_GUIDE_PX = 6, SNAP_NEAR_PX = 60;       // (pieces more than 1 m away on the other axis don't count)
+function boxOf(poly) {
+  const xs = poly.map(p => p.x), ys = poly.map(p => p.y);
+  return {x0: Math.min(...xs), x1: Math.max(...xs), y0: Math.min(...ys), y1: Math.max(...ys)};
+}
+function snapDraggedItem(i, free, moved) {
+  snapGuides = [];
+  const it = placed[i];
+  if (free || it.kind === 'wall') return;
+  const k = viewOf2d().k, tol = SNAP_GUIDE_PX / k, near = SNAP_NEAR_PX, b = boxOf(itemPoly(it));
+  // Mine and theirs as [edge, edge, middle]: edges meet edges, middles meet middles.
+  const mine = {x: [b.x0, b.x1, (b.x0 + b.x1) / 2], y: [b.y0, b.y1, (b.y0 + b.y1) / 2]};
+  const lines = {x: [], y: []};                  // [value, from, to (along the other axis), middle?]
+  const overlaps = (a0, a1, b0, b1) => a0 <= b1 + near && b0 <= a1 + near;
+  placed.forEach((o, j) => {
+    if (j === i || o.kind === 'wall' || o.kind === 'decor') return;
+    const ob = boxOf(itemPoly(o));
+    if (overlaps(ob.y0, ob.y1, b.y0, b.y1)) { lines.x.push([ob.x0, ob.y0, ob.y1, false], [ob.x1, ob.y0, ob.y1, false], [(ob.x0 + ob.x1) / 2, ob.y0, ob.y1, true]); }
+    if (overlaps(ob.x0, ob.x1, b.x0, b.x1)) { lines.y.push([ob.y0, ob.x0, ob.x1, false], [ob.y1, ob.x0, ob.x1, false], [(ob.y0 + ob.y1) / 2, ob.x0, ob.x1, true]); }
+  });
+  if (!(shape === 'custom' && drawing)) {
+    const pts = getRoomPts();
+    pts.forEach((p, w) => {
+      const q = pts[(w + 1) % pts.length];
+      if (walls[w] && walls[w].bulge) return;
+      if (Math.abs(p.x - q.x) < 0.5 && overlaps(Math.min(p.y, q.y), Math.max(p.y, q.y), b.y0, b.y1)) lines.x.push([p.x, Math.min(p.y, q.y), Math.max(p.y, q.y), false]);
+      if (Math.abs(p.y - q.y) < 0.5 && overlaps(Math.min(p.x, q.x), Math.max(p.x, q.x), b.x0, b.x1)) lines.y.push([p.y, Math.min(p.x, q.x), Math.max(p.x, q.x), false]);
+    });
+  }
+  const best = axis => {
+    if (Math.abs(moved[axis]) < 3 / k) return null;     // (not moved along this axis)
+    let hit = null;
+    mine[axis].forEach((m, mi) => lines[axis].forEach(([v, a, z, mid]) => {
+      if (mid !== (mi === 2)) return;
+      const d = v - m; if (Math.abs(d) <= tol && (!hit || Math.abs(d) < Math.abs(hit.d))) hit = {d, v, a, z};
+    }));
+    return hit;
+  };
+  const hx = best('x'), hy = best('y');
+  if (hx) it.x += hx.d;
+  if (hy) it.y += hy.d;
+  const nb = boxOf(itemPoly(it));
+  if (hx) snapGuides.push({x1: hx.v, y1: Math.min(hx.a, nb.y0), x2: hx.v, y2: Math.max(hx.z, nb.y1)});
+  if (hy) snapGuides.push({x1: Math.min(hy.a, nb.x0), y1: hy.v, x2: Math.max(hy.z, nb.x1), y2: hy.v});
+}
+function drawSnapGuides() {
+  if (!snapGuides.length) return;
+  ctx.save();
+  ctx.strokeStyle = '#e8467c'; ctx.lineWidth = 1.5 / viewOf2d().k; ctx.setLineDash([4 / viewOf2d().k, 3 / viewOf2d().k]);
+  snapGuides.forEach(g => { ctx.beginPath(); ctx.moveTo(g.x1, g.y1); ctx.lineTo(g.x2, g.y2); ctx.stroke(); });
+  ctx.restore();
 }
 
 function segsCross(p1, p2, p3, p4) {
@@ -3154,9 +3636,130 @@ const spanOf = it => [it.elev || 0, (it.elev || 0) + (it.zHeight || 0.7)];
 const solidItem = it => it.kind !== 'rug' && !(it.shape && it.shape.kind === 'curtain');
 const onFloor = it => (it.elev || 0) < 0.3 && it.kind !== 'wall';
 const bigItem = it => !it.kind && Math.min(it.w, it.h) >= 0.35 && it.w * it.h >= 0.3;
-const cm = m => Math.round(m * 100) + ' cm';
+// ── Units: metres or feet and inches ──────────────────────────────────────────
+// Everything is stored in metres; this only changes what's shown and how typed
+// lengths are read. The choice is per browser (localStorage 'rp-units').
+const M_PER_IN = 0.0254;
+const trimNum = (v, d) => String(+v.toFixed(d));
+// 2.286 → 7' 6"; 0.3 → 11.75"; quarter-inch steps.
+function fmtFtIn(m) {
+  const sign = m < 0 ? '-' : '', q = Math.round(Math.abs(m) / M_PER_IN * 4) / 4;
+  const ft = Math.floor(q / 12 + 1e-9), inch = q - ft * 12;
+  if (!ft) return sign + trimNum(inch, 2) + '"';
+  return sign + ft + "'" + (inch ? ' ' + trimNum(inch, 2) + '"' : '');
+}
+// A length for a label: "2.40 m" or 7' 10.5".
+function fmtLen(m, digits = 2) { return units === 'ft' ? fmtFtIn(m) : m.toFixed(digits) + ' m'; }
+// Short sizes and gaps: "45 cm" or 17.5".
+function cm(m) { return units === 'ft' ? trimNum(Math.round(m / M_PER_IN * 2) / 2, 1) + '"' : Math.round(m * 100) + ' cm'; }
+// "2.20 × 0.90 × 0.80 m" or 7' 2.5" × 2' 11.5" × 2' 7.5"
+function fmtDims(...ms) { return units === 'ft' ? ms.map(fmtFtIn).join(' × ') : ms.map(m => m.toFixed(2)).join(' × ') + ' m'; }
+// Typed lengths, in metres (NaN if unreadable): 7'6", 7' 6", 7ft 6in, 90",
+// 90in, 7.5' — and 2.4 m / 240 cm / 2400 mm in either mode. A bare number is
+// feet in feet mode and metres otherwise.
+function parseLen(str) {
+  const s = String(str).trim().toLowerCase().replace(/,/g, '.').replace(/[’′‘`]/g, "'").replace(/[”″“]|''/g, '"')
+    .replace(/(\d+)[\s-]+(\d+)\/(\d+)/g, (_, w, n, d) => String(+w + n / d)).replace(/(\d+)\/(\d+)/g, (_, n, d) => String(n / d));
+  if (!s) return NaN;
+  let m = s.match(/^(-?\d*\.?\d+)\s*(m|cm|mm)$/);
+  if (m) return +m[1] / {m: 1, cm: 100, mm: 1000}[m[2]];
+  m = s.match(/^(-?\d*\.?\d+)$/);
+  if (m) return units === 'ft' ? +m[1] * 12 * M_PER_IN : +m[1];
+  m = s.match(/^(-?)\s*(?:(\d*\.?\d+)\s*(?:'|ft|feet|foot)\s*)?(?:(\d*\.?\d+)\s*(?:"|in|inch|inches)?)?$/);
+  if (m && (m[2] || m[3]) && (m[2] || /("|in)\s*$/.test(s))) return (m[1] ? -1 : 1) * ((+m[2] || 0) * 12 + (+m[3] || 0)) * M_PER_IN;
+  return NaN;
+}
+
+// The panels' length boxes. In feet mode they become text boxes showing
+// feet and inches, but their .value still reads and writes metres (parsed
+// from what's typed), so the code that uses them doesn't change.
+const LEN_INPUTS = ['itemW', 'itemH', 'itemZ', 'roomW', 'roomH', 'wallHeight', 'elevHL', 'elevHR', 'elevCurve',
+  'elevOW', 'elevOH', 'elevOY', 'elevOX', 'selW', 'selD', 'selZ', 'selElev'];
+const NATIVE_VALUE = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+let unitsCommit = false;
+// (feet mode applies a typed length when its box loses focus; a press on the
+// plan or the elevation would change the selection first and the length would
+// land on whatever was pressed, so the box is finished before that)
+document.addEventListener('pointerdown', e => {
+  const el = document.activeElement;
+  if (units === 'ft' && el && LEN_INPUTS.includes(el.id) && e.target !== el) el.blur();
+}, true);
+function applyUnitsToInputs() {
+  LEN_INPUTS.forEach(id => {
+    const el = document.getElementById(id), cur = el.value;   // (metres, whichever mode it was in)
+    if (units === 'ft') {
+      el.type = 'text';
+      // (what was set is kept exactly, so a box shown and not edited reads back the same metres)
+      Object.defineProperty(el, 'value', {configurable: true,
+        get() { const t = NATIVE_VALUE.get.call(this);
+          if (this._m != null && t === this._shown) return String(this._m);
+          const v = parseLen(t); return isNaN(v) ? '' : String(v); },
+        set(v) { const ok = !(v === '' || v == null || isNaN(+v));
+          this._m = ok ? +v : null; this._shown = ok ? fmtFtIn(+v) : '';
+          NATIVE_VALUE.set.call(this, this._shown); }});
+      if (!el.dataset.unitsWired) {
+        el.dataset.unitsWired = '1';
+        el.addEventListener('input', e => { if (units === 'ft' && !unitsCommit) e.stopImmediatePropagation(); }, true);
+        el.addEventListener('focus', () => { el._before = el.value; });
+        el.addEventListener('change', () => {
+          if (units !== 'ft') return;
+          const t = NATIVE_VALUE.get.call(el);
+          if (t.trim() && isNaN(parseLen(t))) { toast(`Couldn't read "${t}" as a length. Try 7' 6", 90" or 2.3 m.`); el.value = el._before; return; }
+          unitsCommit = true;
+          try { el.dispatchEvent(new Event('input', {bubbles: true})); } finally { unitsCommit = false; }
+          const v = el.value; if (v !== '') el.value = v;       // (shown the tidy way: 7'6 → 7' 6")
+          el._before = el.value;
+        });
+      }
+    } else {
+      delete el.value;
+      el.type = 'number';
+    }
+    el.value = cur;
+  });
+  document.querySelectorAll('label').forEach(l => {
+    const t = [...l.childNodes].find(n => n.nodeType === 3 && /\((m|ft-in)\)/.test(n.textContent));
+    if (t) t.textContent = t.textContent.replace(/\((m|ft-in)\)/, units === 'ft' ? '(ft-in)' : '(m)');
+  });
+  document.getElementById('scaleLegend').textContent = 'Scale: 1 grid square = 1 metre' + (units === 'ft' ? ` (${fmtFtIn(1)})` : '');
+  const b = document.getElementById('unitsBtn');
+  b.textContent = units === 'ft' ? 'ft-in' : 'm';
+  b.title = units === 'ft' ? 'Lengths in feet and inches — click for metres' : 'Lengths in metres — click for feet and inches';
+}
+function setUnits(u) {
+  units = u;
+  try { localStorage.setItem('rp-units', u); } catch {}
+  applyUnitsToInputs();
+  if (placed[selected]) updateSelPanel();
+  updateElevBar();
+  redraw();
+}
 
 // The floor area each door sweeps (canvas px polygons), as drawn on the plan.
+// A door's leaves: [{u (hinge, metres along the wall), dir (+1: closes toward
+// the wall's end, -1: toward its start), r (leaf width)}]. door.style: 'single'
+// (default) | 'double' | 'sliding' | 'opening' (an archway, no door);
+// door.hinge: 'start' (default: at o.x) | 'end'; door.swing: 'in' (default) | 'out'.
+function doorLeaves(o) {
+  const st = o.style || 'single';
+  if (st === 'double') return [{u: o.x, dir: 1, r: o.w / 2}, {u: o.x + o.w, dir: -1, r: o.w / 2}];
+  if (st !== 'single') return [];
+  return o.hinge === 'end' ? [{u: o.x + o.w, dir: -1, r: o.w}] : [{u: o.x, dir: 1, r: o.w}];
+}
+const doorSide = o => o.swing === 'out' ? 1 : -1;      // along the wall's outward normal: out, or into the room
+// The open ends of the door leaves on the plan (px), for the export's crop.
+function doorTips() {
+  const pts = getRoomPts(), out = [];
+  walls.forEach((w, i) => {
+    if (i >= pts.length) return;
+    const arc = wallArc(i, pts), len = arc.len;
+    if (len < 1) return;
+    w.openings.forEach(o => { if (o.type === 'door') doorLeaves(o).forEach(lf => {
+      const t = Math.max(0, Math.min(len, lf.u * SCALE)) / len, h = arc.at(t), n = arc.normal(t), r = lf.r * SCALE * doorSide(o);
+      out.push({x: h.x + n.x * r, y: h.y + n.y * r}); }); });
+  });
+  return out;
+}
 function doorSwings() {
   const pts = getRoomPts(), out = [];
   walls.forEach((w, i) => {
@@ -3164,14 +3767,17 @@ function doorSwings() {
     const arc = wallArc(i, pts), len = arc.len;
     if (len < 1) return;
     w.openings.forEach((o, k) => {
-      if (o.type !== 'door') return;
-      const p = arc.at(o.x * SCALE / len), q = arc.at(Math.min(len, (o.x + o.w) * SCALE) / len), n = arc.normal(o.x * SCALE / len), r = o.w * SCALE;
-      const a0 = Math.atan2(q.y - p.y, q.x - p.x);
-      let d = Math.atan2(-n.y, -n.x) - a0;
-      while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
-      const poly = [p];
-      for (let s = 0; s <= 10; s++) { const a = a0 + d * s / 10; poly.push({x: p.x + Math.cos(a) * r, y: p.y + Math.sin(a) * r}); }
-      out.push({poly, key: i + ':' + k});
+      if (o.type !== 'door' || o.swing === 'out') return;      // (out: it sweeps outside the room)
+      doorLeaves(o).forEach((lf, j) => {
+        const at = u => arc.at(Math.max(0, Math.min(len, u * SCALE)) / len);
+        const p = at(lf.u), q = at(lf.u + lf.dir * lf.r), n = arc.normal(Math.max(0, Math.min(len, lf.u * SCALE)) / len), r = lf.r * SCALE;
+        const a0 = Math.atan2(q.y - p.y, q.x - p.x);
+        let d = Math.atan2(-n.y, -n.x) - a0;
+        while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
+        const poly = [p];
+        for (let s = 0; s <= 10; s++) { const a = a0 + d * s / 10; poly.push({x: p.x + Math.cos(a) * r, y: p.y + Math.sin(a) * r}); }
+        out.push({poly, key: i + ':' + k + (j ? ':' + j : '')});
+      });
     });
   });
   return out;
@@ -3234,7 +3840,7 @@ function drawClearances(item) {
     ctx.strokeStyle = '#2a7ae2'; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
     ctx.beginPath(); ctx.moveTo(st.x, st.y); ctx.lineTo(en.x, en.y); ctx.stroke(); ctx.setLineDash([]);
     [st, en].forEach(p => { ctx.beginPath(); ctx.moveTo(p.x - d.y * 4, p.y + d.x * 4); ctx.lineTo(p.x + d.y * 4, p.y - d.x * 4); ctx.stroke(); });
-    fitChip(`${m.toFixed(2)} m`, (st.x + en.x) / 2, (st.y + en.y) / 2, '#2a7ae2');
+    fitChip(fmtLen(m), (st.x + en.x) / 2, (st.y + en.y) / 2, '#2a7ae2');
   });
 }
 
@@ -3297,8 +3903,9 @@ setInterval(() => { if (view === '3d') renderFitBox(fitCheck()); }, 500);
 // Carried upright or on its side, does it go through the widest door (or a
 // standard 82 × 204 cm one if none is drawn)?
 function doorFit(item) {
-  if (item.kind === 'rug' || item.kind === 'wall' || (item.shape && item.shape.kind === 'curtain')) return null;
-  const doors = walls.flatMap(w => w.openings.filter(o => o.type === 'door'));
+  if (item.kind === 'rug' || item.kind === 'wall' || (item.shape && item.shape.kind === 'curtain') || item.id === 'column' || item.id === 'radiator') return null;
+  // (a sliding door's panels overlap: about half of it is open at a time)
+  const doors = walls.flatMap(w => w.openings.filter(o => o.type === 'door').map(o => o.style === 'sliding' ? {...o, w: o.w * 0.5} : o));
   const door = doors.length ? doors.reduce((a, b) => (a.w > b.w ? a : b)) : {w: 0.82, h: 2.04};
   const the = doors.length ? 'the' : 'a standard';
   const [a, b] = [item.w, item.h, item.zHeight || 0.7].sort((x, y) => x - y);
@@ -3324,6 +3931,7 @@ function setItemRot(item, rad, snap) {
 }
 
 function select(i) {
+  if (group.length) { group = []; updateGroupBar(); }
   selected = i >= 0 && i < placed.length ? i : -1;
   if (selected >= 0) selCorner = null;
   updateSelPanel();
@@ -3335,13 +3943,17 @@ function updateSelPanel() {
   selPanel.hidden = !item;
   if (!item) return;
   document.getElementById('selName').textContent = item.label;
+  const lk = document.getElementById('selLock');
+  lk.textContent = item.locked ? '🔓 Unlock' : '🔒 Lock'; lk.classList.toggle('on', !!item.locked);
+  [selAngle, selAngleNum, document.getElementById('selFlip'), ...document.querySelectorAll('.sel-btns button')].forEach(el => el.disabled = !!item.locked);
+  document.getElementById('selHint').textContent = item.locked ? 'Locked: unlock to move, turn or delete it with the keys' : 'R / Shift+R rotate 15° · arrows nudge · Del removes';
   const link = document.getElementById('selLink');
   link.style.display = item.pageUrl ? 'block' : 'none';
   if (item.pageUrl) link.href = item.pageUrl;
   const deg = angleDeg(item);
   if (document.activeElement !== selAngle) selAngle.value = deg;
   if (document.activeElement !== selAngleNum) selAngleNum.value = deg;
-  const setVal = (id, v) => { const el = document.getElementById(id); if (document.activeElement !== el) el.value = (+v).toFixed(2); };
+  const setVal = (id, v) => { const el = document.getElementById(id); if (document.activeElement !== el) el.value = units === 'ft' ? +v : (+v).toFixed(2); };
   setVal('selW', item.w); setVal('selD', item.h); setVal('selZ', item.zHeight || 0.7); setVal('selElev', item.elev || 0);
   const door = doorFit(item), df = document.getElementById('selDoorFit');
   df.textContent = door ? door.text : ''; df.className = 'sel-note' + (door ? (door.ok ? ' good' : ' bad') : ''); df.hidden = !door;
@@ -3374,22 +3986,95 @@ function itemChanged(i, geometry) {
 
 function rotateSelected(deltaDeg) {
   const item = placed[selected];
-  if (!item) return;
+  if (!item || item.locked) return;
   setItemRot(item, (item.rot || 0) + deltaDeg * Math.PI / 180);
   itemChanged(selected);
 }
 
 function deleteItem(i) {
   if (!placed[i]) return;
+  if (group.length) { group = []; updateGroupBar(); }
   placed.splice(i, 1);
   if (selected === i) selected = -1; else if (selected > i) selected--;
   updateSelPanel();
   redraw();
 }
 
+// ── Several pieces at once ────────────────────────────────────────────────────
+// Shift+click adds or removes a piece; Shift+drag on empty floor selects what's
+// inside the box. Dragging one of them moves them all; R / Shift+R and the
+// bar's buttons turn them about their middle; arrows nudge; Delete removes.
+// Each action is one undo step.
+function setGroup(list) {
+  const all = [...new Set(list)].filter(i => placed[i]), ids = all.filter(i => !placed[i].locked).sort((a, b) => a - b);
+  if (ids.length < all.length) toast('Locked pieces are left out of the selection.');
+  if (ids.length < 2) { group = []; select(ids.length ? ids[0] : -1); updateGroupBar(); return; }
+  selected = -1; selCorner = null; group = ids;
+  updateSelPanel(); updateGroupBar();
+  if (view === '2d') draw2d();
+}
+function toggleInGroup(i) {
+  const cur = group.length ? group : selected >= 0 ? [selected] : [];
+  setGroup(cur.includes(i) ? cur.filter(j => j !== i) : [...cur, i]);
+}
+const itemCentre = it => ({x: it.x + it.w * SCALE / 2, y: it.y + it.h * SCALE / 2});
+function groupCentre() {
+  const cs = group.map(i => itemCentre(placed[i]));
+  return {x: cs.reduce((a, c) => a + c.x, 0) / cs.length, y: cs.reduce((a, c) => a + c.y, 0) / cs.length};
+}
+function rotateGroup(deg) {
+  if (!group.length) return;
+  const g = groupCentre(), a = deg * Math.PI / 180, c = Math.cos(a), sn = Math.sin(a);
+  group.forEach(i => {
+    const it = placed[i], p = itemCentre(it), dx = p.x - g.x, dy = p.y - g.y;
+    it.x = g.x + dx * c - dy * sn - it.w * SCALE / 2; it.y = g.y + dx * sn + dy * c - it.h * SCALE / 2;
+    setItemRot(it, (it.rot || 0) + a);
+  });
+  redraw(); checkpoint();
+}
+function moveGroup(dx, dy) {
+  group.forEach(i => { placed[i].x += dx; placed[i].y += dy; settleItem(placed[i]); });
+  redraw();
+}
+function duplicateGroup() {
+  if (!group.length) return;
+  const first = placed.length;
+  group.forEach(i => { const it = placed[i]; placed.push({...it, x: it.x + 20, y: it.y + 20, shape: it.shape && JSON.parse(JSON.stringify(it.shape)), footprint: it.footprint && it.footprint.map(p => ({...p}))}); });
+  setGroup(placed.map((_, i) => i).slice(first));
+  redraw(); checkpoint();
+}
+function deleteGroup() {
+  if (!group.length) return;
+  [...group].sort((a, b) => b - a).forEach(i => placed.splice(i, 1));
+  group = []; selected = -1;
+  updateSelPanel(); updateGroupBar(); redraw(); checkpoint();
+}
+function updateGroupBar() {
+  const bar = document.getElementById('groupBar');
+  bar.hidden = !group.length;
+  if (group.length) document.getElementById('groupCount').textContent = `${group.length} pieces selected`;
+}
+document.getElementById('groupRotL').addEventListener('click', () => rotateGroup(-90));
+document.getElementById('groupRotR').addEventListener('click', () => rotateGroup(90));
+document.getElementById('groupDup').addEventListener('click', duplicateGroup);
+document.getElementById('groupDel').addEventListener('click', deleteGroup);
+document.getElementById('groupClose').addEventListener('click', () => select(-1));
+// The selection marks: each piece's outline dashed, and the box being dragged.
+function drawGroupOverlay() {
+  ctx.save();
+  ctx.strokeStyle = '#4a7fe8'; ctx.lineWidth = 1.5; ctx.setLineDash([5, 3]);
+  group.forEach(i => { const ps = itemPoly(placed[i]); ctx.beginPath(); ps.forEach((p, k) => k ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)); ctx.closePath(); ctx.stroke(); });
+  if (boxSel) {
+    ctx.fillStyle = 'rgba(74,127,232,0.08)';
+    const x = Math.min(boxSel.x0, boxSel.x1), y = Math.min(boxSel.y0, boxSel.y1), w = Math.abs(boxSel.x1 - boxSel.x0), h = Math.abs(boxSel.y1 - boxSel.y0);
+    ctx.fillRect(x, y, w, h); ctx.strokeRect(x, y, w, h);
+  }
+  ctx.restore();
+}
+
 [selAngle, selAngleNum].forEach(el => el.addEventListener('input', () => {
   const item = placed[selected];
-  if (!item || el.value === '') return;
+  if (!item || el.value === '' || item.locked) return;
   setItemRot(item, (+el.value) * Math.PI / 180);
   itemChanged(selected);
 }));
@@ -3438,6 +4123,7 @@ document.getElementById('selShape').addEventListener('change', e => {
   const item = placed[selected];
   if (!item) return;
   const v = e.target.value;
+  delete item.flip;                      // (the menu says which way it faces; a mirror would contradict it)
   const {style, ...prevSofa} = item.shape && item.shape.kind === 'sofa' ? item.shape : {};
   item.shape = v === 'box' ? null
     : v === 'modular' ? {kind: 'modular'}
@@ -3464,10 +4150,42 @@ document.getElementById('selClose').addEventListener('click', () => select(-1));
 selPanel.classList.add('compact');
 document.getElementById('selMore').addEventListener('click', () => selPanel.classList.toggle('compact'));
 document.getElementById('selDelete').addEventListener('click', () => deleteItem(selected));
+// Flip: mirror the piece across its own width. A hand-drawn footprint is
+// mirrored itself (so the plan, the fit check and 3D all follow it);
+// a generated sofa with a chaise on one side moves it to the other side;
+// anything else gets item.flip, which mirrors its picture and its 3D model.
+function flipSelected() {
+  const item = placed[selected];
+  if (!item) return;
+  // (a model still loading counts as a model: it will be what's shown)
+  const hasModel = !!item.modelUrl && !(modelCache[item.modelUrl] && modelCache[item.modelUrl].status === 'error');
+  const sh = item.shape, genSofa = sh && sh.kind === 'sofa' && !hasModel && !(item.footprint && item.footprint.length > 2);
+  const oneChaise = genSofa && (sh.chaise === 'left' || sh.chaise === 'right');
+  if (genSofa) delete item.flip;        // (a generated sofa shows its side through shape.chaise, never the flag)
+  if (genSofa && !oneChaise) { toast('This sofa looks the same mirrored. Pick a chaise side under Shape.'); itemChanged(selected, true); return; }
+  if (item.footprint && item.footprint.length > 2) item.footprint = item.footprint.map(p => ({x: -p.x, y: p.y})).reverse();
+  else if (oneChaise) item.shape = {...sh, chaise: sh.chaise === 'left' ? 'right' : 'left'};   // (a new object: a duplicate shares the old one; the Shape menu then says which side)
+  else if (item.flip) delete item.flip; else item.flip = true;
+  if (oneChaise) updateSelPanel();
+  itemChanged(selected, !!item.footprint || oneChaise);
+  checkpoint();
+}
+document.getElementById('selFlip').addEventListener('click', flipSelected);
+// Lock: the piece can still be selected, resized, recoloured or deleted from
+// this panel, but not dragged, turned, nudged or deleted with a key or a
+// right-click. The fit check counts it as usual.
+document.getElementById('selLock').addEventListener('click', () => {
+  const item = placed[selected];
+  if (!item) return;
+  if (item.locked) delete item.locked; else item.locked = true;
+  updateSelPanel(); draw2d(); checkpoint();
+});
 document.getElementById('selDuplicate').addEventListener('click', () => {
   const item = placed[selected];
   if (!item) return;
   placed.push({...item, x: item.x + 20, y: item.y + 20, footprint: item.footprint && item.footprint.map(p => ({...p}))});
+  if (group.length) { group = []; updateGroupBar(); }
+  delete placed[placed.length - 1].locked;      // (a copy is for moving: it starts unlocked)
   selected = placed.length - 1;
   updateSelPanel();
   redraw();
@@ -3475,9 +4193,24 @@ document.getElementById('selDuplicate').addEventListener('click', () => {
 
 document.addEventListener('keydown', e => {
   if (/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+  if (group.length && view === '2d') {
+    if (e.key === 'Escape') { select(-1); return; }
+    if (e.key === 'r' || e.key === 'R') { rotateGroup(e.shiftKey ? -15 : 15); e.preventDefault(); }
+    else if (e.key === 'Delete' || e.key === 'Backspace') { deleteGroup(); e.preventDefault(); }
+    else if (e.key.startsWith('Arrow')) {
+      const step = (e.shiftKey ? 0.25 : 0.05) * SCALE;
+      moveGroup(e.key === 'ArrowLeft' ? -step : e.key === 'ArrowRight' ? step : 0, e.key === 'ArrowUp' ? -step : e.key === 'ArrowDown' ? step : 0);
+      e.preventDefault();
+    }
+    return;
+  }
   const item = placed[selected];
   if (e.key === 'Escape') { select(-1); return; }
   if (!item) return;
+  if (item.locked && (e.key === 'Delete' || e.key === 'Backspace' || e.key.startsWith('Arrow') || e.key === 'r' || e.key === 'R')) {
+    if (view === '3d' && e.key.startsWith('Arrow')) return;     // (in 3D the arrows walk)
+    toast('This piece is locked: unlock it in its panel first.'); e.preventDefault(); return;
+  }
   if (e.key === 'r' || e.key === 'R') { rotateSelected(e.shiftKey ? -15 : 15); e.preventDefault(); }
   else if (e.key === 'Delete' || e.key === 'Backspace') { deleteItem(selected); e.preventDefault(); }
   else if (e.key.startsWith('Arrow')) {
@@ -3492,20 +4225,205 @@ document.addEventListener('keydown', e => {
   }
 });
 
+
+// ── Trace a floor plan: a picture of a real plan under the 2D plan ──────────
+// trace = {src (data: URL), x, y (its centre, metres from the canvas centre),
+// mpp (metres per image pixel), opacity}, per room, saved in the layout (not
+// in share links). "Set scale": click two points, type the real distance.
+const TRACE_MAX_CHARS = 300000;         // (data URL size cap: autosave and undo keep copies)
+function traceImage() {
+  if (!trace) return null;
+  if (traceImgCache.src !== trace.src) {
+    const img = new Image();
+    img.onload = () => draw2d();
+    img.src = trace.src;
+    traceImgCache = {src: trace.src, img};
+  }
+  const img = traceImgCache.img;
+  return img.complete && img.naturalWidth ? img : null;
+}
+function traceRect() {
+  const img = traceImage();
+  if (!img) return null;
+  const w = img.naturalWidth * trace.mpp * SCALE, h = img.naturalHeight * trace.mpp * SCALE;
+  const cx = canvas.width / 2 + trace.x * SCALE, cy = canvas.height / 2 + trace.y * SCALE;
+  return {img, x: cx - w / 2, y: cy - h / 2, w, h, cx, cy};
+}
+function drawTrace() {
+  const r = traceRect();
+  if (!r) return;
+  ctx.save();
+  ctx.globalAlpha = trace.opacity;
+  ctx.drawImage(r.img, r.x, r.y, r.w, r.h);
+  ctx.restore();
+  if (traceMode === 'move') {
+    ctx.save(); ctx.strokeStyle = '#4a7fe8'; ctx.setLineDash([6, 4]); ctx.lineWidth = 1.5;
+    ctx.strokeRect(r.x, r.y, r.w, r.h); ctx.restore();
+  }
+  if (traceMode === 'scale' && traceScalePt) {
+    ctx.save(); ctx.fillStyle = '#e8834a';
+    ctx.beginPath(); ctx.arc(traceScalePt.x, traceScalePt.y, 5, 0, Math.PI * 2); ctx.fill();
+    if (traceHover) {
+      ctx.strokeStyle = '#e8834a'; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(traceScalePt.x, traceScalePt.y); ctx.lineTo(traceHover.x, traceHover.y); ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+// A picked file, shrunk to at most 1600 px (and then smaller until it fits
+// the size cap) and stored as a JPEG.
+function addTraceFile(file) {
+  if (!file || !/^image\//.test(file.type)) { toast('Pick a picture file (PNG or JPEG) of the floor plan.'); return; }
+  const fr = new FileReader();
+  fr.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      let src = null;
+      for (const [max, q] of [[1600, 0.8], [1200, 0.7], [900, 0.6], [700, 0.5]]) {
+        const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+        const c = document.createElement('canvas');
+        c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+        const g = c.getContext('2d');
+        g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);      // (transparent PNGs: white paper)
+        g.drawImage(img, 0, 0, c.width, c.height);
+        src = c.toDataURL('image/jpeg', q);
+        if (src.length <= TRACE_MAX_CHARS) break;
+      }
+      // Fitted to the room's width to start with; "Set scale" makes it exact.
+      const bb = getRoomBBox(), probe = new Image();
+      probe.onload = () => {
+        const roomWm = Math.max(1, (bb.x2 - bb.x) / SCALE);
+        trace = {src, x: +(((bb.x + bb.x2) / 2 - canvas.width / 2) / SCALE).toFixed(4), y: +(((bb.y + bb.y2) / 2 - canvas.height / 2) / SCALE).toFixed(4),
+          mpp: roomWm / probe.naturalWidth, opacity: 0.5};
+        updateTraceControls(); draw2d(); checkpoint();
+        setTraceMode('scale');
+        diag('trace image', {kb: Math.round(src.length / 1024), w: probe.naturalWidth, h: probe.naturalHeight});
+      };
+      probe.src = src;
+    };
+    img.onerror = () => toast("That picture couldn't be read. Try a PNG or JPEG.");
+    img.src = fr.result;
+  };
+  fr.readAsDataURL(file);
+}
+function cancelLengthBox() {
+  document.querySelectorAll('.wall-len-input').forEach(el => { if (el.isConnected) el.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'})); });
+}
+function setTraceMode(m) {
+  if (m && trace) { if (measureMode) setMeasureMode(false); if (noteMode) setNoteMode(false); }
+  traceMode = trace ? m : null; traceScalePt = null; traceHover = null; traceDrag = null; tracePending = null;
+  cancelLengthBox();
+  document.getElementById('traceScaleBtn').classList.toggle('active', traceMode === 'scale');
+  document.getElementById('traceMoveBtn').classList.toggle('active', traceMode === 'move');
+  document.getElementById('traceHint').textContent = traceMode === 'scale'
+    ? 'Set the scale: click one end of something on the picture you know the length of (a wall, a door), then the other end, and type its real length.'
+    : traceMode === 'move' ? 'Drag the picture to line it up with the room. Click Move again (or press Esc) when done.' : '';
+  canvas.style.cursor = traceMode ? (traceMode === 'move' ? 'move' : 'crosshair') : 'default';
+  // (on a phone the hint is in the panels below the plan, out of sight)
+  if (traceMode && window.innerWidth <= 820) toast(document.getElementById('traceHint').textContent);
+  draw2d();
+}
+// The plan's pointer, while a trace mode is on. Returns true if it took it.
+function tracePointerDown(mx, my, e) {
+  if (!traceMode || !trace) return false;
+  e.preventDefault();                  // (keeps focus on the length box opened below)
+  if (traceMode === 'move') { traceDrag = {mx, my, x: trace.x, y: trace.y}; return true; }
+  if (document.querySelector('.wall-len-input')) return true;     // (the length box is open: Enter or Esc first)
+  if (e.pointerType === 'touch') { tracePending = {mx, my, id: e.pointerId}; return true; }
+  return traceScaleClick(mx, my);
+}
+function traceScaleClick(mx, my) {
+  if (!traceScalePt) { traceScalePt = {x: mx, y: my}; document.getElementById('traceHint').textContent = 'Now click the other end.'; draw2d(); return true; }
+  const p1 = traceScalePt, d = Math.hypot(mx - p1.x, my - p1.y);
+  if (d < 8) return true;
+  traceHover = {x: mx, y: my}; draw2d();
+  canvasNumberInput(mx + 8, my - 10, (d / SCALE).toFixed(2), v => {
+    if (!(v > 0)) { setTraceMode('scale'); return; }
+    // Scale the picture about the first point, so that point stays put.
+    const f = v * SCALE / d, cx = canvas.width / 2 + trace.x * SCALE, cy = canvas.height / 2 + trace.y * SCALE;
+    trace.mpp *= f;
+    trace.x = +((p1.x + (cx - p1.x) * f - canvas.width / 2) / SCALE).toFixed(4);
+    trace.y = +((p1.y + (cy - p1.y) * f - canvas.height / 2) / SCALE).toFixed(4);
+    setTraceMode(null); checkpoint();
+    toast(`Scale set (${fmtLen(v)} between the two points). Use Move to line the picture up with the room.`);
+  }, {title: 'The real length between the two points'});
+  return true;
+}
+// A second finger: the first one was the start of a pinch, not a point or a move.
+function traceTakeBackTouch() {
+  tracePending = null;
+  if (traceDrag) { trace.x = traceDrag.x; trace.y = traceDrag.y; traceDrag = null; }
+}
+function tracePointerMove(mx, my) {
+  if (traceDrag) {
+    trace.x = +(traceDrag.x + (mx - traceDrag.mx) / SCALE).toFixed(4);
+    trace.y = +(traceDrag.y + (my - traceDrag.my) / SCALE).toFixed(4);
+    draw2d(); return true;
+  }
+  if (traceMode === 'scale' && traceScalePt) { traceHover = {x: mx, y: my}; draw2d(); return true; }
+  return !!traceMode;
+}
+function updateTraceControls() {
+  document.getElementById('traceTools').hidden = !trace;
+  document.getElementById('traceAddBtn').textContent = trace ? 'Replace plan image…' : 'Add plan image…';
+  if (trace) document.getElementById('traceOpacity').value = trace.opacity;
+  if (!trace && traceMode) setTraceMode(null);
+}
+document.getElementById('traceAddBtn').addEventListener('click', () => document.getElementById('traceFile').click());
+document.getElementById('traceFile').addEventListener('change', e => { addTraceFile(e.target.files[0]); e.target.value = ''; });
+document.getElementById('traceOpacity').addEventListener('input', e => { if (trace) { trace.opacity = +e.target.value; draw2d(); } });
+document.getElementById('traceOpacity').addEventListener('change', () => checkpoint());
+document.getElementById('traceScaleBtn').addEventListener('click', () => setTraceMode(traceMode === 'scale' ? null : 'scale'));
+document.getElementById('traceMoveBtn').addEventListener('click', () => setTraceMode(traceMode === 'move' ? null : 'move'));
+document.getElementById('traceRemoveBtn').addEventListener('click', () => { trace = null; updateTraceControls(); draw2d(); checkpoint(); });
+document.addEventListener('keydown', e => {
+  // (Esc in the length box is the box's own: it cancels just the length)
+  if (traceMode && e.key === 'Escape' && !e.target.classList.contains('wall-len-input')) { setTraceMode(null); e.stopImmediatePropagation(); }
+}, true);
+
 // ── Furniture sidebar ─────────────────────────────────────────────────────────
 
+// Grouped by the room they usually go in; "Any room" for lamps, rugs, art….
+const FURN_ROOMS = [['living', 'Living room'], ['bedroom', 'Bedroom'], ['dining', 'Dining'], ['kitchen', 'Kitchen'], ['office', 'Office'],
+  ['bathroom', 'Bathroom & laundry'], ['outdoor', 'Outdoor'], ['any', 'Any room']];
 const furnList = document.getElementById('furnList');
-FURNITURE.forEach(f => {
+FURN_ROOMS.forEach(([room, name]) => {
+  const h = document.createElement('div');
+  h.className = 'furn-group'; h.textContent = name;
+  furnList.appendChild(h);
+  // (a piece with no known room goes under "Any room")
+  FURNITURE.filter(f => (FURN_ROOMS.some(r => r[0] === f.room) ? f.room : 'any') === room).forEach(addFurnButton);
+});
+// The search box: pieces whose name (or room) has every word typed, ignoring
+// accents and case; headings with nothing left are hidden.
+function foldText(t) { return t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(); }
+document.getElementById('furnSearch').addEventListener('input', e => {
+  const words = foldText(e.target.value).split(/\s+/).filter(Boolean);
+  let shown = 0, head = null, inHead = 0;
+  const closeHead = () => { if (head) head.hidden = !inHead; };
+  [...furnList.children].forEach(el => {
+    if (el.classList.contains('furn-group')) { closeHead(); head = el; inHead = 0; return; }
+    // (a word in the name or its other words; or a whole word of the room heading: "kitchen", not "bed" in "Bedroom")
+    const headWords = head ? foldText(head.textContent).split(/[^a-z]+/) : [];
+    const ok = words.every(w => el.dataset.search.includes(w) || headWords.includes(w));
+    el.hidden = !ok; if (ok) { inHead++; shown++; }
+  });
+  closeHead();
+  document.getElementById('furnNone').hidden = shown > 0;
+});
+function addFurnButton(entry) {
+  const {room, keywords, ...f} = entry;   // (the group and search words aren't part of the item)
   const el = document.createElement('div');
   el.className = 'furn-item';
   el.innerHTML = `<span class="furn-emoji">${f.emoji}</span><span>${f.label}</span>`;
+  el.dataset.search = foldText(f.label + ' ' + (keywords || ''));
   el.draggable = true;
   el.title = 'Drag onto the plan, or click to add';
   el.addEventListener('dragstart', () => { draggingFurn = {...f, shape: f.shape && {...f.shape}}; });
   // Click adds to the room centre — the only way in while the 3D view is showing.
   el.addEventListener('click', () => addItem({...f, shape: f.shape && {...f.shape}}));
   furnList.appendChild(el);
-});
+}
 
 // Add an item centred in the room and select it.
 function addItem(props) {
@@ -3517,6 +4435,7 @@ function addItem(props) {
   applyKindDefaults(item);
   settleItem(item);
   placed.push(item);
+  if (group.length) { group = []; updateGroupBar(); }
   selected = placed.length - 1;
   updateSelPanel();
   redraw();
@@ -3575,7 +4494,7 @@ function itemIndexAt(mx, my) {
 
 function onHandle(mx, my) {
   const item = placed[selected];
-  if (!item) return false;
+  if (!item || item.locked) return false;
   const h = handlePos(item);
   return Math.hypot(mx - h.x, my - h.y) <= 10;
 }
@@ -3589,6 +4508,12 @@ let touchUndo = null;   // what the latest first finger added, taken back if it 
 // Two fingers on the plan: pinch to zoom and move them to pan, instead of
 // whatever the first finger started (a drag, a corner while drawing...).
 function startPinch2d() {
+  measureDrag = null;
+  if (noteDrag) { notes[noteDrag.i].x = noteDrag.ox; notes[noteDrag.i].y = noteDrag.oy; noteDrag = null; }
+  if (traceMode) traceTakeBackTouch();
+  if (groupDrag) { group.forEach((j, k) => { placed[j].x = groupDrag.start[k].x; placed[j].y = groupDrag.start[k].y; }); groupDrag = null; }
+  boxSel = null;
+  snapGuides = [];
   if (touchUndo && shape === 'custom' && drawing) { customPts.length = Math.min(customPts.length, touchUndo.drawLen); drawHover = null; }
   if (touchUndo && drawingItemShape) itemShapePts.length = Math.min(itemShapePts.length, touchUndo.shapeLen);
   if (touchUndo && selected !== touchUndo.sel) select(touchUndo.sel);
@@ -3624,8 +4549,19 @@ canvas.addEventListener('pointerdown', e => {
   }
   if (e.pointerType === 'touch') {
     const now = performance.now();
-    if (lastTap && now - lastTap.t < 350 && Math.hypot(mx - lastTap.x, my - lastTap.y) < 30) { lastTap = null; draggingPlaced = null; doubleClickAt(mx, my); return; }
+    if (!measureMode && lastTap && now - lastTap.t < 350 && Math.hypot(mx - lastTap.x, my - lastTap.y) < 30) { lastTap = null; draggingPlaced = null; doubleClickAt(mx, my); return; }
     lastTap = {t: now, x: mx, y: my};
+  }
+  if (elevWall == null && tracePointerDown(mx, my, e)) return;
+  if (measureMode && elevWall == null) {
+    const p = measureSnap(mx, my, e.altKey);
+    measureDrag = {x1: p.x, y1: p.y, x2: p.x, y2: p.y, px: mx, py: my};   // (px, py: where it was pressed, for a click)
+    draw2d(); return;
+  }
+  if (elevWall == null && !drawingItemShape && !(shape === 'custom' && drawing)) {
+    if (noteMode) { e.preventDefault(); select(-1); notes.push({x: mx, y: my, text: ''}); setNoteMode(false); editNote(notes.length - 1); return; }
+    const ni = onHandle(mx, my) ? -1 : noteAt(mx, my);
+    if (ni >= 0) { e.preventDefault(); select(-1); noteDrag = {i: ni, dx: mx - notes[ni].x, dy: my - notes[ni].y, ox: notes[ni].x, oy: notes[ni].y, moved: false}; return; }
   }
   if (elevWall != null) { elevMouseDown(mx, my); return; }
   if (drawingItemShape) { itemShapePts.push({x: mx, y: my}); draw2d(); return; }
@@ -3639,6 +4575,11 @@ canvas.addEventListener('pointerdown', e => {
     return;
   }
   if (onHandle(mx, my)) { rotating2d = true; draw2d(); return; }
+  {
+    const gi = itemIndexAt(mx, my);
+    if (e.shiftKey && (gi >= 0 || !roomHitAt(mx, my))) { boxSel = {x0: mx, y0: my, x1: mx, y1: my, piece: gi}; draw2d(); return; }
+    if (group.length && group.includes(gi)) { groupDrag = {mx, my, start: group.map(j => ({x: placed[j].x, y: placed[j].y})), moved: false}; return; }
+  }
   // The room outline: a wall's length label, a corner, then furniture, then a wall.
   const hit = roomHitAt(mx, my);
   // (preventDefault: the press would otherwise move focus off the new box, closing it)
@@ -3656,8 +4597,8 @@ canvas.addEventListener('pointerdown', e => {
   }
   if (hit && (hit.type === 'vertex' || hit.type === 'curve')) { e.preventDefault(); select(-1); startRoomEdit(hit, mx, my); return; }
   if (i < 0 && hit && (hit.type === 'wall' || hit.type === 'radius')) { select(-1); startRoomEdit(hit, mx, my); return; }
-  if (i >= 0) { draggingPlaced = i; dragOff = {x: mx - placed[i].x, y: my - placed[i].y}; }
-  else pan2d = {sx, sy, x: view2d.x, y: view2d.y};   // (empty space: drag to pan)
+  if (i >= 0 && !placed[i].locked) { draggingPlaced = i; dragOff = {x: mx - placed[i].x, y: my - placed[i].y}; dragStart = {x: mx, y: my}; }
+  else pan2d = {sx, sy, x: view2d.x, y: view2d.y};   // (empty space, or a locked piece: drag to pan)
   select(i);
 });
 
@@ -3669,6 +4610,10 @@ window.addEventListener('pointermove', e => {
     if (pinch2d && touches2d.size >= 2) { movePinch2d(); return; }
   }
   if (pinch2d) return;
+  if (measureDrag) { const {mx, my} = canvasPoint(e), p = measureEnd(measureDrag, mx, my, e.altKey); measureDrag.x2 = p.x; measureDrag.y2 = p.y; draw2d(); return; }
+  if (measureMode && elevWall == null) { canvas.style.cursor = 'crosshair'; return; }   // (no handle highlights while measuring)
+  if (noteDrag) { const {mx, my} = canvasPoint(e), n = notes[noteDrag.i]; n.x = mx - noteDrag.dx; n.y = my - noteDrag.dy; noteDrag.moved = true; draw2d(); return; }
+  if (traceMode && elevWall == null) { const {mx, my} = canvasPoint(e); if (tracePointerMove(mx, my)) return; }
   if (pan2d) {
     const {sx, sy} = screenPoint(e);
     view2d.x = pan2d.x + sx - pan2d.sx; view2d.y = pan2d.y + sy - pan2d.sy;
@@ -3684,9 +4629,16 @@ window.addEventListener('pointermove', e => {
     itemChanged(selected);
     return;
   }
+  if (groupDrag) {
+    groupDrag.moved = true;
+    group.forEach((j, k) => { placed[j].x = groupDrag.start[k].x + mx - groupDrag.mx; placed[j].y = groupDrag.start[k].y + my - groupDrag.my; settleItem(placed[j]); });
+    draw2d(); return;
+  }
+  if (boxSel) { boxSel.x1 = mx; boxSel.y1 = my; draw2d(); return; }
   if (draggingPlaced != null) {
     placed[draggingPlaced].x = mx - dragOff.x;
     placed[draggingPlaced].y = my - dragOff.y;
+    snapDraggedItem(draggingPlaced, e.altKey, {x: mx - dragStart.x, y: my - dragStart.y});
     settleItem(placed[draggingPlaced]);
     draw2d();
     return;
@@ -3713,6 +4665,15 @@ window.addEventListener('pointermove', e => {
 
 const pointerUp2d = e => {
   touches2d.delete(e.pointerId);
+  if (measureDrag) {
+    const m = measureDrag; measureDrag = null;
+    if (Math.hypot(m.x2 - m.x1, m.y2 - m.y1) >= 4 && e.type !== 'pointercancel') { delete m.px; delete m.py; measures.push(m); measureSel = -1; updateMeasureClear(); checkpoint(); }
+    else if (e.type !== 'pointercancel') { measureSel = measureAt(m.px, m.py); updateMeasureClear(); }   // (a click: pick the tape there, or none)
+    draw2d();
+  }
+  if (noteDrag) { if (noteDrag.moved) checkpoint(); noteDrag = null; }
+  if (traceDrag) { traceDrag = null; checkpoint(); }
+  if (tracePending && e.pointerId === tracePending.id) { const p = tracePending; tracePending = null; if (!pinch2d && e.type !== 'pointercancel') traceScaleClick(p.mx, p.my); }
   if (pinch2d) {
     if (touches2d.size >= 2) return;
     pinch2d = null;
@@ -3724,6 +4685,17 @@ const pointerUp2d = e => {
   if (pan2d) { pan2d = null; canvas.style.cursor = 'default'; }
   if (rotating2d) { rotating2d = false; draw2d(); }
   draggingPlaced = null;
+  if (groupDrag) { if (groupDrag.moved) checkpoint(); groupDrag = null; }
+  if (boxSel) {
+    const box = boxSel, x0 = Math.min(boxSel.x0, boxSel.x1), x1 = Math.max(boxSel.x0, boxSel.x1), y0 = Math.min(boxSel.y0, boxSel.y1), y1 = Math.max(boxSel.y0, boxSel.y1);
+    boxSel = null;
+    if (x1 - x0 > 4 || y1 - y0 > 4) {
+      const inside = placed.map((it, i) => ({i, c: itemCentre(it)})).filter(({c}) => c.x >= x0 && c.x <= x1 && c.y >= y0 && c.y <= y1).map(({i}) => i);
+      setGroup(inside);
+    } else if (box.piece >= 0) toggleInGroup(box.piece);
+    else draw2d();
+  }
+  if (snapGuides.length) { snapGuides = []; draw2d(); }
   if (roomEdit) {
     // (a click on a corner, without dragging it, selects it for Delete)
     if (roomEdit.type === 'vertex' && !roomEdit.moved) selCorner = roomEdit.i;
@@ -3741,10 +4713,15 @@ window.addEventListener('pointerup', pointerUp2d);
 window.addEventListener('pointercancel', pointerUp2d);
 
 function doubleClickAt(mx, my) {
+  if (measureMode) return;
   if (shape === 'custom' && drawing) { finishDrawing(); return; }
   if (elevWall != null) return;
-  // Double-click a wall (not furniture): its elevation, for height, windows and doors.
+  const ni = noteAt(mx, my);
+  if (ni >= 0) { editNote(ni); return; }
   const wh = roomHitAt(mx, my);
+  // Double-tap a corner with a finger or pen (often no Delete key there): remove it.
+  if (wh && wh.type === 'vertex' && lastPointerType !== 'mouse') { select(-1); deleteCorner(wh.i); return; }
+  // Double-click a wall (not furniture): its elevation, for height, windows and doors.
   if (wh && (wh.type === 'wall' || wh.type === 'curve' || wh.type === 'radius') && itemIndexAt(mx, my) < 0) { openElevation(wh.i); return; }
   const i = itemIndexAt(mx, my);
   if (i >= 0) { select(i); rotateSelected(90); }
@@ -3755,9 +4732,16 @@ canvas.addEventListener('contextmenu', e => {
   e.preventDefault();
   if (elevWall != null || lastPointerType === 'touch') return;
   if (drawingItemShape) { finishItemFootprint(); return; }
+  { const {mx, my} = canvasPoint(e), mi = measureAt(mx, my);       // (right-click a tape: remove it)
+    if (mi >= 0 && !(shape === 'custom' && drawing)) { deleteMeasure(mi); return; }
+    if (measureMode) return; }
   if (shape === 'custom' && drawing) { finishDrawing(); return; }
   const {mx, my} = canvasPoint(e);
-  deleteItem(itemIndexAt(mx, my));
+  const ni = noteAt(mx, my);
+  if (ni >= 0) { notes.splice(ni, 1); draw2d(); checkpoint(); return; }
+  const di = itemIndexAt(mx, my);
+  if (placed[di] && placed[di].locked) { toast('This piece is locked: unlock it in its panel to delete it.'); return; }
+  deleteItem(di);
 });
 
 // ── Room outline: drawing, wall lengths, reshaping, undo ─────────────────────
@@ -3823,7 +4807,7 @@ function finishDrawing() {
 
 // A typed length: the next wall goes that far towards the pointer.
 function applyTypedLength() {
-  const m = parseFloat(lenBuffer.replace(',', '.'));
+  const m = parseLen(lenBuffer);         // (metres; feet and inches in feet mode)
   const last = customPts[customPts.length - 1];
   lenBuffer = '';
   if (!(m > 0) || !last) { draw2d(); return; }
@@ -3900,7 +4884,7 @@ function setCircleDiameter(d, snap = true) {
 function editCircleDiameter() {
   const lab = wallLabels[0];
   if (!lab) return;
-  canvasNumberInput(lab.x - 6, lab.y - 3, Math.min(roomW, roomH).toFixed(2), v => { if (v > 0) { setCircleDiameter(v, false); redraw(); checkpoint(); } else draw2d(); }, {min: String(CIRCLE_D.min), title: 'Diameter (m)'});
+  canvasNumberInput(lab.x - 6, lab.y - 3, Math.min(roomW, roomH), v => { if (v > 0) { setCircleDiameter(v, false); redraw(); checkpoint(); } else draw2d(); }, {min: String(CIRCLE_D.min), title: 'Diameter (m)'});
 }
 
 function startRoomEdit(hit, mx, my) {
@@ -3985,8 +4969,10 @@ function setWallLength(i, m) {
 function canvasNumberInput(x, y, value, apply, {min = '0.1', title = ''} = {}) {
   document.querySelectorAll('.wall-len-input').forEach(el => el.remove());
   const input = document.createElement('input');
-  input.type = 'number'; input.step = '0.01'; input.min = min; input.className = 'wall-len-input'; input.title = title;
-  input.value = value;
+  input.className = 'wall-len-input'; input.title = title;
+  if (units === 'ft') { input.type = 'text'; input.value = fmtFtIn(+value); }   // (feet and inches, read with parseLen)
+  else { input.type = 'number'; input.step = '0.01'; input.min = min; input.value = (+value).toFixed(2); }
+  const shown = input.value;
   const k = canvas.clientWidth / canvas.width || 1, v = viewOf2d();
   input.style.left = (canvas.offsetLeft + (x * v.k + v.x) * k) + 'px';
   input.style.top = (canvas.offsetTop + (y * v.k + v.y) * k) + 'px';
@@ -3995,7 +4981,8 @@ function canvasNumberInput(x, y, value, apply, {min = '0.1', title = ''} = {}) {
   let done = false;
   const finish = ok => {
     if (done) return; done = true;
-    const v = parseFloat(input.value);
+    // (feet mode: Enter on an unedited box changes nothing; its text is rounded to ¼")
+    const v = units === 'ft' ? (input.value === shown ? NaN : parseLen(input.value)) : parseFloat(input.value);
     if (input.isConnected) input.remove();
     if (ok && !isNaN(v)) apply(v); else draw2d();
   };
@@ -4007,7 +4994,7 @@ function canvasNumberInput(x, y, value, apply, {min = '0.1', title = ''} = {}) {
 function editWallLength(i) {
   const lab = wallLabels.find(l => l.i === i);
   if (!lab) return;
-  canvasNumberInput(lab.x - 6, lab.y - 3, wallLen(i).toFixed(2), v => { if (v > 0) setWallLength(i, v); else draw2d(); });
+  canvasNumberInput(lab.x - 6, lab.y - 3, wallLen(i), v => { if (v > 0) setWallLength(i, v); else draw2d(); });
 }
 
 // ── Adding and deleting corners ──
@@ -4087,12 +5074,12 @@ function drawRoomOverlay() {
       pts.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
       ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 9; ctx.stroke();
       ctx.strokeStyle = roomStyle.wallColor; ctx.lineWidth = 7; ctx.stroke();
-      for (let i = 0; i + 1 < pts.length; i++) label(lenOf(pts[i], pts[i + 1]).toFixed(2) + ' m', (pts[i].x + pts[i + 1].x) / 2, (pts[i].y + pts[i + 1].y) / 2 - 14);
+      for (let i = 0; i + 1 < pts.length; i++) label(fmtLen(lenOf(pts[i], pts[i + 1])), (pts[i].x + pts[i + 1].x) / 2, (pts[i].y + pts[i + 1].y) / 2 - 14);
       const last = pts[pts.length - 1], hv = drawHover;
       if (hv) {
         ctx.setLineDash([7, 5]); ctx.strokeStyle = '#4a7fe8'; ctx.lineWidth = 3;
         ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(hv.x, hv.y); ctx.stroke(); ctx.setLineDash([]);
-        const text = lenBuffer ? `${lenBuffer} m ↵ Enter` : lenOf(last, hv).toFixed(2) + ' m';
+        const text = lenBuffer ? `${lenBuffer}${units === 'ft' && !/['"]/.test(lenBuffer) ? ' ft' : units === 'ft' ? '' : ' m'} ↵ Enter` : fmtLen(lenOf(last, hv));
         label(text, (last.x + hv.x) / 2, (last.y + hv.y) / 2 - 16, null, true);
       }
       pts.forEach((p, i) => {
@@ -4109,7 +5096,7 @@ function drawRoomOverlay() {
       ctx.strokeStyle = 'rgba(74,127,232,0.55)'; ctx.lineWidth = 9;
       ctx.beginPath(); ctx.arc(c.cx, c.cy, c.r, 0, Math.PI * 2); ctx.stroke();
     }
-    label(Math.min(roomW, roomH).toFixed(2) + ' m across', c.cx, c.cy - c.r - 20, 0, hot);
+    label(fmtLen(Math.min(roomW, roomH)) + ' across', c.cx, c.cy - c.r - 20, 0, hot);
     if (!exporting) {
       ctx.fillStyle = hot ? '#4a7fe8' : '#fff'; ctx.strokeStyle = '#4a7fe8'; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.arc(c.handle.x, c.handle.y, 5, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
@@ -4128,7 +5115,7 @@ function drawRoomOverlay() {
       }
       // length (along the arc), outside the wall — far enough out that the
       // label clears the wall and its ◆ whichever way the wall runs
-      const text = (arc.len / SCALE).toFixed(2) + ' m', tw = ctx.measureText(text).width + 10;
+      const text = fmtLen(arc.len / SCALE), tw = ctx.measureText(text).width + 10;
       const off = 12 + Math.abs(nrm.x) * tw / 2 + Math.abs(nrm.y) * 17 / 2;
       label(text, mid.x + nrm.x * off, mid.y + nrm.y * off, i, hot && !bending);
       if (exporting) return;
@@ -4141,7 +5128,7 @@ function drawRoomOverlay() {
       ctx.restore();
       if (bending || curveHot && !arc.straight) {
         const s = (walls[i] && walls[i].bulge) || 0;
-        label(s ? `curve ${s > 0 ? '+' : ''}${s.toFixed(2)} m · radius ${(arc.R / SCALE).toFixed(2)} m` : 'straight', mid.x - nrm.x * 22, mid.y - nrm.y * 22, null, true);
+        label(s ? `curve ${s > 0 ? '+' : ''}${fmtLen(s)} · radius ${fmtLen(arc.R / SCALE)}` : 'straight', mid.x - nrm.x * 22, mid.y - nrm.y * 22, null, true);
       }
     });
     if (!exporting) pts.forEach((a, i) => {
@@ -4160,10 +5147,10 @@ function drawRoomOverlay() {
       ctx.fillStyle = sel ? '#e8834a' : hot ? '#4a7fe8' : '#fff'; ctx.strokeStyle = sel ? '#e8834a' : '#4a7fe8'; ctx.lineWidth = 1.5;
       ctx.beginPath(); ctx.rect(p.x - r, p.y - r, 2 * r, 2 * r); ctx.fill(); ctx.stroke();
     });
-    if (!exporting && selCorner != null && pts[selCorner] && lastPointerType !== 'touch') {
+    if (!exporting && selCorner != null && pts[selCorner]) {
       // (inside the room, off the corner's two walls)
       const p = pts[selCorner], n1 = wallNormal(pts, selCorner), n2 = wallNormal(pts, (selCorner + pts.length - 1) % pts.length);
-      label(pts.length > 3 ? 'Delete removes this corner' : 'A room needs 3 corners', p.x - (n1.x + n2.x) * 40, p.y - (n1.y + n2.y) * 40, null, true);
+      label(pts.length > 3 ? (lastPointerType !== 'mouse' ? 'Double-tap removes this corner' : 'Delete removes this corner') : 'A room needs 3 corners', p.x - (n1.x + n2.x) * 40, p.y - (n1.y + n2.y) * 40, null, true);
     }
   }
   ctx.restore();
@@ -4244,6 +5231,45 @@ function getRoomOutline() {
   return out;
 }
 function wallLen(i) { return wallArc(i).len / SCALE; }
+
+// Floor area (m²) and the length of wall around it (m). Curved walls count
+// along their arcs (getRoomOutline, ~12 cm steps); a circle is exact.
+function roomArea() {
+  if (shape === 'circle') { const r = Math.min(roomW, roomH) / 2; return Math.PI * r * r; }
+  const o = getRoomOutline();
+  let a = 0;
+  o.forEach((p, i) => { const q = o[(i + 1) % o.length]; a += p.x * q.y - q.x * p.y; });
+  return Math.abs(a) / 2 / (SCALE * SCALE);
+}
+function roomPerimeter() {
+  if (shape === 'circle') return Math.PI * Math.min(roomW, roomH);
+  return getRoomPts().reduce((s, _, i) => s + wallLen(i), 0);
+}
+const roomReady = () => !(shape === 'custom' && (drawing || customPts.length < 3));
+// Where the area goes on the floor: the outline's centroid, or (an L or a
+// U whose centroid falls outside) the middle of the widest stretch of floor
+// across that height.
+function areaLabelPoint() {
+  const o = getRoomOutline();
+  let a = 0, cx = 0, cy = 0;
+  o.forEach((p, i) => { const q = o[(i + 1) % o.length], c = p.x * q.y - q.x * p.y; a += c; cx += (p.x + q.x) * c; cy += (p.y + q.y) * c; });
+  if (!a) return null;
+  cx /= 3 * a; cy /= 3 * a;
+  if (pointInPoly(o, cx, cy)) return {x: cx, y: cy};
+  const xs = [];
+  o.forEach((p, i) => { const q = o[(i + 1) % o.length]; if ((p.y > cy) !== (q.y > cy)) xs.push(p.x + (cy - p.y) / (q.y - p.y) * (q.x - p.x)); });
+  xs.sort((m, n) => m - n);
+  let best = null;
+  for (let i = 0; i + 1 < xs.length; i += 2) if (!best || xs[i + 1] - xs[i] > best[1] - best[0]) best = [xs[i], xs[i + 1]];
+  return best ? {x: (best[0] + best[1]) / 2, y: cy} : null;
+}
+// (feet mode: square feet)
+const fmtArea = m2 => units === 'ft' ? Math.round(m2 * 10.7639) + ' ft²' : (m2 < 10 ? m2.toFixed(2) : m2.toFixed(1)) + ' m²';
+function updateRoomArea() {
+  const el = document.getElementById('roomArea');
+  const t = roomReady() ? `Area ${fmtArea(roomArea())} · perimeter ${fmtLen(roomPerimeter())}` : '';
+  if (el.textContent !== t) el.textContent = t;
+}
 function wallHeights(i) { const w = walls[i] || {}, d = roomStyle.wallHeight; return [w.hStart ?? d, w.hEnd ?? d]; }
 function wallHeightAt(i, u) { const [a, b] = wallHeights(i), L = wallLen(i); return a + (b - a) * (L ? u / L : 0); }
 const snap5 = m => +(Math.round(m / 0.05) * 0.05).toFixed(2);
@@ -4270,6 +5296,9 @@ function elevFrame() {
 }
 
 function openElevation(i) {
+  if (measureMode) setMeasureMode(false);
+  if (noteMode) setNoteMode(false);
+  if (traceMode) setTraceMode(null);
   syncWalls();
   const n = getRoomPts().length;
   elevWall = ((i % n) + n) % n; elevSel = null; elevDrag = null;
@@ -4315,12 +5344,12 @@ function drawElevation() {
     tag(text, (xa + xb) / 2, (ya + yb) / 2, hot);
   };
   // length along the floor; the height at each end
-  dim(X(0), F.y0 + 24, X(L), F.y0 + 24, L.toFixed(2) + ' m');
+  dim(X(0), F.y0 + 24, X(L), F.y0 + 24, fmtLen(L));
   const drag = elevDrag && elevDrag.kind;
   const leftU = F.flip ? L : 0, rightU = F.flip ? 0 : L;
   const hl = wallHeightAt(i, leftU), hr = wallHeightAt(i, rightU);
-  dim(F.x0 - 30, Y(0), F.x0 - 30, Y(hl), hl.toFixed(2) + ' m', drag === (F.flip ? 'h1' : 'h0') || drag === 'hmid');
-  dim(F.x0 + L * s + 30, Y(0), F.x0 + L * s + 30, Y(hr), hr.toFixed(2) + ' m', drag === (F.flip ? 'h0' : 'h1') || drag === 'hmid');
+  dim(F.x0 - 30, Y(0), F.x0 - 30, Y(hl), fmtLen(hl), drag === (F.flip ? 'h1' : 'h0') || drag === 'hmid');
+  dim(F.x0 + L * s + 30, Y(0), F.x0 + L * s + 30, Y(hr), fmtLen(hr), drag === (F.flip ? 'h0' : 'h1') || drag === 'hmid');
   // windows and doors
   w.openings.forEach((o, k) => {
     const xa = Math.min(X(o.x), X(o.x + o.w)), xb = Math.max(X(o.x), X(o.x + o.w)), ya = Y(o.y + o.h), yb = Y(o.y);
@@ -4328,19 +5357,36 @@ function drawElevation() {
       ctx.fillStyle = '#d6ecf8'; ctx.fillRect(xa, ya, xb - xa, yb - ya);
       ctx.strokeStyle = '#5b7f9c'; ctx.lineWidth = 3; ctx.strokeRect(xa, ya, xb - xa, yb - ya);
       ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo((xa + xb) / 2, ya); ctx.lineTo((xa + xb) / 2, yb); ctx.stroke();
+    } else if (o.style === 'opening') {
+      // an archway: the gap, no door
+      ctx.fillStyle = '#f4f1ea'; ctx.fillRect(xa, ya, xb - xa, yb - ya);
+      ctx.strokeStyle = '#6b5234'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(xa, yb); ctx.lineTo(xa, ya); ctx.lineTo(xb, ya); ctx.lineTo(xb, yb); ctx.stroke();
+    } else if (o.style === 'sliding') {
+      // two panels, overlapping in the middle, with a pull on each
+      const xm1 = X(o.x + o.w * 0.56), xm0 = X(o.x + o.w * 0.44);
+      ctx.fillStyle = '#c9a982'; ctx.fillRect(xa, ya, xb - xa, yb - ya);
+      ctx.strokeStyle = '#6b5234'; ctx.lineWidth = 2.5; ctx.strokeRect(xa, ya, xb - xa, yb - ya);
+      ctx.lineWidth = 1.5; [xm0, xm1].forEach(x => { ctx.beginPath(); ctx.moveTo(x, ya); ctx.lineTo(x, yb); ctx.stroke(); });
+      ctx.fillStyle = '#3a2d1e'; [xa + 8, xb - 11].forEach(x => ctx.fillRect(x, (ya + yb) / 2 - 8, 3, 22));
     } else {
+      // single or double: each leaf with its handle on the side away from its hinge
       ctx.fillStyle = '#b08a5e'; ctx.fillRect(xa, ya, xb - xa, yb - ya);
       ctx.strokeStyle = '#6b5234'; ctx.lineWidth = 2.5; ctx.strokeRect(xa, ya, xb - xa, yb - ya);
-      ctx.fillStyle = '#3a2d1e'; ctx.beginPath(); ctx.arc(xb - 10, (ya + yb) / 2 + 6, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#3a2d1e';
+      doorLeaves(o).forEach(lf => {
+        const xh = X(lf.u), xf = X(lf.u + lf.dir * lf.r), toward = Math.sign(xf - xh);
+        if (o.style === 'double') { ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(xf, ya); ctx.lineTo(xf, yb); ctx.stroke(); }
+        ctx.beginPath(); ctx.arc(xf - toward * 10, (ya + yb) / 2 + 6, 3, 0, Math.PI * 2); ctx.fill();
+      });
     }
     if (k === elevSel) {
       ctx.strokeStyle = '#4a7fe8'; ctx.lineWidth = 2; ctx.setLineDash([5, 4]); ctx.strokeRect(xa - 4, ya - 4, xb - xa + 8, yb - ya + 8); ctx.setLineDash([]);
       elevHandles(o, F).forEach(h => { ctx.fillStyle = '#fff'; ctx.strokeStyle = '#4a7fe8'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.rect(h.x - 4, h.y - 4, 8, 8); ctx.fill(); ctx.stroke(); });
       const fromLeft = F.flip ? L - o.x - o.w : o.x;
-      dim(xa, ya - 16, xb, ya - 16, o.w.toFixed(2) + ' m');
-      dim(xb + 16, ya, xb + 16, yb, o.h.toFixed(2) + ' m');
-      if (o.y > 0.01) dim(xa - 16, yb, xa - 16, Y(0), 'sill ' + o.y.toFixed(2) + ' m');
-      dim(X(F.flip ? L : 0), Y(0) - 12, xa, Y(0) - 12, fromLeft.toFixed(2) + ' m');
+      dim(xa, ya - 16, xb, ya - 16, fmtLen(o.w));
+      dim(xb + 16, ya, xb + 16, yb, fmtLen(o.h));
+      if (o.y > 0.01) dim(xa - 16, yb, xa - 16, Y(0), 'sill ' + fmtLen(o.y));
+      dim(X(F.flip ? L : 0), Y(0) - 12, xa, Y(0) - 12, fmtLen(fromLeft));
     }
   });
   // handles on the wall top: the two ends and the middle
@@ -4378,15 +5424,27 @@ function drawPlanOpenings(pts) {
         run(o.x, o.x + o.w, -2.5); run(o.x, o.x + o.w, 2.5);
         ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(0,0,0,0.5)';
         [[p, nAt(o.x)], [q, nAt(o.x + o.w)]].forEach(([e, m]) => { ctx.beginPath(); ctx.moveTo(e.x - m.x * 4.5, e.y - m.y * 4.5); ctx.lineTo(e.x + m.x * 4.5, e.y + m.y * 4.5); ctx.stroke(); });
+      } else if (o.style === 'sliding') {
+        // two panels side by side in the wall, overlapping in the middle
+        ctx.strokeStyle = '#8a6a44'; ctx.lineWidth = 2.5;
+        run(o.x, o.x + o.w * 0.56, -1.8); run(o.x + o.w * 0.44, o.x + o.w, 1.8);
+      } else if (o.style === 'opening') {
+        // an archway: just the gap, with its ends marked
+        ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+        [[p, nAt(o.x)], [q, nAt(o.x + o.w)]].forEach(([e, m]) => { ctx.beginPath(); ctx.moveTo(e.x - m.x * 4.5, e.y - m.y * 4.5); ctx.lineTo(e.x + m.x * 4.5, e.y + m.y * 4.5); ctx.stroke(); });
       } else {
-        // leaf hinged at the x end, swinging into the room (against the outward normal)
-        const r = o.w * SCALE, leaf = {x: p.x - n.x * r, y: p.y - n.y * r};
-        ctx.strokeStyle = '#8a6a44'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(leaf.x, leaf.y); ctx.stroke();
-        const a0 = Math.atan2(q.y - p.y, q.x - p.x), a1 = Math.atan2(leaf.y - p.y, leaf.x - p.x);
-        let d = a1 - a0; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
-        ctx.lineWidth = 1; ctx.setLineDash([4, 3]);
-        ctx.beginPath(); ctx.arc(p.x, p.y, r, a0, a0 + d, d < 0); ctx.stroke(); ctx.setLineDash([]);
+        // each leaf from its hinge, swung open into the room (or out), with its arc
+        const side = doorSide(o);
+        doorLeaves(o).forEach(lf => {
+          const h = at(lf.u), c = at(lf.u + lf.dir * lf.r), m = nAt(lf.u), r = lf.r * SCALE;
+          const leaf = {x: h.x + m.x * side * r, y: h.y + m.y * side * r};
+          ctx.strokeStyle = '#8a6a44'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(h.x, h.y); ctx.lineTo(leaf.x, leaf.y); ctx.stroke();
+          const a0 = Math.atan2(c.y - h.y, c.x - h.x), a1 = Math.atan2(leaf.y - h.y, leaf.x - h.x);
+          let d = a1 - a0; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
+          ctx.lineWidth = 1; ctx.setLineDash([4, 3]);
+          ctx.beginPath(); ctx.arc(h.x, h.y, r, a0, a0 + d, d < 0); ctx.stroke(); ctx.setLineDash([]);
+        });
       }
     });
   });
@@ -4484,8 +5542,8 @@ function addOpening(type) {
 function updateElevBar() {
   if (elevWall == null) return;
   const F = elevFrame(), n = walls.length, o = elevSel != null ? walls[F.i].openings[elevSel] : null;
-  document.getElementById('elevTitle').textContent = `Wall ${F.i + 1} of ${n} · ${F.L.toFixed(2)} m`;
-  const set = (id, v) => { const el = document.getElementById(id); if (document.activeElement !== el) el.value = v.toFixed(2); };
+  document.getElementById('elevTitle').textContent = `Wall ${F.i + 1} of ${n} · ${fmtLen(F.L)}`;
+  const set = (id, v) => { const el = document.getElementById(id); if (document.activeElement !== el) el.value = units === 'ft' ? v : v.toFixed(2); };
   set('elevHL', wallHeightAt(F.i, F.flip ? F.L : 0));
   set('elevHR', wallHeightAt(F.i, F.flip ? 0 : F.L));
   set('elevCurve', (walls[F.i] && walls[F.i].bulge) || 0);
@@ -4494,8 +5552,33 @@ function updateElevBar() {
     document.getElementById('elevSelName').textContent = o.type === 'door' ? 'Door' : 'Window';
     set('elevOW', o.w); set('elevOH', o.h); set('elevOY', o.y); set('elevOX', F.flip ? F.L - o.x - o.w : o.x);
     document.getElementById('elevOY').disabled = o.type === 'door';
+    const door = o.type === 'door', st = o.style || 'single';
+    const ds = document.getElementById('elevDoorStyle'), dh = document.getElementById('elevDoorHinge'), dw = document.getElementById('elevDoorSwing');
+    ds.style.display = door ? '' : 'none';
+    dh.style.display = door && st === 'single' ? '' : 'none';
+    dw.style.display = door && (st === 'single' || st === 'double') ? '' : 'none';
+    if (door) {
+      ds.value = st;
+      // (the view shows corner i on the left unless the wall runs the other way)
+      dh.value = (o.hinge === 'end') !== !!F.flip ? 'right' : 'left';
+      dw.value = o.swing === 'out' ? 'out' : 'in';
+    }
   }
 }
+
+// The selected door's kind, hinge side and swing.
+function setDoorOption(k, v) {
+  document.activeElement && document.activeElement.blur();
+  const F = elevFrame(), o = elevSel != null ? walls[F.i].openings[elevSel] : null;
+  if (!o || o.type !== 'door') return;
+  if (k === 'style') { if (v === 'single') delete o.style; else o.style = v; }
+  if (k === 'hinge') { const end = (v === 'right') !== !!F.flip; if (end) o.hinge = 'end'; else delete o.hinge; }
+  if (k === 'swing') { if (v === 'out') o.swing = 'out'; else delete o.swing; }
+  updateElevBar(); draw2d(); checkpoint();
+}
+document.getElementById('elevDoorStyle').addEventListener('change', e => setDoorOption('style', e.target.value));
+document.getElementById('elevDoorHinge').addEventListener('change', e => setDoorOption('hinge', e.target.value));
+document.getElementById('elevDoorSwing').addEventListener('change', e => setDoorOption('swing', e.target.value));
 
 function updateRoomHint() {
   // (no walls to edit yet while a room is being drawn)
@@ -4544,7 +5627,7 @@ document.getElementById('elevCurve').addEventListener('input', e => {
 // once things settle (checked twice a second, never mid-drag) and before an undo.
 let undoStack = [], histPos = -1, pointerDown = false;
 function checkpoint() {
-  if (drawing || roomEdit || elevDrag || draggingPlaced != null || rotating2d) return;
+  if (drawing || roomEdit || elevDrag || draggingPlaced != null || rotating2d || groupDrag || boxSel) return;
   const s = homeToJson();
   if (s === undoStack[histPos]) return;
   undoStack = undoStack.slice(0, histPos + 1);
@@ -4595,7 +5678,8 @@ document.addEventListener('keydown', e => {
   }
   if (!(shape === 'custom' && drawing) || e.ctrlKey || e.metaKey) return;
   let handled = true;
-  if (/^[0-9]$/.test(e.key) || (e.key === '.' || e.key === ',') && !/[.,]/.test(lenBuffer)) { if (customPts.length) lenBuffer += e.key; }
+  if (/^[0-9]$/.test(e.key) || (e.key === '.' || e.key === ',') && !/[.,]/.test(lenBuffer.split("'").pop())
+      || units === 'ft' && (e.key === "'" && !/['"]/.test(lenBuffer) || e.key === '"' && !/"/.test(lenBuffer)) && lenBuffer) { if (customPts.length) lenBuffer += e.key; }
   else if (e.key === 'Backspace') lenBuffer = lenBuffer.slice(0, -1);
   else if (e.key === 'Enter') { if (lenBuffer) applyTypedLength(); else finishDrawing(); }
   else if (e.key === 'Escape') { if (lenBuffer) lenBuffer = ''; else finishDrawing(); }
@@ -4619,15 +5703,15 @@ function setShape(s, pts) {
 }
 
 document.querySelectorAll('.shape-btn').forEach(btn => {
-  btn.addEventListener('click', () => { setShape(btn.dataset.shape); redraw(); });
+  btn.addEventListener('click', () => { if (measureMode) setMeasureMode(false); if (noteMode) setNoteMode(false); setShape(btn.dataset.shape); redraw(); });
 });
 
 document.getElementById('roomW').addEventListener('input', e => { roomW = +e.target.value || 6; redraw(); });
 document.getElementById('roomH').addEventListener('input', e => { roomH = +e.target.value || 5; redraw(); });
 document.getElementById('clearBtn').addEventListener('click', () => {
   // The layout is autosaved, so reloading won't bring it back.
-  if (placed.length && !confirm('Remove all furniture from the room? This can\'t be undone.')) return;
-  placed = []; customPts = []; select(-1); redraw();
+  if ((placed.length || measures.length || notes.length) && !confirm('Remove all furniture, measurements and notes from the room? This can\'t be undone.')) return;
+  placed = []; customPts = []; measures = []; notes = []; updateMeasureClear(); select(-1); redraw();
 });
 
 const presetsEl = document.getElementById('presets');
@@ -4677,6 +5761,11 @@ document.getElementById('btn2d').addEventListener('click', () => {
 document.getElementById('btn3d').addEventListener('click', () => {
   if (elevWall != null) closeElevation();
   view = '3d'; selCorner = null;
+  if (measureMode) setMeasureMode(false);
+  if (noteMode) setNoteMode(false);
+  document.querySelectorAll('.note-input').forEach(el => el.blur());
+  if (traceMode) setTraceMode(null);
+  if (group.length) select(-1);
   document.getElementById('btn2d').classList.remove('active');
   document.getElementById('btn3d').classList.add('active');
   autoRotateBtn.style.display = 'inline-block';
@@ -4789,7 +5878,7 @@ function colourFromPhoto(item, image) {
   whenImageLoaded(image).then(e => {
     if (e.status !== 'ok' || !e.cors) return;
     try {
-      const c = photoColor(e.img);
+      const c = photoColor(e.img, item.shape.kind === 'sofa' && item.shape.style === 'curved');
       if (c) { item.color = c; const i = placed.indexOf(item); if (i >= 0) itemChanged(i, true); }
     } catch (err) { diag('photo colour failed', String(err).slice(0, 200)); }
   });
@@ -4830,7 +5919,7 @@ function addSofaSet(p, url, image, seatsList, drawn) {
   if (image) showPreviewWhenLoaded(image);
   const drawnAny = items.some(it => it._sizeFrom !== 'typical');
   setStatus(`✓ Added the set as ${items.length} pieces: ` +
-    items.map(it => `"${it.label}" ${it.w.toFixed(2)} × ${it.h.toFixed(2)} × ${it.zHeight.toFixed(2)} m (${it._sizeFrom === 'typical' ? 'typical size' : 'from its dimension drawing'})`).join(', ') + '. ' +
+    items.map(it => `"${it.label}" ${fmtDims(it.w, it.h, it.zHeight)} (${it._sizeFrom === 'typical' ? 'typical size' : 'from its dimension drawing'})`).join(', ') + '. ' +
     (drawnAny ? 'Sizes read off a drawing are read automatically — check them against the page.' : 'The page doesn\'t list their sizes, so they\'re typical ones — set the real size in the panel if you know it.'), 'ok');
 }
 
@@ -4937,7 +6026,7 @@ function addFromAnalysis(p, url, image, ai) {
     : it.shape.kind === 'sofa' ? (it.shape.style === 'curved' ? 'curved sofa' : it.shape.chaise !== 'none' ? `sofa with a chaise (${it.shape.chaise})` : 'sofa')
     : it.shape.kind === 'beanbag' ? (it.shape.arms ? 'bean bag chair with armrests' : 'bean bag') : it.shape.kind === 'seat' ? it.shape.style : it.shape.kind === 'cabinet' ? (it.shape.front === 'drawers' ? 'chest of drawers' : 'cabinet') : it.shape.kind;
   const modelName = {'claude-opus-5': 'Claude Opus 5', 'claude-sonnet-5': 'Claude Sonnet 5', 'claude-haiku-4-5': 'Claude Haiku 4.5'}[ai.model] || ai.model || 'Claude';
-  setStatus(`✓ Added ${items.map(it => `"${it.label}" — ${it.w.toFixed(2)} × ${it.h.toFixed(2)} × ${it.zHeight.toFixed(2)} m (${from[it._sizeFrom] || 'size'}), drawn as ${drawn(it)}`).join('; ')}. ` +
+  setStatus(`✓ Added ${items.map(it => `"${it.label}" — ${fmtDims(it.w, it.h, it.zHeight)} (${from[it._sizeFrom] || 'size'}), drawn as ${drawn(it)}`).join('; ')}. ` +
     `Read by ${modelName}${ai.cost != null ? ` (≈US$${ai.cost.toFixed(3)})` : ''}` + (ai.analysis.notes ? `: ${ai.analysis.notes.replace(/\s+$/, '')}` : '.') +
     ' Change the shape or size in the panel on the plan if it\'s off.', 'ok');
 }
@@ -5060,10 +6149,11 @@ async function generateFromPage(url) {
     if (modules) modules.forEach(m => { if (m.model) getModelEntry(m.model); });
     if (image) showPreviewWhenLoaded(image);
     colourFromPhoto(item, image);
-    const dims = () => `${item.w.toFixed(2)} × ${item.h.toFixed(2)} × ${item.zHeight.toFixed(2)} m (W × D × H)`;
+    const dims = () => `${fmtDims(item.w, item.h, item.zHeight)} (W × D × H)`;
     if (p.model) {
       setStatus(`Added "${item.label}". Loading its 3D model for the real shape and size…`, 'loading');
       const m = await getModelEntry(p.model).ready;
+      if (m.status === 'ok') { fitItemsToModel(p.model, m); redraw(); }   // loaded before: its onLoad won't fit this one
       if (m.status === 'ok') {
         setStatus(`✓ Added "${item.label}" with its 3D model — real size ${dims()}.`, 'ok');
         return;
@@ -5217,6 +6307,8 @@ imgUrlInput.addEventListener('keydown', e => {
 document.getElementById('drawFootprint').addEventListener('click', () => {
   if (view !== '2d') document.getElementById('btn2d').click();
   drawingItemShape = true;
+  if (measureMode) setMeasureMode(false);
+  if (noteMode) setNoteMode(false);
   itemShapePts = [];
   const hint = document.getElementById('footprintHint');
   hint.style.display = 'block';
@@ -5243,7 +6335,7 @@ function finishItemFootprint() {
   pendingFootprint = itemShapePts.map(p => ({ x: (p.x - cx) / SCALE, y: (p.y - cy) / SCALE }));
   document.getElementById('itemW').value = wMeters.toFixed(2);
   document.getElementById('itemH').value = hMeters.toFixed(2);
-  hint.textContent = `✓ Custom footprint set (${itemShapePts.length} points, ${wMeters.toFixed(2)}×${hMeters.toFixed(2)}m bounding box). It will be used instead of a plain rectangle.`;
+  hint.textContent = `✓ Custom footprint set (${itemShapePts.length} points, ${fmtDims(wMeters, hMeters)} bounding box). It will be used instead of a plain rectangle.`;
   itemShapePts = [];
   draw2d();
 }
@@ -5354,6 +6446,9 @@ function layoutToJson() {
     customPts: shape === 'custom' && !drawing ? customPts.map(p => toM(p.x, p.y)) : null,
     walls: walls.map(w => ({hStart: w.hStart, hEnd: w.hEnd, bulge: w.bulge || 0, openings: w.openings.map(o => ({...o}))})),
     items,
+    measures: measures.map(m => { const a = toM(m.x1, m.y1), b = toM(m.x2, m.y2); return {x1: a.x, y1: a.y, x2: b.x, y2: b.y}; }),
+    notes: notes.map(n => ({...toM(n.x, n.y), text: n.text})),
+    trace: trace ? {...trace} : null,
   });
 }
 
@@ -5399,6 +6494,14 @@ function applyLayout(data) {
   if (elevWall != null) { elevSel = null; if (elevWall >= getRoomPts().length) closeElevation(); }
   syncStyleControls();
   placed = data.items.map(it => ({...it, ...toPx(it)}));
+  measures = Array.isArray(data.measures) ? data.measures.filter(m => [m.x1, m.y1, m.x2, m.y2].every(Number.isFinite)).map(m => {
+    const a = toPx({x: m.x1, y: m.y1}), b = toPx({x: m.x2, y: m.y2}); return {x1: a.x, y1: a.y, x2: b.x, y2: b.y}; }) : [];
+  measureSel = -1; updateMeasureClear();
+  notes = Array.isArray(data.notes) ? data.notes.filter(n => n && typeof n.text === 'string' && n.text.trim() && Number.isFinite(n.x) && Number.isFinite(n.y))
+    .map(n => ({...toPx(n), text: n.text.slice(0, NOTE_MAX)})) : [];
+  const t = data.trace;
+  trace = t && typeof t.src === 'string' && t.src.startsWith('data:image') && t.mpp > 0 ? {src: t.src, x: +t.x || 0, y: +t.y || 0, mpp: +t.mpp, opacity: Math.min(1, Math.max(0.1, +t.opacity || 0.5))} : null;
+  updateTraceControls();
   if (data.budget && data.budget.amount > 0) budget = {amount: +data.budget.amount, currency: data.budget.currency || null};
   select(-1);
   redraw();
@@ -5408,8 +6511,12 @@ function autosave() {
   const json = homeToJson();
   if (json === lastSavedLayout) return;
   try { localStorage.setItem(LAYOUT_KEY, json); lastSavedLayout = json; }
-  catch (err) { diag('autosave failed', String(err).slice(0, 200)); }
+  catch (err) {
+    diag('autosave failed', String(err).slice(0, 200));
+    if (!autosaveWarned) { autosaveWarned = true; toast('This browser\'s storage is full, so changes aren\'t being kept. Use Save file, or remove plan pictures you don\'t need.'); }
+  }
 }
+let autosaveWarned = false;
 
 function restoreLayout() {
   let json = null;
@@ -5574,6 +6681,8 @@ function refreshBudget() {
   if (!editingBudget) document.getElementById('budgetSet').textContent = budget.amount > 0 ? 'Change' : 'Set a budget';
 }
 setInterval(refreshBudget, 200);
+// (draw2d keeps it current on the plan; this covers changes made in 3D)
+setInterval(() => { if (view !== '2d') updateRoomArea(); }, 200);
 
 document.getElementById('fitHead').addEventListener('click', () => { fitOpen = !fitOpen; lastFitKey = null; if (view === '2d') draw2d(); else renderFitBox(fitCheck()); });
 document.getElementById('budgetMissing').addEventListener('click', () => {
@@ -5617,7 +6726,7 @@ function shoppingLines() {
   });
   return lines;
 }
-const sizeText = l => `${l.w.toFixed(2)} × ${l.d.toFixed(2)}${l.z ? ' × ' + l.z.toFixed(2) : ''} m`;
+const sizeText = l => l.z ? fmtDims(l.w, l.d, l.z) : fmtDims(l.w, l.d);
 
 // A small picture from what's already loaded (no new request: a plain <img>
 // load of the same URL can spoil the CORS load the 3D view depends on).
@@ -5691,7 +6800,7 @@ function renderShoppingList() {
   });
   table.appendChild(foot);
   if (!lines.length) table.innerHTML = '<tr><td style="color:#999;padding:24px 6px">Nothing in the room yet.</td></tr>';
-  document.querySelector('.shop-head h2').textContent = rooms.length > 1 ? `Shopping list · ${rooms.length} rooms` : 'Shopping list';
+  document.querySelector('#shopDialog .shop-head h2').textContent = rooms.length > 1 ? `Shopping list · ${rooms.length} rooms` : 'Shopping list';
   const b = budget.amount > 0 ? budget : null, spent = b ? sums[b.currency || main] || 0 : 0;
   document.getElementById('shopNote').textContent =
     (b ? (spent > b.amount ? `${fmtMoney(spent - b.amount, b.currency || main, true)} over budget. ` : `${fmtMoney(b.amount - spent, b.currency || main, true)} of the budget left. `) : '') +
@@ -5740,6 +6849,170 @@ function flashButton(btn, text) {
 document.getElementById('shopListBtn').addEventListener('click', () => { renderShoppingList(); shopDialog.showModal(); });
 document.getElementById('shopClose').addEventListener('click', () => shopDialog.close());
 shopDialog.addEventListener('click', e => { if (e.target === shopDialog) shopDialog.close(); });   // the backdrop
+
+// ── IKEA catalogue ────────────────────────────────────────────────────────────
+// ikea-catalog.js (next to this file, made by tools/ikea-catalog.mjs) lists
+// every IKEA Australia product that has an official 3D model: links only.
+// It's a plain <script> (fetch() can't read files from a file:// page),
+// loaded the first time the catalogue opens. Colour variants of one product
+// share a card. Adding one is the pasted-link flow without the page fetch:
+// the listed size first, then fitToModel makes the model's real size win.
+// Thumbnails ask for IKEA's small ?f=xxs copy, never the ?f=xl URL the 3D
+// view loads with CORS, so they can't spoil that load (see getImageEntry).
+const catDialog = document.getElementById('catDialog');
+const catGrid = document.getElementById('catGrid'), catSearch = document.getElementById('catSearch');
+const catTop = document.getElementById('catTop'), catSub = document.getElementById('catSub');
+const CAT_PAGE = 60;
+let catalog = null, catGroups = [], catShown = CAT_PAGE;
+
+function loadCatalog() {
+  if (catalog) return Promise.resolve(catalog);
+  return new Promise(resolve => {
+    const s = document.createElement('script');
+    s.src = new URL('ikea-catalog.js', location.href).href;
+    s.onload = () => resolve(catalog = window.IKEA_CATALOG || null);
+    s.onerror = () => { s.remove(); resolve(null); };
+    document.head.appendChild(s);
+  });
+}
+
+// Searchable without accents: "soderhamn" finds SÖDERHAMN.
+const plainText = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+
+function buildCatGroups(c) {
+  const byKey = new Map();
+  for (const r of c.rows) {
+    const [slug, series, type, variant, top, sub, price, img, model, w, d, h] = r;
+    const key = series + '|' + type + '|' + top;
+    if (!byKey.has(key)) byKey.set(key, {series, type, top, sub, variants: [], text: ''});
+    byKey.get(key).variants.push({slug, variant, price, img, model, w, d, h});
+  }
+  for (const g of byKey.values()) {
+    g.text = plainText([g.series, g.type, c.cats[g.top], c.cats[g.sub], ...g.variants.map(v => v.variant + ' ' + v.slug)].join(' '));
+    g.variants.sort((a, b) => (a.price || 0) - (b.price || 0));
+    // Different products can share a colour name (VITTSJÖ comes in three
+    // "black-brown/glass 200x36x175 cm"): tell them apart by article number.
+    const seen = new Map();
+    g.variants.forEach(v => seen.set(v.variant, (seen.get(v.variant) || 0) + 1));
+    g.variants.forEach(v => { v.label = (v.variant || 'Option') + (seen.get(v.variant) > 1 ? ' · ' + (v.slug.match(/(s?\d{8})$/) || ['', v.slug])[1] : ''); });
+  }
+  return [...byKey.values()];
+}
+
+function fillCatFilters() {
+  const count = new Map();
+  catGroups.forEach(g => count.set(g.top, (count.get(g.top) || 0) + 1));
+  catTop.innerHTML = `<option value="">All categories (${catGroups.length})</option>` +
+    [...count].sort((a, b) => catalog.cats[a[0]].localeCompare(catalog.cats[b[0]]))
+      .map(([i, n]) => `<option value="${i}">${escHtml(catalog.cats[i])} (${n})</option>`).join('');
+  fillCatSub();
+}
+function fillCatSub() {
+  const top = catTop.value;
+  const count = new Map();
+  if (top !== '') catGroups.forEach(g => { if (g.top === +top) count.set(g.sub, (count.get(g.sub) || 0) + 1); });
+  catSub.hidden = count.size < 2;
+  catSub.innerHTML = `<option value="">All of them</option>` +
+    [...count].sort((a, b) => catalog.cats[a[0]].localeCompare(catalog.cats[b[0]]))
+      .map(([i, n]) => `<option value="${i}">${escHtml(catalog.cats[i])} (${n})</option>`).join('');
+}
+
+function catMatches() {
+  const words = plainText(catSearch.value).split(/\s+/).filter(Boolean);
+  const top = catTop.value, sub = catSub.hidden ? '' : catSub.value;
+  return catGroups.filter(g => (top === '' || g.top === +top) && (sub === '' || g.sub === +sub) && words.every(w => g.text.includes(w)));
+}
+
+function renderCatalog() {
+  if (!catalog) return;
+  const found = catMatches();
+  catGrid.innerHTML = '';
+  if (!found.length) catGrid.innerHTML = '<div class="cat-empty">Nothing matches. Try fewer words, or another category.</div>';
+  found.slice(0, catShown).forEach(g => catGrid.appendChild(catCard(g)));
+  if (found.length > catShown) {
+    const more = document.createElement('button');
+    more.className = 'view-btn cat-more';
+    more.style.gridColumn = '1 / -1';
+    more.textContent = `Show more (${found.length - catShown} left)`;
+    more.addEventListener('click', () => { catShown += CAT_PAGE * 2; renderCatalog(); });
+    catGrid.appendChild(more);
+  }
+  document.getElementById('catNote').textContent = `${found.length} of ${catGroups.length} products · IKEA Australia, prices in AUD as of ${catalog.built}` +
+    (location.protocol !== 'file:' && !hasExtension() ? ' · without the browser extension the 3D models can\'t load here, so they show as boxes with the photo' : '');
+}
+
+function catCard(g) {
+  const el = document.createElement('div');
+  el.className = 'cat-card';
+  const v0 = g.variants[0];
+  const thumb = v => v.img ? catalog.img + v.img + '?f=xxs' : '';
+  const size = v => v.w && v.d && v.h ? (units === 'ft' ? fmtDims(v.w, v.d, v.h) : `${Math.round(v.w * 100)} × ${Math.round(v.d * 100)} × ${Math.round(v.h * 100)} cm`) : '';
+  el.innerHTML = `<img loading="lazy" alt="" src="${escHtml(thumb(v0))}">
+    <div class="cat-body">
+      <div class="cat-series">${escHtml(g.series)}</div>
+      <div class="cat-type">${escHtml(g.type)}</div>
+      ${g.variants.length > 1 ? `<select title="Colour / size">${g.variants.map((v, i) => `<option value="${i}">${escHtml(v.label)}</option>`).join('')}</select>`
+        : `<div class="cat-meta">${escHtml(v0.variant)}</div>`}
+      <div class="cat-meta cat-size">${size(v0)}</div>
+      <div class="cat-price">${v0.price ? fmtMoney(v0.price, 'AUD', true) : ''}</div>
+      <button class="add-btn primary">Add to room</button>
+    </div>`;
+  const sel = el.querySelector('select');
+  const pick = () => g.variants[sel ? +sel.value : 0];
+  if (sel) sel.addEventListener('change', () => {
+    const v = pick();
+    el.querySelector('img').src = thumb(v);
+    el.querySelector('.cat-size').textContent = size(v);
+    el.querySelector('.cat-price').textContent = v.price ? fmtMoney(v.price, 'AUD', true) : '';
+  });
+  el.querySelector('button').addEventListener('click', () => { catDialog.close(); addFromCatalog(g, pick()); });
+  return el;
+}
+
+async function addFromCatalog(g, v) {
+  const label = `${g.series} ${g.type}` + (v.variant ? ' - ' + v.variant : '');
+  const image = v.img ? normalizeImageUrl(catalog.img + v.img) : null;
+  const modelUrl = catalog.glb + v.model;
+  diag('catalogue add', {slug: v.slug, model: v.model.slice(-40)});
+  const item = addItem({
+    id: 'product', label,
+    w: v.w || 1, h: v.d || 1, zHeight: v.h || 0.8,
+    imgUrl: image, modelUrl, pageUrl: catalog.page + v.slug + '/',
+    fitToModel: true,
+    ...(v.price ? {price: v.price, currency: catalog.currency} : {}),
+  });
+  setStatus(`Added "${label}". Loading its 3D model for the real shape and size…`, 'loading');
+  const m = await getModelEntry(modelUrl).ready;
+  // Already loaded (a second of the same chair): its onLoad won't run again.
+  if (m.status === 'ok') { fitItemsToModel(modelUrl, m); redraw(); }
+  const dims = `${fmtDims(item.w, item.h, item.zHeight)} (W × D × H)`;
+  if (m.status === 'ok') setStatus(`✓ Added "${label}" with its 3D model — real size ${dims}.`, 'ok');
+  else setStatus(`Added "${label}", but its 3D model didn't load` +
+    (location.protocol !== 'file:' && !hasExtension() ? ' (on the website IKEA\'s models need the browser extension)' : '') +
+    `, so it's a box of the listed size ${dims}.`, 'err');
+}
+
+document.getElementById('ikeaCatBtn').addEventListener('click', async () => {
+  catDialog.showModal();
+  if (!catalog) {
+    catGrid.innerHTML = '<div class="cat-empty">Loading the catalogue…</div>';
+    if (!(await loadCatalog())) {
+      catGrid.innerHTML = '<div class="cat-empty">The catalogue file (ikea-catalog.js) isn\'t next to this page.<br>Make it with <code>node tools/ikea-catalog.mjs</code>.</div>';
+      return;
+    }
+    catGroups = buildCatGroups(catalog);
+    fillCatFilters();
+  }
+  catShown = CAT_PAGE;
+  renderCatalog();
+  catSearch.focus();
+});
+let catTyping = null;
+catSearch.addEventListener('input', () => { clearTimeout(catTyping); catTyping = setTimeout(() => { catShown = CAT_PAGE; renderCatalog(); }, 150); });
+catTop.addEventListener('change', () => { fillCatSub(); catShown = CAT_PAGE; renderCatalog(); });
+catSub.addEventListener('change', () => { catShown = CAT_PAGE; renderCatalog(); });
+document.getElementById('catClose').addEventListener('click', () => catDialog.close());
+catDialog.addEventListener('click', e => { if (e.target === catDialog) catDialog.close(); });
 document.getElementById('shopCsv').addEventListener('click', () => {
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([shoppingCsv()], {type: 'text/csv;charset=utf-8'}));
@@ -5799,6 +7072,7 @@ async function makeShareLink() {
   // Pictures pasted in as data: URLs would make the link enormous.
   let dropped = 0;
   data.rooms.forEach(r => r.layout.items.forEach(it => { if (/^data:/.test(it.imgUrl || '')) { it.imgUrl = null; dropped++; } }));
+  data.rooms.forEach(r => { if (r.layout.trace) { r.layout.trace = null; dropped++; } });   // (floor plan pictures too)
   const base = location.protocol === 'file:' ? SITE_URL : location.origin + location.pathname;
   return {url: base + '#layout=' + await packLayout(JSON.stringify(data)), dropped};
 }
@@ -5871,6 +7145,8 @@ function emptyRoom() {
 }
 function switchRoom(i) {
   if (i === curRoom || !rooms[i]) return;
+  if (measureMode) setMeasureMode(false);
+  if (noteMode) setNoteMode(false);
   if (elevWall != null) closeElevation();
   rooms[curRoom].data = JSON.parse(layoutToJson());
   curRoom = i;
@@ -5951,7 +7227,7 @@ function planImage() {
     ctx.setTransform(R, 0, 0, R, 0, 0);
     draw2d();
     // bounds: the room, the furniture and the wall-length labels around it
-    const pts = [...getRoomOutline(), ...placed.flatMap(it => itemPoly(it))];
+    const pts = [...getRoomOutline(), ...placed.flatMap(it => itemPoly(it)), ...doorTips(), ...measures.flatMap(m => [{x: m.x1, y: m.y1}, {x: m.x2, y: m.y2}]), ...noteBoxes.flatMap(b => [{x: b.x, y: b.y}, {x: b.x + b.w, y: b.y + b.h}])];
     const x0 = Math.max(0, Math.min(...pts.map(p => p.x)) - 50), y0 = Math.max(0, Math.min(...pts.map(p => p.y)) - 40);
     const x1 = Math.min(canvas.width, Math.max(...pts.map(p => p.x)) + 50), y1 = Math.min(canvas.height, Math.max(...pts.map(p => p.y)) + 40);
     const head = 44, foot = 36, out = document.createElement('canvas');
@@ -5964,11 +7240,12 @@ function planImage() {
     g.fillStyle = '#1a1a1a'; g.font = '600 15px system-ui'; g.textBaseline = 'middle';
     g.fillText(roomName(), 12, 16);
     g.fillStyle = '#777'; g.font = '11px system-ui';
-    g.fillText(`${((bb.x2 - bb.x) / SCALE).toFixed(2)} × ${((bb.y2 - bb.y) / SCALE).toFixed(2)} m · ${placed.length} item${placed.length === 1 ? '' : 's'} · ${new Date().toLocaleDateString()}`, 12, 33);
+    g.fillText(`${fmtDims((bb.x2 - bb.x) / SCALE, (bb.y2 - bb.y) / SCALE)} · ${fmtArea(roomArea())} · ${placed.length} item${placed.length === 1 ? '' : 's'} · ${new Date().toLocaleDateString()}`, 12, 33);
     const sy = head + (y1 - y0) + foot / 2;
     g.strokeStyle = '#333'; g.lineWidth = 2;
-    g.beginPath(); g.moveTo(12, sy); g.lineTo(12 + SCALE, sy); g.moveTo(12, sy - 4); g.lineTo(12, sy + 4); g.moveTo(12 + SCALE, sy - 4); g.lineTo(12 + SCALE, sy + 4); g.stroke();
-    g.fillStyle = '#333'; g.fillText('1 m', 18 + SCALE, sy);
+    const bar = units === 'ft' ? 3 * 12 * M_PER_IN * SCALE : SCALE;     // (1 m, or 3 ft)
+    g.beginPath(); g.moveTo(12, sy); g.lineTo(12 + bar, sy); g.moveTo(12, sy - 4); g.lineTo(12, sy + 4); g.moveTo(12 + bar, sy - 4); g.lineTo(12 + bar, sy + 4); g.stroke();
+    g.fillStyle = '#333'; g.fillText(units === 'ft' ? '3 ft' : '1 m', 18 + bar, sy);
     return out.toDataURL('image/png');          // throws if a photo locked the canvas
   };
   try {
@@ -6074,7 +7351,7 @@ function exampleLayout(name) {
   const ex = EXAMPLES[name];
   const walls4 = [0, 1, 2, 3].map(i => ({hStart: null, hEnd: null, bulge: 0, openings: (ex.openings[i] || []).map(o => ({...o}))}));
   const items = ex.items.map(([id, cx, cy, deg, extra = {}]) => {
-    const f = FURNITURE.find(x => x.id === id);
+    const {room, keywords, ...f} = FURNITURE.find(x => x.id === id);
     const it = {...f, shape: f.shape && {...f.shape}, rot: deg * Math.PI / 180, ...extra};
     // (a rectangular room is centred on the canvas; layouts count from the centre)
     return Object.assign(it, {x: cx - ex.w / 2 - it.w / 2, y: cy - ex.h / 2 - it.h / 2});
@@ -6103,6 +7380,27 @@ function hideWelcome() {
   try { localStorage.setItem('rp-welcomed', '1'); } catch (e) {}
 }
 document.getElementById('helpBtn').addEventListener('click', () => { welcomeEl.hidden = !welcomeEl.hidden; });
+// Keyboard shortcuts: "?" (outside a text box), or the link on the Help card.
+const keysDialog = document.getElementById('keysDialog');
+function toggleKeys() { if (keysDialog.open) keysDialog.close(); else { keysDialog.showModal(); keysDialog.querySelector('.keys-body').focus(); } }
+// While a dialog (this card, the shopping list, the catalogue) is open, keys
+// are for it: they don't reach the plan behind (Esc would otherwise finish a
+// room being drawn, Delete remove the selected piece). Typing in its boxes
+// still works, and the browser still closes it on Esc.
+window.addEventListener('keydown', e => {
+  if (!document.querySelector('dialog[open]') || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+  if (e.key === '?' && keysDialog.open) return;          // (? closes the card again)
+  e.stopImmediatePropagation();
+}, true);
+document.getElementById('keysLink').addEventListener('click', e => { e.preventDefault(); toggleKeys(); });
+document.getElementById('keysClose').addEventListener('click', () => keysDialog.close());
+keysDialog.addEventListener('click', e => { if (e.target === keysDialog) keysDialog.close(); });
+document.addEventListener('keydown', e => {
+  if (e.key !== '?' || e.ctrlKey || e.metaKey || e.altKey || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+  toggleKeys(); e.preventDefault();
+});
+document.getElementById('unitsBtn').addEventListener('click', () => setUnits(units === 'ft' ? 'm' : 'ft'));
+applyUnitsToInputs();
 document.getElementById('welcomeEmpty').addEventListener('click', hideWelcome);
 welcomeEl.addEventListener('click', e => { if (e.target === welcomeEl) hideWelcome(); });
 document.querySelectorAll('.example').forEach(b => b.addEventListener('click', () => loadExample(b.dataset.example)));
