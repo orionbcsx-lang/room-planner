@@ -399,7 +399,7 @@
       </details>
     </div>
 
-    <div class="panel">
+    <div class="panel" id="ikeaCatPanel">
       <h3>IKEA catalogue</h3>
       <button class="add-btn primary" id="ikeaCatBtn">Browse IKEA furniture</button>
       <div class="hint-text" style="margin-top: 6px">IKEA Australia products with official 3D models: search, pick a colour, add.</div>
@@ -834,7 +834,7 @@ const STYLE_PRESETS = {
 // diag() keeps the last 150 steps/errors in localStorage ('rp-diag'), which
 // Claude can read back from the Edge profile on disk when something works in
 // tests but not in the user's browser (see CLAUDE.md).
-const BUILD = '2026-10-06.2';
+const BUILD = '2026-10-07.1';
 function diag(event, data) {
   try {
     const log = JSON.parse(localStorage.getItem('rp-diag') || '[]');
@@ -5019,7 +5019,7 @@ function moveGroup(dx, dy) {
 function duplicateGroup() {
   if (!group.length) return;
   const first = placed.length;
-  group.forEach(i => { const it = placed[i]; placed.push({...it, x: it.x + 20, y: it.y + 20, shape: it.shape && JSON.parse(JSON.stringify(it.shape)), footprint: it.footprint && it.footprint.map(p => ({...p}))}); });
+  group.forEach(i => { const it = placed[i]; placed.push({...it, uid: newUid(), x: it.x + 20, y: it.y + 20, shape: it.shape && JSON.parse(JSON.stringify(it.shape)), footprint: it.footprint && it.footprint.map(p => ({...p}))}); });
   setGroup(placed.map((_, i) => i).slice(first));
   redraw(); checkpoint();
 }
@@ -5165,7 +5165,7 @@ document.getElementById('selLock').addEventListener('click', () => {
 document.getElementById('selDuplicate').addEventListener('click', () => {
   const item = placed[selected];
   if (!item) return;
-  placed.push({...item, x: item.x + 20, y: item.y + 20, footprint: item.footprint && item.footprint.map(p => ({...p}))});
+  placed.push({...item, uid: newUid(), x: item.x + 20, y: item.y + 20, footprint: item.footprint && item.footprint.map(p => ({...p}))});
   if (group.length) { group = []; updateGroupBar(); }
   delete placed[placed.length - 1].locked;      // (a copy is for moving: it starts unlocked)
   selected = placed.length - 1;
@@ -5472,7 +5472,7 @@ function saveMyFurniture(list = myFurniture) {
 function myFurnitureItem(it) {
   const out = {};
   // (fitToModel stays: a piece saved before its model loaded still gets the model's real size)
-  Object.keys(it).forEach(k => { if (!k.startsWith('_') && !['x', 'y', 'rot', 'locked', 'inSet'].includes(k)) out[k] = JSON.parse(JSON.stringify(it[k])); });
+  Object.keys(it).forEach(k => { if (!k.startsWith('_') && !['x', 'y', 'rot', 'locked', 'inSet', 'uid'].includes(k)) out[k] = JSON.parse(JSON.stringify(it[k])); });
   if (/^data:/.test(out.imgUrl || '') && out.imgUrl.length > MY_FURN_IMG_MAX) delete out.imgUrl;     // (a big pasted picture won't fit)
   if (it.inSet) { delete out.price; delete out.currency; }   // (part of a set: its price is on the set's first piece)
   return out;
@@ -5535,7 +5535,7 @@ document.getElementById('selMine').addEventListener('click', () => { if (placed[
 function addItem(props) {
   const bb = getRoomBBox();
   const cx = (bb.x + bb.x2) / 2, cy = (bb.y + bb.y2) / 2;
-  const item = {rot: 0, color: '#888780', emoji: '🖼', ...props};
+  const item = {rot: 0, color: '#888780', emoji: '🖼', ...props, uid: newUid()};
   if (!item.zHeight) delete item.zHeight;
   item.x = cx - item.w * SCALE / 2; item.y = cy - item.h * SCALE / 2;
   applyKindDefaults(item);
@@ -5566,7 +5566,7 @@ canvas.addEventListener('drop', e => {
   const {_x, _y, ...f} = draggingFurn;
   if (isElec(f) && !showElec) setShowElec(true);
   placed.push({
-    ...f,
+    ...f, uid: newUid(),
     x: mx - f.w * SCALE / 2,
     y: my - f.h * SCALE / 2,
     rot: 0
@@ -7734,7 +7734,7 @@ document.getElementById('addCustom').addEventListener('click', () => {
   const iz    = Math.max(0.05, +document.getElementById('itemZ').value || 0.8);
   const bbox  = getRoomBBox();
   placed.push({
-    id: 'custom', label, emoji: '🖼', w: iw, h: ih, zHeight: iz, color: '#888780',
+    id: 'custom', uid: newUid(), label, emoji: '🖼', w: iw, h: ih, zHeight: iz, color: '#888780',
     x: bbox.x + 20, y: bbox.y + 20, rot: 0,
     imgUrl: url || null,
     modelUrl: pendingModelUrl, pageUrl: pendingPageUrl, fitToModel: !!pendingModelUrl,
@@ -7816,10 +7816,20 @@ const LAYOUT_KEY = 'rp-layout';
 let lastSavedLayout = null;
 let rooms = [{name: 'Room 1', data: null}], curRoom = 0;
 
+// Every placed piece carries a `uid` of its own (the type `id` is shared by every
+// sofa, every pasted product…), so a share link or shopping list can tell two
+// copies of the same thing apart. Copies are made by spreading an item, so a
+// missing or repeated uid is replaced here, whenever the layout is read or written.
+function newUid() { return Date.now().toString(36).slice(-5) + Math.random().toString(36).slice(2, 7); }
+function fixUids(list) {
+  const seen = new Set();
+  list.forEach(it => { if (typeof it.uid !== 'string' || !it.uid || seen.has(it.uid)) it.uid = newUid(); seen.add(it.uid); });
+}
 function layoutToJson() { return inRoom(layoutToJsonHere); }
 function layoutToJsonHere() {
   const cx = canvas.width / 2, cy = canvas.height / 2;
   const toM = (x, y) => ({x: +((x - cx) / SCALE).toFixed(4), y: +((y - cy) / SCALE).toFixed(4)});
+  fixUids(placed);
   const items = placed.map(it => {
     const out = {};
     for (const k in it) if (!k.startsWith('_')) out[k] = it[k];
@@ -7860,7 +7870,10 @@ const MAX_VERSIONS = 20;
 function versionRooms() {
   return JSON.parse(homeToJson()).rooms.map(r => ({name: r.name, layout: {...r.layout, trace: null}}));
 }
-function sameRooms(a, b) { return JSON.stringify(a) === JSON.stringify(b); }
+// (uids are left out: versions saved before pieces had them, or rooms not opened since,
+// would never match again once loading hands out fresh ones)
+const noUid = (k, v) => k === 'uid' ? undefined : v;
+function sameRooms(a, b) { return JSON.stringify(a, noUid) === JSON.stringify(b, noUid); }
 function currentVersion() { const now = versionRooms(); return versions.findIndex(v => sameRooms(v.rooms, now)); }
 function saveVersion(name, at) {
   name = String(name || '').trim().slice(0, 40) || `Version ${versions.length + 1}`;
@@ -7967,6 +7980,7 @@ function applyLayout(data) {
   if (elevWall != null) { elevSel = null; if (elevWall >= getRoomPts().length) closeElevation(); }
   syncStyleControls();
   placed = data.items.map(it => ({...it, ...toPx(it)}));
+  fixUids(placed);
   extras = Array.isArray(data.extras) ? data.extras.filter(e => e && Array.isArray(e.pts) && e.pts.length >= 3 && e.pts.every(p => Number.isFinite(p.x) && Number.isFinite(p.y)))
     .map(e => ({pts: e.pts.map(toPx), walls: Array.isArray(e.walls) ? e.walls.map(w => ({hStart: w.hStart ?? null, hEnd: w.hEnd ?? null, bulge: +w.bulge || 0, openings: (w.openings || []).map(o => ({...o})), ...(w.open ? {open: true} : {})})) : [],
       floor: e.floor && FLOOR_STYLE_IDS.includes(e.floor.style) && /^#[0-9a-f]{6}$/i.test(e.floor.color) ? {style: e.floor.style, color: e.floor.color} : null})) : [];
@@ -8332,6 +8346,9 @@ document.getElementById('shopClose').addEventListener('click', () => shopDialog.
 shopDialog.addEventListener('click', e => { if (e.target === shopDialog) shopDialog.close(); });   // the backdrop
 
 // ── IKEA catalogue ────────────────────────────────────────────────────────────
+// Local copies only (decided 2026-10-07): the public site neither ships
+// ikea-catalog.js nor shows the panel, since its photos and models load from IKEA.
+if (location.protocol === 'https:') document.getElementById('ikeaCatPanel').style.display = 'none';
 // ikea-catalog.js (next to this file, made by tools/ikea-catalog.mjs) lists
 // every IKEA Australia product that has an official 3D model: links only.
 // It's a plain <script> (fetch() can't read files from a file:// page),
